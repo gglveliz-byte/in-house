@@ -317,6 +317,7 @@ export default function VendorSettingsPage() {
 
               <div className="space-y-4">
                 <ImageUpload
+                  id="store-logo-upload"
                   label="Logo de la tienda"
                   value={formData.logo}
                   onChange={(url) => setFormData((prev) => ({ ...prev, logo: url }))}
@@ -325,6 +326,7 @@ export default function VendorSettingsPage() {
                 />
 
                 <ImageUpload
+                  id="store-banner-upload"
                   label="Banner de la tienda"
                   value={formData.banner}
                   onChange={(url) => setFormData((prev) => ({ ...prev, banner: url }))}

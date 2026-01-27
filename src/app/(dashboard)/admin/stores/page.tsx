@@ -551,6 +551,7 @@ export default function AdminStoresPage() {
 
                   <div className="mt-4 space-y-4">
                     <ImageUpload
+                      id="admin-store-logo-upload"
                       label="Logo de la tienda"
                       value={formData.logo}
                       onChange={(url) => setFormData((prev) => ({ ...prev, logo: url }))}
@@ -558,6 +559,7 @@ export default function AdminStoresPage() {
                       placeholder="https://ejemplo.com/logo.png"
                     />
                     <ImageUpload
+                      id="admin-store-banner-upload"
                       label="Banner de la tienda"
                       value={formData.banner}
                       onChange={(url) => setFormData((prev) => ({ ...prev, banner: url }))}

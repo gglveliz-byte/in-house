@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useId } from 'react'
 import { Button } from './button'
 
 interface ImageUploadProps {
@@ -9,6 +9,7 @@ interface ImageUploadProps {
   folder?: string
   label?: string
   placeholder?: string
+  id?: string
 }
 
 export function ImageUpload({
@@ -17,11 +18,15 @@ export function ImageUpload({
   folder = 'general',
   label = 'Imagen',
   placeholder = 'https://ejemplo.com/imagen.jpg',
+  id,
 }: ImageUploadProps) {
   const [mode, setMode] = useState<'upload' | 'url'>('upload')
   const [uploading, setUploading] = useState(false)
   const [urlInput, setUrlInput] = useState(value || '')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  // Generar ID único para cada instancia del componente
+  const uniqueId = useId()
+  const inputId = id || `file-${folder}-${uniqueId}`
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -128,10 +133,10 @@ export function ImageUpload({
             accept="image/jpeg,image/png,image/webp,image/gif"
             onChange={handleFileChange}
             className="hidden"
-            id={`file-${folder}`}
+            id={inputId}
           />
           <label
-            htmlFor={`file-${folder}`}
+            htmlFor={inputId}
             className={`flex items-center justify-center w-full h-20 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 transition-colors ${
               uploading ? 'opacity-50 cursor-wait' : ''
             }`}
