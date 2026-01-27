@@ -19,6 +19,20 @@ export async function PATCH(
     const { id } = await params
     const body = await request.json()
 
+    // Verificar que el admin pertenece a este Super Admin
+    const existingAdmin = await prisma.user.findUnique({
+      where: { id },
+      select: { superAdminId: true, role: true },
+    })
+
+    if (!existingAdmin || existingAdmin.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Admin no encontrado' }, { status: 404 })
+    }
+
+    if (existingAdmin.superAdminId !== session.user.id) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+    }
+
     // Preparar datos de actualización
     const updateData: Record<string, unknown> = {}
     
@@ -53,28 +67,5 @@ export async function PATCH(
   } catch (error) {
     console.error('Error updating admin:', error)
     return NextResponse.json({ error: 'Error al actualizar admin' }, { status: 500 })
-  }
-}
-
-// DELETE /api/superadmin/admins/[id] - Eliminar admin
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'SUPER_ADMIN') {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
-    }
-
-    const { id } = await params
-
-    await prisma.user.delete({ where: { id } })
-
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Error deleting admin:', error)
-    return NextResponse.json({ error: 'Error al eliminar admin' }, { status: 500 })
   }
 }

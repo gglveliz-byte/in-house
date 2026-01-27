@@ -1,13 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// GET /api/stats - Estadísticas para el admin
+// GET /api/stats - Estadísticas para el admin (filtrado por zona)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const storeId = searchParams.get('storeId')
 
-    const where = storeId ? { storeId } : {}
+    // Obtener sesión para filtrar por zona si es admin
+    const session = await getServerSession(authOptions)
+
+    // Construir filtro dinámico
+    const where: Record<string, unknown> = {}
+    if (storeId) {
+      where.storeId = storeId
+    } else if (session?.user?.role === 'ADMIN' && session.user.zoneId) {
+      // Si es admin sin storeId específico, filtrar por zona
+      where.store = {
+        zoneId: session.user.zoneId
+      }
+    }
 
     // Pedidos de hoy
     const today = new Date()
@@ -59,8 +73,12 @@ export async function GET(request: NextRequest) {
         _count: true,
       }),
 
-      // Total de tiendas
-      prisma.store.count(),
+      // Total de tiendas (filtrado por zona si es admin)
+      prisma.store.count(
+        session?.user?.role === 'ADMIN' && session.user.zoneId && !storeId
+          ? { where: { zoneId: session.user.zoneId } }
+          : undefined
+      ),
 
       // Total de productos
       prisma.product.count(storeId ? { where: { storeId } } : undefined),

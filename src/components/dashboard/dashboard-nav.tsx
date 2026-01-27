@@ -110,8 +110,16 @@ export function DashboardNav({ user }: DashboardNavProps) {
               <p className="text-xs text-gray-500">{getRoleLabel()}</p>
             </div>
             <button
-              onClick={() => signOut({ callbackUrl: '/' })}
-              className="text-sm text-gray-600 hover:text-gray-900"
+              onClick={async () => {
+                try {
+                  await signOut({ callbackUrl: '/login' })
+                } catch (error) {
+                  console.error('Error al cerrar sesión:', error)
+                  // Fallback: redirigir manualmente
+                  window.location.href = '/login'
+                }
+              }}
+              className="text-sm text-gray-600 hover:text-gray-900 px-3 py-1 rounded hover:bg-gray-100 transition-colors"
             >
               Salir
             </button>

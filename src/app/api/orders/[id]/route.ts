@@ -49,6 +49,39 @@ export async function PATCH(
     const body = await request.json()
     const { status, driverId } = body
 
+    // Obtener sesión para validar autorización
+    const { getServerSession } = await import('next-auth')
+    const { authOptions } = await import('@/lib/auth')
+    const session = await getServerSession(authOptions)
+
+    // Si un repartidor está aceptando el pedido, validar que pertenece a su zona
+    if (driverId && session?.user?.role === 'DRIVER' && session.user.zoneId) {
+      const order = await prisma.order.findUnique({
+        where: { id },
+        include: { store: { select: { zoneId: true } } },
+      })
+
+      if (!order) {
+        return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
+      }
+
+      // Verificar que el pedido pertenece a la zona del repartidor
+      if (order.store.zoneId !== session.user.zoneId) {
+        return NextResponse.json(
+          { error: 'No puedes aceptar pedidos de otras zonas' },
+          { status: 403 }
+        )
+      }
+
+      // Verificar que el driverId coincide con el usuario autenticado
+      if (driverId !== session.user.id) {
+        return NextResponse.json(
+          { error: 'No autorizado' },
+          { status: 403 }
+        )
+      }
+    }
+
     // Preparar datos de actualización
     const updateData: Record<string, unknown> = {}
 

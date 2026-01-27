@@ -351,6 +351,32 @@ export default function AdminStoresPage() {
                   >
                     Editar
                   </Button>
+                  <Button
+                    variant={store.isOpen ? "secondary" : "primary"}
+                    size="sm"
+                    onClick={async () => {
+                      if (!confirm(store.isOpen ? '¿Cerrar esta tienda?' : '¿Abrir esta tienda?')) return
+                      try {
+                        const response = await fetch(`/api/stores/${store.slug}`, {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ isOpen: !store.isOpen }),
+                        })
+                        if (response.ok) {
+                          fetchStores()
+                        } else {
+                          const error = await response.json()
+                          alert(error.error || 'Error al actualizar estado')
+                        }
+                      } catch (error) {
+                        console.error('Error:', error)
+                        alert('Error al actualizar estado')
+                      }
+                    }}
+                    title={store.isOpen ? 'Cerrar tienda' : 'Abrir tienda'}
+                  >
+                    {store.isOpen ? '🔒 Cerrar' : '🔓 Abrir'}
+                  </Button>
                 </div>
               </CardContent>
             </Card>

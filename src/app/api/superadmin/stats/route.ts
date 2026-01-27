@@ -100,29 +100,52 @@ export async function GET() {
           .filter(o => o.status === 'DELIVERED')
           .reduce((sum, o) => sum + (o.actualDeliveryFee || 0), 0)
 
-        // Contar tiendas y repartidores
+        // Contar repartidores asignados a la zona del admin
         const driversCount = admin.zone ? await prisma.user.count({
           where: {
             role: 'DRIVER',
-            deliveries: {
-              some: {
-                store: {
-                  zoneId: admin.zone.id,
-                },
-              },
-            },
+            zoneId: admin.zone.id,
           },
         }) : 0
 
         // Calcular monto a cobrar
         const amountDue = calculateAmountDue(completedOrders)
 
-        // Verificar estado de facturación (simplificado)
-        const billingStatus = 'PENDING_PAYMENT' // Por ahora todos pendientes
+        // Obtener estado de facturación real del ciclo actual
+        const now = new Date()
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+        
+        const currentCycle = await prisma.billingCycle.findFirst({
+          where: {
+            adminId: admin.id,
+            startDate: { gte: startOfMonth },
+            endDate: { lte: endOfMonth },
+          },
+          orderBy: { createdAt: 'desc' },
+        })
+        
+        // Determinar estado de facturación
+        let billingStatus = 'PENDING_PAYMENT'
+        if (currentCycle) {
+          if (currentCycle.isPaid) {
+            billingStatus = 'PAID'
+          } else {
+            // Verificar si está vencido (más de 30 días después del fin del ciclo)
+            const daysSinceEnd = Math.floor((now.getTime() - currentCycle.endDate.getTime()) / (1000 * 60 * 60 * 24))
+            if (daysSinceEnd > 30) {
+              billingStatus = 'OVERDUE'
+            } else {
+              billingStatus = 'PENDING_PAYMENT'
+            }
+          }
+        }
 
         totalOrders += orders.length
         totalRevenue += deliveryRevenue
-        pendingBilling += amountDue
+        if (billingStatus !== 'PAID') {
+          pendingBilling += amountDue
+        }
 
         return {
           id: admin.id,

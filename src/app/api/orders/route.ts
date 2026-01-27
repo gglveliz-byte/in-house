@@ -26,6 +26,13 @@ export async function GET(request: NextRequest) {
         zoneId: session.user.zoneId
       }
     }
+    
+    // Si es repartidor, solo ver pedidos de tiendas en su zona
+    if (session?.user?.role === 'DRIVER' && session.user.zoneId) {
+      where.store = {
+        zoneId: session.user.zoneId
+      }
+    }
 
     const orders = await prisma.order.findMany({
       where,
@@ -76,9 +83,17 @@ export async function POST(request: NextRequest) {
       items,
     } = body
 
-    // Obtener info de la tienda
+    // Obtener info de la tienda (incluyendo zona)
     const store = await prisma.store.findUnique({
       where: { id: storeId },
+      select: {
+        id: true,
+        name: true,
+        zoneId: true,
+        minDeliveryFee: true,
+        maxDeliveryFee: true,
+        deliveryFee: true,
+      },
     })
 
     if (!store) {
@@ -124,10 +139,11 @@ export async function POST(request: NextRequest) {
       create: { id: 'order_counter', value: 1001 },
     })
 
-    // Crear el pedido
+    // Crear el pedido (asignar zona automáticamente desde la tienda)
     const order = await prisma.order.create({
       data: {
         storeId,
+        zoneId: store.zoneId, // Asignar zona de la tienda
         orderNumber: counter.value,
         customerName,
         customerPhone,

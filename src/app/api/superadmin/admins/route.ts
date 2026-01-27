@@ -65,17 +65,11 @@ export async function GET() {
           .filter(o => o.status === 'DELIVERED')
           .reduce((sum, o) => sum + (o.actualDeliveryFee || 0), 0)
 
-        // Contar repartidores (usuarios con rol DRIVER que han entregado en esta zona)
+        // Contar repartidores asignados a la zona del admin
         const driversCount = admin.zone ? await prisma.user.count({
           where: {
             role: 'DRIVER',
-            deliveries: {
-              some: {
-                store: {
-                  zoneId: admin.zone.id,
-                },
-              },
-            },
+            zoneId: admin.zone.id,
           },
         }) : 0
 

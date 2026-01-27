@@ -17,12 +17,14 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = {}
     if (role) where.role = role
     
-    // Si es admin, solo ver usuarios que tienen tiendas en su zona
-    // O usuarios que él mismo ha creado (zoneId = su zona)
-    if (session?.user?.role === 'ADMIN' && session.user.zoneId) {
-      // Filtrar: vendedores que tienen tiendas en la zona del admin
-      // O repartidores que tienen la misma zona
+    // Si es admin, solo ver usuarios que él creó o que pertenecen a su zona
+    if (session?.user?.role === 'ADMIN' && session.user.id) {
+      // Filtrar: usuarios creados por este admin O que pertenecen a su zona
       where.OR = [
+        {
+          // Usuarios creados por este admin (vendedores y repartidores)
+          createdByAdminId: session.user.id
+        },
         {
           // Vendedores con tiendas en la zona del admin
           role: 'VENDOR',
@@ -39,7 +41,9 @@ export async function GET(request: NextRequest) {
         }
       ]
       // No filtrar por role si ya estamos filtrando con OR
-      delete where.role
+      if (where.role) {
+        delete where.role
+      }
     }
 
     const users = await prisma.user.findMany({
@@ -92,10 +96,21 @@ export async function POST(request: NextRequest) {
     // Hash de la contraseña
     const hashedPassword = await hash(password, 12)
 
-    // Si es admin creando un repartidor, asignar su zona
-    const zoneId = (session?.user?.role === 'ADMIN' && session.user.zoneId && role === 'DRIVER')
-      ? session.user.zoneId
-      : body.zoneId || null
+    // Si es admin creando un usuario, asignar su zona y rastrear quién lo creó
+    let zoneId: string | null = null
+    let createdByAdminId: string | null = null
+    
+    if (session?.user?.role === 'ADMIN' && session.user.zoneId) {
+      // Si es repartidor, asignar zona directamente
+      if (role === 'DRIVER') {
+        zoneId = session.user.zoneId
+      }
+      // Rastrear que este admin creó este usuario (vendedor o repartidor)
+      createdByAdminId = session.user.id
+    } else {
+      // Si no es admin, usar zoneId del body si viene
+      zoneId = body.zoneId || null
+    }
 
     const user = await prisma.user.create({
       data: {
@@ -105,6 +120,7 @@ export async function POST(request: NextRequest) {
         role: role || 'VENDOR',
         phone,
         zoneId,
+        createdByAdminId,
       },
       select: {
         id: true,

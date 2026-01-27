@@ -93,10 +93,61 @@ export async function PATCH(
   try {
     const { slug } = await params
     const body = await request.json()
+    
+    // Obtener sesión para validar autorización
+    const { getServerSession } = await import('next-auth')
+    const { authOptions } = await import('@/lib/auth')
+    const session = await getServerSession(authOptions)
+    
+    // Obtener la tienda para verificar autorización
+    const existingStore = await prisma.store.findUnique({
+      where: { slug },
+      select: { zoneId: true, ownerId: true },
+    })
+    
+    if (!existingStore) {
+      return NextResponse.json({ error: 'Tienda no encontrada' }, { status: 404 })
+    }
+    
+    // Si es admin, solo puede editar tiendas de su zona
+    if (session?.user?.role === 'ADMIN' && session.user.zoneId) {
+      if (existingStore.zoneId !== session.user.zoneId) {
+        return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+      }
+    }
+    
+    // Si es vendedor, solo puede editar sus propias tiendas
+    if (session?.user?.role === 'VENDOR') {
+      if (existingStore.ownerId !== session.user.id) {
+        return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+      }
+    }
+
+    // Preparar datos de actualización, asegurando que logo y banner se guarden por separado
+    const updateData: Record<string, unknown> = {}
+    
+    // Campos permitidos para actualizar
+    const allowedFields = [
+      'name', 'slug', 'description', 'whatsapp', 'address', 
+      'latitude', 'longitude', 'isOpen', 'minOrder', 
+      'deliveryFee', 'minDeliveryFee', 'maxDeliveryFee', 
+      'paymentMethods', 'logo', 'banner'
+    ]
+    
+    for (const field of allowedFields) {
+      if (field in body) {
+        // Asegurar que logo y banner se guarden por separado
+        if (field === 'logo' || field === 'banner') {
+          updateData[field] = body[field] || null
+        } else {
+          updateData[field] = body[field]
+        }
+      }
+    }
 
     const store = await prisma.store.update({
       where: { slug },
-      data: body,
+      data: updateData,
     })
 
     return NextResponse.json(store)

@@ -47,6 +47,11 @@ model User {
   superAdminId  String?
   superAdmin    User?     @relation("SuperAdminAdmins", fields: [superAdminId], references: [id])
   managedAdmins User[]    @relation("SuperAdminAdmins") // Admins que este Super Admin gestiona
+  
+  // Rastrear quién creó este usuario (para ADMIN)
+  createdByAdminId String?
+  createdByAdmin   User?   @relation("AdminCreatesUsers", fields: [createdByAdminId], references: [id])
+  createdUsers     User[]  @relation("AdminCreatesUsers") // Usuarios que este admin creó
 
   // Relaciones existentes
   stores        Store[]   @relation("StoreOwner")  // Un vendedor puede tener múltiples tiendas
