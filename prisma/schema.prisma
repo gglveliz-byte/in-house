@@ -1,0 +1,276 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Zona geográfica (administrada por un Admin)
+model Zone {
+  id            String    @id @default(cuid())
+  name          String    // Nombre de la zona (ej: "Roberto Astudillo - Los Ríos")
+  description   String?
+  latitude      Float     // Centro del mapa para esta zona
+  longitude     Float
+  radius        Float     @default(10) // Radio en km (opcional, para referencia)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relaciones
+  admins        User[]    @relation("ZoneAdmins") // Admins que operan en esta zona
+  stores        Store[]   // Tiendas en esta zona
+  orders        Order[]   // Pedidos en esta zona
+}
+
+// Usuario del sistema (super_admin, admin, vendedor, repartidor)
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          String    @default("VENDOR") // SUPER_ADMIN, ADMIN, VENDOR, DRIVER
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Campos para ADMIN (facturación)
+  registeredAt  DateTime? // Fecha de registro para calcular ciclos de facturación
+  
+  // Relación con zona (para ADMIN)
+  zoneId        String?
+  zone          Zone?     @relation("ZoneAdmins", fields: [zoneId], references: [id])
+  
+  // Relación con Super Admin (para ADMIN)
+  superAdminId  String?
+  superAdmin    User?     @relation("SuperAdminAdmins", fields: [superAdminId], references: [id])
+  managedAdmins User[]    @relation("SuperAdminAdmins") // Admins que este Super Admin gestiona
+
+  // Relaciones existentes
+  stores        Store[]   @relation("StoreOwner")  // Un vendedor puede tener múltiples tiendas
+  deliveries    Order[]   @relation("DriverOrders")
+  
+  // Relaciones de mensajería
+  sentMessages     AdminMessage[] @relation("MessageSender")
+  receivedMessages AdminMessage[] @relation("MessageReceiver")
+  notifications    Notification[]
+  
+  // Ciclos de facturación (para ADMIN)
+  billingCycles BillingCycle[]
+}
+
+// Tienda
+model Store {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  description   String?
+  logo          String?
+  banner        String?
+  whatsapp      String
+  address       String
+  latitude      Float?
+  longitude     Float?
+  isOpen        Boolean   @default(true)
+  minOrder      Float     @default(0)
+  deliveryFee   Float     @default(0)  // Mantener para compatibilidad
+  minDeliveryFee Float    @default(0)  // Precio mínimo de envío
+  maxDeliveryFee Float    @default(0)  // Precio máximo de envío
+  paymentMethods String?  // Métodos de pago (cuentas bancarias, etc.)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relaciones
+  ownerId       String    // Ya no es @unique, un vendedor puede tener múltiples tiendas
+  owner         User      @relation("StoreOwner", fields: [ownerId], references: [id])
+  
+  // Relación con zona (para SaaS multi-tenant)
+  zoneId        String?
+  zone          Zone?     @relation(fields: [zoneId], references: [id])
+  
+  products      Product[]
+  orders        Order[]
+  categories    Category[]
+}
+
+// Categoría de productos
+model Category {
+  id            String    @id @default(cuid())
+  name          String
+  order         Int       @default(0)
+
+  // Relaciones
+  storeId       String
+  store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  products      Product[]
+}
+
+// Producto
+model Product {
+  id            String    @id @default(cuid())
+  name          String
+  description   String?
+  price         Float
+  image         String?
+  isAvailable   Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relaciones
+  storeId       String
+  store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  orderItems    OrderItem[]
+}
+
+// Contador global para números de pedido
+model Counter {
+  id            String    @id @default("order_counter")
+  value         Int       @default(1000)
+}
+
+// Pedido
+model Order {
+  id              String    @id @default(cuid())
+  orderNumber     Int
+  status          String    @default("PENDING") // PENDING, CONFIRMED, READY, PICKED_UP, DELIVERED, CANCELLED
+
+  // Info del cliente (sin autenticación)
+  customerName    String
+  customerPhone   String
+  customerAddress String
+  customerLat     Float?
+  customerLng     Float?
+  customerNotes   String?
+
+  // Totales
+  subtotal        Float
+  deliveryFee     Float     @default(0)  // Mantener para compatibilidad
+  actualDeliveryFee Float?  // El valor real que cobra el repartidor
+  total           Float
+
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  confirmedAt     DateTime?
+  readyAt         DateTime?
+  pickedUpAt      DateTime?
+  deliveredAt     DateTime?
+
+  // Estado del pago
+  paymentStatus   String    @default("PENDING") // PENDING, UPLOADED, VERIFIED
+  paymentProof    String?   // URL del comprobante de pago
+  
+  // Estado del pago del envío
+  deliveryPaymentStatus String? // PENDING, PAID_CASH, PAID_TRANSFER
+  deliveryPaymentProof  String? // URL del comprobante de transferencia del envío
+
+  // Relaciones
+  storeId         String
+  store           Store     @relation(fields: [storeId], references: [id])
+  driverId        String?
+  driver          User?     @relation("DriverOrders", fields: [driverId], references: [id])
+  
+  // Relación con zona (para SaaS multi-tenant)
+  zoneId          String?
+  zone            Zone?     @relation(fields: [zoneId], references: [id])
+  
+  items           OrderItem[]
+  messages        Message[]
+}
+
+// Items del pedido
+model OrderItem {
+  id            String    @id @default(cuid())
+  quantity      Int
+  unitPrice     Float
+  totalPrice    Float
+  notes         String?
+
+  // Relaciones
+  orderId       String
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product   @relation(fields: [productId], references: [id])
+}
+
+// Mensajes del chat de pedidos
+model Message {
+  id            String    @id @default(cuid())
+  content       String    // Texto del mensaje
+  imageUrl      String?   // URL de imagen (comprobante de pago, etc.)
+  senderType    String    // CUSTOMER, VENDOR, SYSTEM
+  senderName    String    // Nombre del remitente
+  isRead        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+
+  // Relaciones
+  orderId       String
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// Ciclo de facturación mensual (para Admins)
+model BillingCycle {
+  id            String    @id @default(cuid())
+  
+  // Período del ciclo
+  startDate     DateTime  // Inicio del ciclo (fecha de registro o aniversario)
+  endDate       DateTime  // Fin del ciclo (un mes después)
+  
+  // Estadísticas del período
+  totalOrders   Int       @default(0) // Total de pedidos completados
+  totalDeliveryRevenue Float @default(0) // Total recaudado en envíos
+  
+  // Facturación
+  amountDue     Float     @default(10) // Monto a cobrar según escala de precios
+  isPaid        Boolean   @default(false)
+  paidAt        DateTime?
+  paymentProof  String?   // URL del comprobante de pago
+  
+  // Estado
+  status        String    @default("ACTIVE") // ACTIVE, PENDING_PAYMENT, PAID, OVERDUE
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relaciones
+  adminId       String
+  admin         User      @relation(fields: [adminId], references: [id])
+}
+
+// Mensajes entre Super Admin y Admin (cobranza, soporte, avisos)
+model AdminMessage {
+  id            String    @id @default(cuid())
+  content       String    // Texto del mensaje
+  imageUrl      String?   // URL de imagen (comprobante de pago, etc.)
+  messageType   String    @default("GENERAL") // GENERAL, BILLING, SUPPORT, ANNOUNCEMENT
+  isRead        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+
+  // Relaciones
+  senderId      String
+  sender        User      @relation("MessageSender", fields: [senderId], references: [id])
+  receiverId    String
+  receiver      User      @relation("MessageReceiver", fields: [receiverId], references: [id])
+  
+  // Referencia opcional al ciclo de facturación (para mensajes de cobranza)
+  billingCycleId String?
+}
+
+// Notificaciones (campanita)
+model Notification {
+  id            String    @id @default(cuid())
+  title         String
+  message       String
+  type          String    @default("INFO") // INFO, BILLING, ORDER, SYSTEM, WARNING
+  isRead        Boolean   @default(false)
+  link          String?   // URL a donde redirigir al hacer clic
+  createdAt     DateTime  @default(now())
+
+  // Relaciones
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+}
