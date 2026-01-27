@@ -12,7 +12,8 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "reset-password": "tsx scripts/reset-password.ts",
-    "list-users": "tsx scripts/list-users.ts"
+    "list-users": "tsx scripts/list-users.ts",
+    "db:clean": "tsx scripts/clean-database.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
