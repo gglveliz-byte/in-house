@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description, latitude, longitude, radius } = body
+    const { name, description, latitude, longitude, radius, currency } = body
 
     if (!name || latitude === undefined || longitude === undefined) {
       return NextResponse.json(
@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         latitude,
         longitude,
         radius: radius || 10,
+        currency: currency || 'USD',
       },
     })
 

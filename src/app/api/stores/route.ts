@@ -44,14 +44,26 @@ export async function GET(request: NextRequest) {
         minDeliveryFee: true,
         maxDeliveryFee: true,
         zoneId: true,
+        zone: { select: { currency: true } },
         ownerId: true,
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+        ...(session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN'
+          ? {
+              owner: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            }
+          : {
+              owner: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            }),
         _count: {
           select: {
             products: true,

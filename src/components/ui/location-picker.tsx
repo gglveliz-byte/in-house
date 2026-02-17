@@ -310,14 +310,14 @@ export function LocationPicker({
   // Verificar estado de permisos al cargar
   useEffect(() => {
     if (typeof navigator === 'undefined') return
+    let permResult: PermissionStatus | null = null
 
-    // Verificar si el permiso ya fue denegado
     if (navigator.permissions) {
       navigator.permissions.query({ name: 'geolocation' as PermissionName }).then((result) => {
+        permResult = result
         if (result.state === 'denied') {
           setLocationPermissionDenied(true)
         }
-        // Escuchar cambios en el permiso
         result.onchange = () => {
           if (result.state === 'denied') {
             setLocationPermissionDenied(true)
@@ -325,31 +325,11 @@ export function LocationPicker({
             setLocationPermissionDenied(false)
           }
         }
-      }).catch(() => {
-        // Si no soporta Permissions API, no hacer nada
-      })
-    } else {
-      // Si no soporta Permissions API, intentar una vez y si falla, marcar como denegado
-      // Esto es para desarrollo local donde puede estar bloqueado
-      const testGeolocation = () => {
-        if (!navigator.geolocation) {
-          setLocationPermissionDenied(true)
-          return
-        }
-        // Intentar obtener ubicación con timeout muy corto para detectar bloqueo
-        navigator.geolocation.getCurrentPosition(
-          () => {
-            setLocationPermissionDenied(false)
-          },
-          (error) => {
-            if (error.code === error.PERMISSION_DENIED) {
-              setLocationPermissionDenied(true)
-            }
-          },
-          { timeout: 100, maximumAge: 0 }
-        )
-      }
-      // No ejecutar automáticamente, solo cuando el usuario lo solicite
+      }).catch(() => {})
+    }
+
+    return () => {
+      if (permResult) permResult.onchange = null
     }
   }, [])
 
@@ -496,6 +476,8 @@ export function LocationPicker({
           <button
             type="button"
             onClick={() => setMapMode('map')}
+            aria-pressed={mapMode === 'map'}
+            aria-label="Seleccionar ubicación en mapa"
             className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${
               mapMode === 'map'
                 ? 'bg-primary-600 text-white'
@@ -507,6 +489,8 @@ export function LocationPicker({
           <button
             type="button"
             onClick={() => setMapMode('manual')}
+            aria-pressed={mapMode === 'manual'}
+            aria-label="Escribir dirección manualmente"
             className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${
               mapMode === 'manual'
                 ? 'bg-primary-600 text-white'
@@ -527,8 +511,10 @@ export function LocationPicker({
               className="w-full h-64 rounded-lg border border-gray-300"
             />
             {!mapLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-lg animate-pulse">
+                <div className="w-12 h-12 bg-gray-300 rounded-full mb-3" />
                 <p className="text-sm text-gray-500">Cargando mapa...</p>
+                <div className="mt-2 w-32 h-2 bg-gray-300 rounded" />
               </div>
             )}
           </div>
@@ -564,11 +550,11 @@ export function LocationPicker({
 
           {/* Modal de solicitud de permiso */}
           {showLocationPermissionRequest && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="location-permission-title">
+              <div className="bg-white rounded-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
                 <div className="text-center mb-4">
                   <div className="text-4xl mb-3">📍</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 id="location-permission-title" className="text-lg font-semibold text-gray-900 mb-2">
                     {locationPermissionDenied ? 'Permisos de ubicación bloqueados' : 'Acceso a tu ubicación'}
                   </h3>
                   <p className="text-sm text-gray-600">
@@ -643,15 +629,6 @@ export function LocationPicker({
             </div>
           )}
 
-          {latitude && longitude && (
-            <p className="text-xs text-green-600">
-              ✓ Ubicación seleccionada: {latitude.toFixed(6)}, {longitude.toFixed(6)}
-            </p>
-          )}
-
-          <p className="text-xs text-gray-500">
-            Haz clic en el mapa para seleccionar la ubicación exacta de la tienda
-          </p>
         </div>
       )}
 

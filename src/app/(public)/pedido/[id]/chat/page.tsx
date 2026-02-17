@@ -69,9 +69,10 @@ export default function CustomerChatPage({
   const previousStatusRef = useRef<string | null>(null)
   const previousPaymentStatusRef = useRef<string | null>(null)
 
-  // Función para obtener el pedido (sin lógica de recarga)
+  const fetchInFlightRef = useRef(false)
   const fetchOrder = useCallback(async () => {
-    if (!orderId || reloadingRef.current) return // Evitar fetch si ya se está recargando
+    if (!orderId || reloadingRef.current || fetchInFlightRef.current) return
+    fetchInFlightRef.current = true
     try {
       const response = await fetch(`/api/orders/${orderId}`)
       if (response.ok) {
@@ -82,6 +83,7 @@ export default function CustomerChatPage({
       console.error('Error fetching order:', error)
     } finally {
       setLoading(false)
+      fetchInFlightRef.current = false
     }
   }, [orderId])
 
@@ -301,12 +303,12 @@ export default function CustomerChatPage({
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Notificación */}
       {notification?.show && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-bounce">
-          <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 mx-4">
-            <span className="text-2xl">{notification.icon}</span>
+        <div className="fixed top-2 left-2 right-2 z-50 animate-bounce">
+          <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-3 py-2 rounded-xl shadow-2xl flex items-center gap-2">
+            <span className="text-xl">{notification.icon}</span>
             <div>
-              <p className="font-bold text-sm">{notification.title}</p>
-              <p className="text-xs opacity-90">{notification.message}</p>
+              <p className="font-bold text-xs">{notification.title}</p>
+              <p className="text-[10px] opacity-90">{notification.message}</p>
             </div>
           </div>
         </div>
@@ -315,8 +317,8 @@ export default function CustomerChatPage({
       {/* Si el pedido está confirmado con pago verificado o listo/entregado - redirigir */}
       {isCompleted && (
         <div className="h-full flex flex-col items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full text-center">
-            <span className="text-5xl block mb-3 animate-bounce">
+          <div className="bg-white rounded-xl shadow-lg p-4 max-w-sm w-full text-center">
+            <span className="text-3xl block mb-2 animate-bounce">
               {order.status === 'DELIVERED' ? '🎉' : order.status === 'PICKED_UP' ? '🏍️' : order.status === 'READY' ? '✅' : '🎊'}
             </span>
             <h1 className="text-xl font-bold text-gray-900 mb-2">
@@ -341,9 +343,9 @@ export default function CustomerChatPage({
       {/* Si el pedido está cancelado - redirigir */}
       {isCancelled && (
         <div className="h-full flex flex-col items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-            <span className="text-6xl block mb-4">❌</span>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Pedido cancelado</h1>
+          <div className="bg-white rounded-xl shadow-lg p-4 max-w-sm w-full text-center">
+            <span className="text-3xl block mb-2">❌</span>
+            <h1 className="text-lg font-bold text-gray-900 mb-1">Pedido cancelado</h1>
             <p className="text-gray-600 mb-4">
               Redirigiendo...
             </p>

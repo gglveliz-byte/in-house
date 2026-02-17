@@ -34,6 +34,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
           { href: '/admin/stores', label: 'Tiendas', icon: '🏪' },
           { href: '/admin/users', label: 'Usuarios', icon: '👥' },
           { href: '/admin/orders', label: 'Pedidos', icon: '📦' },
+          { href: '/admin/qr', label: 'QR', icon: '📱' },
           { href: '/admin/messages', label: 'Mensajes', icon: '💬' },
         ]
       case 'VENDOR':

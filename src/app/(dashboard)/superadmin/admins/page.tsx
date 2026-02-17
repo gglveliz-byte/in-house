@@ -119,6 +119,42 @@ export default function AdminsPage() {
     }
   }
 
+  const handleDelete = async (admin: Admin) => {
+    const storeCount = admin._count?.stores || 0
+    const orderCount = admin.stats?.totalOrders || 0
+    const driverCount = admin.stats?.totalDrivers || 0
+
+    const confirmMsg = `ADVERTENCIA: Vas a eliminar al administrador "${admin.name}" y TODO lo que creó:\n\n` +
+      `- ${storeCount} tienda(s)\n` +
+      `- ${driverCount} repartidor(es)\n` +
+      `- ${orderCount} pedido(s)\n` +
+      `- Su zona: ${admin.zone?.name || 'Sin zona'}\n` +
+      `- Todos los productos, categorías, mensajes y datos asociados\n\n` +
+      `Esta acción NO se puede deshacer. ¿Estás seguro?`
+
+    if (!confirm(confirmMsg)) return
+
+    // Segunda confirmación
+    if (!confirm('¿REALMENTE estás seguro? Se perderán TODOS los datos permanentemente.')) return
+
+    try {
+      const response = await fetch(`/api/superadmin/admins/${admin.id}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        alert('Admin y todos sus datos eliminados correctamente')
+        fetchAdmins()
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Error al eliminar')
+      }
+    } catch (error) {
+      console.error('Error deleting admin:', error)
+      alert('Error al eliminar el administrador')
+    }
+  }
+
   const handleEdit = (admin: Admin) => {
     setEditingAdmin(admin)
     setFormData({
@@ -311,6 +347,14 @@ export default function AdminsPage() {
                         💬 Chat
                       </Button>
                     </Link>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => handleDelete(admin)}
+                      className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+                    >
+                      🗑️ Eliminar
+                    </Button>
                   </div>
                 </div>
               </CardContent>

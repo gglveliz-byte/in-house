@@ -50,8 +50,8 @@ export default function VendorOrdersPage() {
   const fetchOrders = useCallback(async (storeId: string) => {
     try {
       const response = await fetch(`/api/orders?storeId=${storeId}`)
-      const data = await response.json()
-      setOrders(data)
+      const json = await response.json()
+      setOrders(json.data || json)
     } catch (error) {
       console.error('Error fetching orders:', error)
     } finally {

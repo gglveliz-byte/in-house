@@ -4,6 +4,7 @@ import './globals.css'
 import { Providers } from './providers'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register'
+import { CurrencyProvider } from '@/components/currency-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -42,6 +43,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <Providers>{children}</Providers>
+        <CurrencyProvider />
         <ServiceWorkerRegister />
         <InstallPrompt />
       </body>

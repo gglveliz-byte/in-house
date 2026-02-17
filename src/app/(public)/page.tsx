@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { StoreCard } from '@/components/store/store-card'
+import { setActiveCurrency } from '@/lib/utils'
 
 interface Zone {
   id: string
   name: string
   description: string | null
+  currency: string
 }
 
 interface Store {
@@ -25,6 +27,28 @@ interface Store {
   zoneId: string | null
 }
 
+const CURRENCY_LABELS: Record<string, string> = {
+  USD: '💵 Dólar (USD)',
+  MXN: '🇲🇽 Peso mexicano (MXN)',
+  COP: '🇨🇴 Peso colombiano (COP)',
+  ARS: '🇦🇷 Peso argentino (ARS)',
+  PEN: '🇵🇪 Sol peruano (PEN)',
+  CLP: '🇨🇱 Peso chileno (CLP)',
+  BRL: '🇧🇷 Real brasileño (BRL)',
+  EUR: '🇪🇺 Euro (EUR)',
+  VES: '🇻🇪 Bolívar (VES)',
+  BOB: '🇧🇴 Boliviano (BOB)',
+  UYU: '🇺🇾 Peso uruguayo (UYU)',
+  PYG: '🇵🇾 Guaraní (PYG)',
+  GTQ: '🇬🇹 Quetzal (GTQ)',
+  HNL: '🇭🇳 Lempira (HNL)',
+  NIO: '🇳🇮 Córdoba (NIO)',
+  CRC: '🇨🇷 Colón (CRC)',
+  PAB: '🇵🇦 Balboa (PAB)',
+  DOP: '🇩🇴 Peso dominicano (DOP)',
+  CUP: '🇨🇺 Peso cubano (CUP)',
+}
+
 export default function HomePage() {
   const [zones, setZones] = useState<Zone[]>([])
   const [stores, setStores] = useState<Store[]>([])
@@ -41,6 +65,11 @@ export default function HomePage() {
         const savedZone = localStorage.getItem('selectedZone')
         if (savedZone && data.some((z: Zone) => z.id === savedZone)) {
           setSelectedZone(savedZone)
+          const zone = data.find((z: Zone) => z.id === savedZone)
+          if (zone?.currency) {
+            setActiveCurrency(zone.currency)
+            localStorage.setItem('zoneCurrency', zone.currency)
+          }
         }
       })
       .catch(err => console.error('Error loading zones:', err))
@@ -71,8 +100,14 @@ export default function HomePage() {
     setSelectedZone(zoneId)
     if (zoneId) {
       localStorage.setItem('selectedZone', zoneId)
+      const zone = zones.find(z => z.id === zoneId)
+      if (zone?.currency) {
+        setActiveCurrency(zone.currency)
+        localStorage.setItem('zoneCurrency', zone.currency)
+      }
     } else {
       localStorage.removeItem('selectedZone')
+      localStorage.removeItem('zoneCurrency')
     }
   }
 
@@ -114,18 +149,40 @@ export default function HomePage() {
                   <select
                     value={selectedZone}
                     onChange={(e) => handleZoneChange(e.target.value)}
+                    aria-label="Selecciona tu zona de entrega"
                     className={`w-full px-4 py-3 text-lg border-2 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 font-medium ${
-                      !selectedZone 
-                        ? 'border-orange-300 bg-orange-50 animate-pulse' 
+                      !selectedZone
+                        ? 'border-orange-300 bg-orange-50 animate-pulse'
                         : 'border-green-200 bg-green-50'
                     }`}
                   >
                     <option value="">-- Selecciona tu localidad --</option>
-                    {zones.map((zone) => (
-                      <option key={zone.id} value={zone.id}>
-                        📍 {zone.name}
-                      </option>
-                    ))}
+                    {(() => {
+                      const grouped: Record<string, Zone[]> = {}
+                      zones.forEach((zone) => {
+                        const cur = zone.currency || 'USD'
+                        if (!grouped[cur]) grouped[cur] = []
+                        grouped[cur].push(zone)
+                      })
+                      const currencies = Object.keys(grouped)
+                      // Si solo hay una moneda, no agrupar
+                      if (currencies.length <= 1) {
+                        return zones.map((zone) => (
+                          <option key={zone.id} value={zone.id}>
+                            📍 {zone.name}
+                          </option>
+                        ))
+                      }
+                      return currencies.map((cur) => (
+                        <optgroup key={cur} label={CURRENCY_LABELS[cur] || cur}>
+                          {grouped[cur].map((zone) => (
+                            <option key={zone.id} value={zone.id}>
+                              📍 {zone.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))
+                    })()}
                   </select>
                 </div>
               </div>

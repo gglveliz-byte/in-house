@@ -52,13 +52,22 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, description, price, image, storeId, categoryId } = body
 
-    // Obtener sesión para validar autorización
-    const { getServerSession } = await import('next-auth')
-    const { authOptions } = await import('@/lib/auth')
     const session = await getServerSession(authOptions)
 
-    // Si es vendedor, verificar que la tienda le pertenece
-    if (session?.user?.role === 'VENDOR' && session.user.id) {
+    if (!session) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Validar campos requeridos
+    if (!name?.trim() || !storeId) {
+      return NextResponse.json({ error: 'Nombre y tienda son requeridos' }, { status: 400 })
+    }
+
+    if (typeof price !== 'number' || price < 0) {
+      return NextResponse.json({ error: 'Precio inválido' }, { status: 400 })
+    }
+
+    if (session.user.role === 'VENDOR' && session.user.id) {
       const store = await prisma.store.findUnique({
         where: { id: storeId },
         select: { ownerId: true },

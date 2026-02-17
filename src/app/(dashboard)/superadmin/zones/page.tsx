@@ -6,6 +6,28 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 
+const CURRENCY_OPTIONS = [
+  { code: 'USD', label: 'USD - Dólar estadounidense' },
+  { code: 'MXN', label: 'MXN - Peso mexicano' },
+  { code: 'COP', label: 'COP - Peso colombiano' },
+  { code: 'ARS', label: 'ARS - Peso argentino' },
+  { code: 'PEN', label: 'PEN - Sol peruano' },
+  { code: 'CLP', label: 'CLP - Peso chileno' },
+  { code: 'BRL', label: 'BRL - Real brasileño' },
+  { code: 'EUR', label: 'EUR - Euro' },
+  { code: 'VES', label: 'VES - Bolívar venezolano' },
+  { code: 'BOB', label: 'BOB - Boliviano' },
+  { code: 'UYU', label: 'UYU - Peso uruguayo' },
+  { code: 'PYG', label: 'PYG - Guaraní paraguayo' },
+  { code: 'GTQ', label: 'GTQ - Quetzal guatemalteco' },
+  { code: 'HNL', label: 'HNL - Lempira hondureño' },
+  { code: 'NIO', label: 'NIO - Córdoba nicaragüense' },
+  { code: 'CRC', label: 'CRC - Colón costarricense' },
+  { code: 'PAB', label: 'PAB - Balboa panameño' },
+  { code: 'DOP', label: 'DOP - Peso dominicano' },
+  { code: 'CUP', label: 'CUP - Peso cubano' },
+]
+
 interface Zone {
   id: string
   name: string
@@ -13,6 +35,7 @@ interface Zone {
   latitude: number
   longitude: number
   radius: number
+  currency: string
   isActive: boolean
   createdAt: string
   _count?: {
@@ -33,6 +56,7 @@ export default function ZonesPage() {
     latitude: '',
     longitude: '',
     radius: '10',
+    currency: 'USD',
   })
 
   useEffect(() => {
@@ -70,6 +94,7 @@ export default function ZonesPage() {
           latitude: parseFloat(formData.latitude),
           longitude: parseFloat(formData.longitude),
           radius: parseFloat(formData.radius),
+          currency: formData.currency,
         }),
       })
 
@@ -92,6 +117,7 @@ export default function ZonesPage() {
       latitude: zone.latitude.toString(),
       longitude: zone.longitude.toString(),
       radius: zone.radius.toString(),
+      currency: zone.currency || 'USD',
     })
     setShowForm(true)
   }
@@ -121,6 +147,7 @@ export default function ZonesPage() {
       latitude: '',
       longitude: '',
       radius: '10',
+      currency: 'USD',
     })
   }
 
@@ -167,7 +194,7 @@ export default function ZonesPage() {
                   placeholder="Descripción de la zona"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Input
                   label="Latitud"
                   type="number"
@@ -193,6 +220,22 @@ export default function ZonesPage() {
                   onChange={(e) => setFormData({ ...formData, radius: e.target.value })}
                   placeholder="10"
                 />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Moneda
+                  </label>
+                  <select
+                    value={formData.currency}
+                    onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  >
+                    {CURRENCY_OPTIONS.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <p className="text-sm text-gray-500">
                 💡 Tip: Puedes obtener las coordenadas desde Google Maps haciendo clic derecho en el mapa.
@@ -246,6 +289,10 @@ export default function ZonesPage() {
                   <div className="flex justify-between">
                     <span className="text-gray-500">📏 Radio:</span>
                     <span>{zone.radius} km</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">💰 Moneda:</span>
+                    <span className="font-medium">{zone.currency || 'USD'}</span>
                   </div>
                   {zone._count && (
                     <>

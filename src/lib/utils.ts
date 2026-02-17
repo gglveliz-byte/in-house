@@ -5,10 +5,48 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('es-MX', {
+// Map currency codes to locale for proper formatting
+const CURRENCY_LOCALES: Record<string, string> = {
+  USD: 'en-US',
+  MXN: 'es-MX',
+  COP: 'es-CO',
+  ARS: 'es-AR',
+  PEN: 'es-PE',
+  CLP: 'es-CL',
+  BRL: 'pt-BR',
+  EUR: 'es-ES',
+  VES: 'es-VE',
+  BOB: 'es-BO',
+  UYU: 'es-UY',
+  PYG: 'es-PY',
+  GTQ: 'es-GT',
+  HNL: 'es-HN',
+  NIO: 'es-NI',
+  CRC: 'es-CR',
+  PAB: 'es-PA',
+  DOP: 'es-DO',
+  CUP: 'es-CU',
+}
+
+// Global currency state - set by zone selection
+let _activeCurrency = 'USD'
+
+export function setActiveCurrency(currency: string) {
+  _activeCurrency = currency
+}
+
+export function getActiveCurrency(): string {
+  return _activeCurrency
+}
+
+export function formatPrice(price: number, currency?: string): string {
+  const cur = currency || _activeCurrency
+  const locale = CURRENCY_LOCALES[cur] || 'en-US'
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'MXN',
+    currency: cur,
+    minimumFractionDigits: cur === 'CLP' || cur === 'PYG' || cur === 'COP' ? 0 : 2,
+    maximumFractionDigits: cur === 'CLP' || cur === 'PYG' || cur === 'COP' ? 0 : 2,
   }).format(price)
 }
 

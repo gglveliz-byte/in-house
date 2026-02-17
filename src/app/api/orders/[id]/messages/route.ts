@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { pusherServer, CHANNELS, EVENTS } from '@/lib/pusher'
 
@@ -9,6 +11,15 @@ export async function GET(
 ) {
   try {
     const { id } = await params
+
+    const order = await prisma.order.findUnique({
+      where: { id },
+      select: { id: true },
+    })
+
+    if (!order) {
+      return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
+    }
 
     const messages = await prisma.message.findMany({
       where: { orderId: id },
@@ -32,7 +43,24 @@ export async function POST(
     const body = await request.json()
     const { content, imageUrl, senderType, senderName } = body
 
-    // Verificar que el pedido existe
+    // Validar senderType
+    const validSenderTypes = ['CUSTOMER', 'VENDOR', 'SYSTEM']
+    if (!senderType || !validSenderTypes.includes(senderType)) {
+      return NextResponse.json({ error: 'Tipo de remitente inválido' }, { status: 400 })
+    }
+
+    // VENDOR y SYSTEM requieren autenticación
+    if (senderType === 'VENDOR' || senderType === 'SYSTEM') {
+      const session = await getServerSession(authOptions)
+      if (!session) {
+        return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+      }
+    }
+
+    if (!content?.trim() && !imageUrl) {
+      return NextResponse.json({ error: 'El mensaje debe tener contenido o imagen' }, { status: 400 })
+    }
+
     const order = await prisma.order.findUnique({
       where: { id },
       include: { store: true },
@@ -42,35 +70,31 @@ export async function POST(
       return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
     }
 
-    // Crear el mensaje
     const message = await prisma.message.create({
       data: {
         orderId: id,
-        content,
+        content: content || '',
         imageUrl,
-        senderType, // CUSTOMER, VENDOR, SYSTEM
-        senderName,
+        senderType,
+        senderName: senderName || (senderType === 'CUSTOMER' ? 'Cliente' : 'Vendedor'),
       },
     })
 
-    // Emitir evento por Pusher para actualización en tiempo real
     try {
       await pusherServer.trigger(CHANNELS.ORDER(id), EVENTS.NEW_MESSAGE, {
         message,
         orderId: id,
       })
 
-      // Si es un mensaje del cliente, notificar al vendedor
       if (senderType === 'CUSTOMER') {
         await pusherServer.trigger(CHANNELS.STORE(order.storeId), EVENTS.NEW_MESSAGE, {
           orderId: id,
           orderNumber: order.orderNumber,
           senderName,
-          content: content.substring(0, 50) + (content.length > 50 ? '...' : ''),
+          content: content ? content.substring(0, 50) + (content.length > 50 ? '...' : '') : 'Imagen',
         })
       }
 
-      // Si es un mensaje del vendedor, notificar al cliente
       if (senderType === 'VENDOR') {
         await pusherServer.trigger(CHANNELS.ORDER(id), EVENTS.ORDER_UPDATED, {
           orderId: id,

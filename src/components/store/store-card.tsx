@@ -33,6 +33,7 @@ export function StoreCard({ store }: StoreCardProps) {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-400 via-green-500 to-orange-500">
@@ -56,10 +57,11 @@ export function StoreCard({ store }: StoreCardProps) {
               <div className="w-20 h-20 rounded-2xl bg-white shadow-xl overflow-hidden border-4 border-white transform group-hover:scale-105 transition-transform duration-300">
                 <Image
                   src={store.logo}
-                  alt={store.name}
+                  alt={`Logo de ${store.name}`}
                   width={80}
                   height={80}
                   className="object-cover w-full h-full"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                 />
               </div>
             </div>

@@ -25,7 +25,8 @@ export default function DriverHistoryPage() {
 
       try {
         const response = await fetch(`/api/orders?driverId=${session.user.id}`)
-        const data = await response.json()
+        const json = await response.json()
+        const data = json.data || json
         // Filtrar solo pedidos completados o cancelados
         const completedOrders = data.filter(
           (o: Order) => o.status === 'DELIVERED' || o.status === 'CANCELLED'

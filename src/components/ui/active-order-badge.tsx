@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import { useActiveOrderStore, ActiveOrderStatus } from '@/stores/active-order-store'
 import { formatPrice } from '@/lib/utils'
@@ -25,18 +25,27 @@ export function ActiveOrderBadge() {
   }, [])
 
   // Escuchar actualizaciones del pedido activo
+  const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (clearTimerRef.current) clearTimeout(clearTimerRef.current)
+    }
+  }, [])
+
   usePusherChannel(
     activeOrder?.id ? CHANNELS.ORDER(activeOrder.id) : '',
     EVENTS.ORDER_UPDATED,
     (data: unknown) => {
+      if (!data || typeof data !== 'object') return
       const orderData = data as { status?: string }
       if (orderData.status) {
         const newStatus = orderData.status as ActiveOrderStatus
-        // Si el pedido terminó, limpiar después de un delay
         if (newStatus === 'DELIVERED' || newStatus === 'CANCELLED') {
-          setTimeout(() => {
+          if (clearTimerRef.current) clearTimeout(clearTimerRef.current)
+          clearTimerRef.current = setTimeout(() => {
             clearActiveOrder()
-          }, 5000) // Mostrar el estado final por 5 segundos
+          }, 5000)
         }
         updateStatus(newStatus)
       }

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { pusherServer, CHANNELS, EVENTS } from '@/lib/pusher'
 
@@ -11,6 +13,30 @@ export async function PATCH(
     const { id } = await params
     const body = await request.json()
     const { paymentStatus, paymentProof } = body
+
+    // Validar paymentStatus permitidos
+    const validStatuses = ['UPLOADED', 'VERIFIED']
+    if (paymentStatus && !validStatuses.includes(paymentStatus)) {
+      return NextResponse.json({ error: 'Estado de pago inválido' }, { status: 400 })
+    }
+
+    // VERIFICAR pago requiere autenticación con rol VENDOR, ADMIN o SUPER_ADMIN
+    if (paymentStatus === 'VERIFIED') {
+      const session = await getServerSession(authOptions)
+      if (!session || !['VENDOR', 'ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
+        return NextResponse.json({ error: 'No autorizado para verificar pagos' }, { status: 401 })
+      }
+    }
+
+    // Verificar que el pedido existe
+    const existingOrder = await prisma.order.findUnique({
+      where: { id },
+      select: { id: true, paymentStatus: true },
+    })
+
+    if (!existingOrder) {
+      return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
+    }
 
     // Actualizar el pedido
     const order = await prisma.order.update({
@@ -45,27 +71,23 @@ export async function PATCH(
 
     // Emitir eventos por Pusher
     try {
-      // Notificar al cliente
       await pusherServer.trigger(CHANNELS.ORDER(id), EVENTS.ORDER_UPDATED, {
         orderId: id,
         paymentStatus: order.paymentStatus,
       })
 
-      // Si el pago fue verificado, notificar especialmente
       if (paymentStatus === 'VERIFIED') {
         await pusherServer.trigger(CHANNELS.ORDER(id), EVENTS.PAYMENT_VERIFIED, {
           orderId: id,
         })
       }
 
-      // Notificar a la tienda cuando cambia el estado del pago
       await pusherServer.trigger(CHANNELS.STORE(order.storeId), EVENTS.ORDER_UPDATED, {
         orderId: id,
         orderNumber: order.orderNumber,
         paymentStatus: order.paymentStatus,
       })
 
-      // Notificar a la tienda si el cliente subió comprobante (mensaje adicional)
       if (paymentStatus === 'UPLOADED') {
         await pusherServer.trigger(CHANNELS.STORE(order.storeId), EVENTS.NEW_MESSAGE, {
           orderId: id,

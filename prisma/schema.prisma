@@ -10,19 +10,19 @@ datasource db {
 // Zona geográfica (administrada por un Admin)
 model Zone {
   id            String    @id @default(cuid())
-  name          String    // Nombre de la zona (ej: "Roberto Astudillo - Los Ríos")
+  name          String
   description   String?
-  latitude      Float     // Centro del mapa para esta zona
+  latitude      Float
   longitude     Float
-  radius        Float     @default(10) // Radio en km (opcional, para referencia)
+  radius        Float     @default(10)
+  currency      String    @default("USD")
   isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // Relaciones
-  admins        User[]    @relation("ZoneAdmins") // Admins que operan en esta zona
-  stores        Store[]   // Tiendas en esta zona
-  orders        Order[]   // Pedidos en esta zona
+  admins        User[]    @relation("ZoneAdmins")
+  stores        Store[]
+  orders        Order[]
 }
 
 // Usuario del sistema (super_admin, admin, vendedor, repartidor)
@@ -31,39 +31,38 @@ model User {
   email         String    @unique
   password      String
   name          String
-  role          String    @default("VENDOR") // SUPER_ADMIN, ADMIN, VENDOR, DRIVER
+  role          String    @default("VENDOR")
   phone         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // Campos para ADMIN (facturación)
-  registeredAt  DateTime? // Fecha de registro para calcular ciclos de facturación
-  
-  // Relación con zona (para ADMIN)
+  registeredAt  DateTime?
+
   zoneId        String?
   zone          Zone?     @relation("ZoneAdmins", fields: [zoneId], references: [id])
-  
-  // Relación con Super Admin (para ADMIN)
+
   superAdminId  String?
   superAdmin    User?     @relation("SuperAdminAdmins", fields: [superAdminId], references: [id])
-  managedAdmins User[]    @relation("SuperAdminAdmins") // Admins que este Super Admin gestiona
-  
-  // Rastrear quién creó este usuario (para ADMIN)
+  managedAdmins User[]    @relation("SuperAdminAdmins")
+
   createdByAdminId String?
   createdByAdmin   User?   @relation("AdminCreatesUsers", fields: [createdByAdminId], references: [id])
-  createdUsers     User[]  @relation("AdminCreatesUsers") // Usuarios que este admin creó
+  createdUsers     User[]  @relation("AdminCreatesUsers")
 
-  // Relaciones existentes
-  stores        Store[]   @relation("StoreOwner")  // Un vendedor puede tener múltiples tiendas
+  stores        Store[]   @relation("StoreOwner")
   deliveries    Order[]   @relation("DriverOrders")
-  
-  // Relaciones de mensajería
+
   sentMessages     AdminMessage[] @relation("MessageSender")
   receivedMessages AdminMessage[] @relation("MessageReceiver")
   notifications    Notification[]
-  
-  // Ciclos de facturación (para ADMIN)
-  billingCycles BillingCycle[]
+
+  billingCycles  BillingCycle[]
+  passwordResets PasswordReset[]
+
+  @@index([role])
+  @@index([zoneId])
+  @@index([superAdminId])
+  @@index([createdByAdminId])
 }
 
 // Tienda
@@ -80,24 +79,25 @@ model Store {
   longitude     Float?
   isOpen        Boolean   @default(true)
   minOrder      Float     @default(0)
-  deliveryFee   Float     @default(0)  // Mantener para compatibilidad
-  minDeliveryFee Float    @default(0)  // Precio mínimo de envío
-  maxDeliveryFee Float    @default(0)  // Precio máximo de envío
-  paymentMethods String?  // Métodos de pago (cuentas bancarias, etc.)
+  deliveryFee   Float     @default(0)
+  minDeliveryFee Float    @default(0)
+  maxDeliveryFee Float    @default(0)
+  paymentMethods String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // Relaciones
-  ownerId       String    // Ya no es @unique, un vendedor puede tener múltiples tiendas
+  ownerId       String
   owner         User      @relation("StoreOwner", fields: [ownerId], references: [id])
-  
-  // Relación con zona (para SaaS multi-tenant)
+
   zoneId        String?
   zone          Zone?     @relation(fields: [zoneId], references: [id])
-  
+
   products      Product[]
   orders        Order[]
   categories    Category[]
+
+  @@index([zoneId])
+  @@index([ownerId])
 }
 
 // Categoría de productos
@@ -106,10 +106,11 @@ model Category {
   name          String
   order         Int       @default(0)
 
-  // Relaciones
   storeId       String
   store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
   products      Product[]
+
+  @@index([storeId])
 }
 
 // Producto
@@ -123,12 +124,14 @@ model Product {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // Relaciones
   storeId       String
   store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
   categoryId    String?
   category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   orderItems    OrderItem[]
+
+  @@index([storeId])
+  @@index([storeId, isAvailable])
 }
 
 // Contador global para números de pedido
@@ -141,9 +144,8 @@ model Counter {
 model Order {
   id              String    @id @default(cuid())
   orderNumber     Int
-  status          String    @default("PENDING") // PENDING, CONFIRMED, READY, PICKED_UP, DELIVERED, CANCELLED
+  status          String    @default("PENDING")
 
-  // Info del cliente (sin autenticación)
   customerName    String
   customerPhone   String
   customerAddress String
@@ -151,13 +153,11 @@ model Order {
   customerLng     Float?
   customerNotes   String?
 
-  // Totales
   subtotal        Float
-  deliveryFee     Float     @default(0)  // Mantener para compatibilidad
-  actualDeliveryFee Float?  // El valor real que cobra el repartidor
+  deliveryFee     Float     @default(0)
+  actualDeliveryFee Float?
   total           Float
 
-  // Timestamps
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   confirmedAt     DateTime?
@@ -165,26 +165,30 @@ model Order {
   pickedUpAt      DateTime?
   deliveredAt     DateTime?
 
-  // Estado del pago
-  paymentStatus   String    @default("PENDING") // PENDING, UPLOADED, VERIFIED
-  paymentProof    String?   // URL del comprobante de pago
-  
-  // Estado del pago del envío
-  deliveryPaymentStatus String? // PENDING, PAID_CASH, PAID_TRANSFER
-  deliveryPaymentProof  String? // URL del comprobante de transferencia del envío
+  paymentStatus   String    @default("PENDING")
+  paymentProof    String?
 
-  // Relaciones
+  deliveryPaymentStatus String?
+  deliveryPaymentProof  String?
+
   storeId         String
   store           Store     @relation(fields: [storeId], references: [id])
   driverId        String?
   driver          User?     @relation("DriverOrders", fields: [driverId], references: [id])
-  
-  // Relación con zona (para SaaS multi-tenant)
+
   zoneId          String?
   zone            Zone?     @relation(fields: [zoneId], references: [id])
-  
+
   items           OrderItem[]
   messages        Message[]
+
+  @@index([status])
+  @@index([storeId])
+  @@index([zoneId])
+  @@index([driverId])
+  @@index([createdAt])
+  @@index([status, storeId])
+  @@index([deliveredAt])
 }
 
 // Items del pedido
@@ -195,87 +199,103 @@ model OrderItem {
   totalPrice    Float
   notes         String?
 
-  // Relaciones
   orderId       String
   order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId     String
   product       Product   @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
 }
 
 // Mensajes del chat de pedidos
 model Message {
   id            String    @id @default(cuid())
-  content       String    // Texto del mensaje
-  imageUrl      String?   // URL de imagen (comprobante de pago, etc.)
-  senderType    String    // CUSTOMER, VENDOR, SYSTEM
-  senderName    String    // Nombre del remitente
+  content       String
+  imageUrl      String?
+  senderType    String
+  senderName    String
   isRead        Boolean   @default(false)
   createdAt     DateTime  @default(now())
 
-  // Relaciones
   orderId       String
   order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
 }
 
 // Ciclo de facturación mensual (para Admins)
 model BillingCycle {
   id            String    @id @default(cuid())
-  
-  // Período del ciclo
-  startDate     DateTime  // Inicio del ciclo (fecha de registro o aniversario)
-  endDate       DateTime  // Fin del ciclo (un mes después)
-  
-  // Estadísticas del período
-  totalOrders   Int       @default(0) // Total de pedidos completados
-  totalDeliveryRevenue Float @default(0) // Total recaudado en envíos
-  
-  // Facturación
-  amountDue     Float     @default(10) // Monto a cobrar según escala de precios
+
+  startDate     DateTime
+  endDate       DateTime
+
+  totalOrders   Int       @default(0)
+  totalDeliveryRevenue Float @default(0)
+
+  amountDue     Float     @default(10)
   isPaid        Boolean   @default(false)
   paidAt        DateTime?
-  paymentProof  String?   // URL del comprobante de pago
-  
-  // Estado
-  status        String    @default("ACTIVE") // ACTIVE, PENDING_PAYMENT, PAID, OVERDUE
-  
+  paymentProof  String?
+
+  status        String    @default("ACTIVE")
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // Relaciones
   adminId       String
   admin         User      @relation(fields: [adminId], references: [id])
+
+  @@index([adminId])
+  @@index([startDate, endDate])
 }
 
-// Mensajes entre Super Admin y Admin (cobranza, soporte, avisos)
+// Mensajes entre Super Admin y Admin
 model AdminMessage {
   id            String    @id @default(cuid())
-  content       String    // Texto del mensaje
-  imageUrl      String?   // URL de imagen (comprobante de pago, etc.)
-  messageType   String    @default("GENERAL") // GENERAL, BILLING, SUPPORT, ANNOUNCEMENT
+  content       String
+  imageUrl      String?
+  messageType   String    @default("GENERAL")
   isRead        Boolean   @default(false)
   createdAt     DateTime  @default(now())
 
-  // Relaciones
   senderId      String
   sender        User      @relation("MessageSender", fields: [senderId], references: [id])
   receiverId    String
   receiver      User      @relation("MessageReceiver", fields: [receiverId], references: [id])
-  
-  // Referencia opcional al ciclo de facturación (para mensajes de cobranza)
+
   billingCycleId String?
+
+  @@index([senderId, receiverId])
 }
 
-// Notificaciones (campanita)
+// Token de recuperación de contraseña
+model PasswordReset {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+// Notificaciones
 model Notification {
   id            String    @id @default(cuid())
   title         String
   message       String
-  type          String    @default("INFO") // INFO, BILLING, ORDER, SYSTEM, WARNING
+  type          String    @default("INFO")
   isRead        Boolean   @default(false)
-  link          String?   // URL a donde redirigir al hacer clic
+  link          String?
   createdAt     DateTime  @default(now())
 
-  // Relaciones
   userId        String
   user          User      @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
 }

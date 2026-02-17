@@ -40,48 +40,36 @@ export async function GET() {
       },
     })
 
-    // Obtener estadísticas adicionales para cada admin
     const adminsWithStats = await Promise.all(
       admins.map(async (admin) => {
-        // Obtener tiendas de la zona del admin
-        const stores = admin.zone ? await prisma.store.findMany({
-          where: { zoneId: admin.zone.id },
-          select: { id: true },
-        }) : []
-        
-        const storeIds = stores.map(s => s.id)
+        if (!admin.zone) {
+          return {
+            ...admin,
+            _count: { stores: 0 },
+            stats: { totalOrders: 0, completedOrders: 0, totalDeliveryRevenue: 0, totalDrivers: 0 },
+          }
+        }
 
-        // Contar pedidos y calcular ingresos
-        const orders = storeIds.length > 0 ? await prisma.order.findMany({
-          where: { storeId: { in: storeIds } },
-          select: {
-            status: true,
-            actualDeliveryFee: true,
-          },
-        }) : []
+        const zoneId = admin.zone.id
 
-        const completedOrders = orders.filter(o => o.status === 'DELIVERED').length
-        const totalDeliveryRevenue = orders
-          .filter(o => o.status === 'DELIVERED')
-          .reduce((sum, o) => sum + (o.actualDeliveryFee || 0), 0)
-
-        // Contar repartidores asignados a la zona del admin
-        const driversCount = admin.zone ? await prisma.user.count({
-          where: {
-            role: 'DRIVER',
-            zoneId: admin.zone.id,
-          },
-        }) : 0
+        const [storeCount, orderCount, completedCount, revenueAgg, driversCount] = await Promise.all([
+          prisma.store.count({ where: { zoneId } }),
+          prisma.order.count({ where: { store: { zoneId } } }),
+          prisma.order.count({ where: { store: { zoneId }, status: 'DELIVERED' } }),
+          prisma.order.aggregate({
+            where: { store: { zoneId }, status: 'DELIVERED' },
+            _sum: { actualDeliveryFee: true },
+          }),
+          prisma.user.count({ where: { role: 'DRIVER', zoneId } }),
+        ])
 
         return {
           ...admin,
-          _count: {
-            stores: storeIds.length,
-          },
+          _count: { stores: storeCount },
           stats: {
-            totalOrders: orders.length,
-            completedOrders,
-            totalDeliveryRevenue,
+            totalOrders: orderCount,
+            completedOrders: completedCount,
+            totalDeliveryRevenue: revenueAgg._sum.actualDeliveryFee || 0,
             totalDrivers: driversCount,
           },
         }

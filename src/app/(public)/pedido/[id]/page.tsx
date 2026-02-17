@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { notFound, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusColor } from '@/lib/utils'
-import { useOrderUpdates, useNotificationPermission, usePusherChannel } from '@/hooks/use-pusher'
+import { useOrderUpdates, useNotificationPermission, usePusherChannel, usePusherAvailable } from '@/hooks/use-pusher'
 import { CHANNELS, EVENTS, ORDER_STATUS_NOTIFICATIONS } from '@/lib/pusher'
 import { useActiveOrderStore, ActiveOrderStatus } from '@/stores/active-order-store'
 
@@ -81,6 +81,7 @@ export default function OrderPage({
   
   // Hook para permisos de notificación
   const { permission, requestPermission } = useNotificationPermission()
+  const pusherAvailable = usePusherAvailable()
   
   // Store para el pedido activo
   const { activeOrder, updateStatus: updateActiveOrderStatus, clearActiveOrder } = useActiveOrderStore()
@@ -90,10 +91,12 @@ export default function OrderPage({
     params.then(({ id }) => setOrderId(id))
   }, [params])
 
-  // Función para obtener los datos del pedido
+  // Debounce fetchOrder to avoid duplicate requests from polling + Pusher
+  const fetchInFlightRef = useRef(false)
   const fetchOrder = useCallback(async () => {
-    if (!orderId) return
-    
+    if (!orderId || fetchInFlightRef.current) return
+    fetchInFlightRef.current = true
+
     try {
       const response = await fetch(`/api/orders/${orderId}`)
       if (!response.ok) {
@@ -111,6 +114,7 @@ export default function OrderPage({
       setError('error')
     } finally {
       setLoading(false)
+      fetchInFlightRef.current = false
     }
   }, [orderId])
 
@@ -156,8 +160,7 @@ export default function OrderPage({
   // Escuchar el evento personalizado cuando se actualiza el delivery fee
   useEffect(() => {
     const handleDeliveryFeeUpdate = (event: CustomEvent) => {
-      console.log('Custom event order-delivery-fee-updated received:', event.detail)
-      // Refrescar los datos del pedido inmediatamente
+        // Refrescar los datos del pedido inmediatamente
       fetchOrder()
     }
     
@@ -173,7 +176,6 @@ export default function OrderPage({
     orderId ? CHANNELS.ORDER(orderId) : '',
     EVENTS.ORDER_UPDATED,
     (data: unknown) => {
-      console.log('ORDER_UPDATED received in order page:', data)
       const orderData = data as { 
         actualDeliveryFee?: number | null
         deliveryPaymentStatus?: string | null
@@ -182,50 +184,41 @@ export default function OrderPage({
       
       // Si se actualizó el valor del envío, refrescar inmediatamente
       if (orderData.actualDeliveryFee !== undefined && orderData.actualDeliveryFee !== null) {
-        console.log('Delivery fee updated via Pusher:', orderData.actualDeliveryFee, 'refreshing immediately...')
         fetchOrder()
         return
       }
       
       // Si cambió el estado de pago de delivery, refrescar
       if (orderData.deliveryPaymentStatus !== undefined) {
-        console.log('Delivery payment status changed via Pusher:', orderData.deliveryPaymentStatus, 'refreshing...')
         fetchOrder()
         return
       }
       
       // Si cambió el estado del pedido, también refrescar
       if (orderData.status && orderData.status !== order?.status) {
-        console.log('Order status changed via Pusher:', orderData.status, 'refreshing...')
         fetchOrder()
       }
     },
     !!orderId
   )
   
-  // Refrescar periódicamente cuando el pedido está en PICKED_UP para detectar actualDeliveryFee
-  // Esto es un respaldo en caso de que Pusher falle o el cliente no tenga conexión estable
+  // Polling fallback: when Pusher is not configured, poll for all active states
+  // When Pusher IS configured, only poll during PICKED_UP for delivery fee updates
   useEffect(() => {
     if (!orderId || !order) return
-    
-    // Solo hacer polling si está en PICKED_UP y aún no tiene actualDeliveryFee
-    // O si está en PICKED_UP y tiene actualDeliveryFee pero no deliveryPaymentStatus (para detectar cuando el cliente paga)
-    const needsPolling = order.status === 'PICKED_UP' && 
-                        (!order.actualDeliveryFee || (order.actualDeliveryFee && !order.deliveryPaymentStatus))
-    
-    if (needsPolling) {
-      console.log('Starting polling for delivery fee/payment status...')
-      const interval = setInterval(() => {
-        console.log('Polling: checking for delivery fee/payment status...')
-        fetchOrder()
-      }, 3000) // Cada 3 segundos (más frecuente)
-      
-      return () => {
-        console.log('Stopping polling for delivery fee...')
-        clearInterval(interval)
-      }
+    const isFinished = order.status === 'DELIVERED' || order.status === 'CANCELLED'
+    if (isFinished) return
+
+    const needsDeliveryPolling = order.status === 'PICKED_UP' &&
+      (!order.actualDeliveryFee || (order.actualDeliveryFee && !order.deliveryPaymentStatus))
+
+    const shouldPoll = !pusherAvailable || needsDeliveryPolling
+
+    if (shouldPoll) {
+      const interval = setInterval(fetchOrder, pusherAvailable ? 5000 : 8000)
+      return () => clearInterval(interval)
     }
-  }, [orderId, order?.status, order?.actualDeliveryFee, order?.deliveryPaymentStatus, fetchOrder])
+  }, [orderId, order?.status, order?.actualDeliveryFee, order?.deliveryPaymentStatus, fetchOrder, pusherAvailable])
 
   // Manejar redirección pendiente de WhatsApp
   useEffect(() => {
@@ -271,74 +264,70 @@ export default function OrderPage({
   const statusInfo = ORDER_STATUS_NOTIFICATIONS[order.status]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50 py-8">
-      <div className="max-w-2xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50 py-4 md:py-8">
+      <div className="max-w-2xl mx-auto px-3 md:px-4">
         {/* Notificación en tiempo real */}
         {notification?.show && (
-          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-bounce">
-            <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
-              <span className="text-3xl">{notification.icon}</span>
+          <div className="fixed top-2 left-2 right-2 md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 z-50 animate-bounce">
+            <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2">
+              <span className="text-2xl">{notification.icon}</span>
               <div>
-                <p className="font-bold">{notification.title}</p>
-                <p className="text-sm opacity-90">{notification.message}</p>
+                <p className="font-bold text-sm">{notification.title}</p>
+                <p className="text-xs opacity-90">{notification.message}</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-block mb-4">
-            <div className="bg-white rounded-2xl shadow-lg p-4 inline-block">
-              <span className="text-5xl">{statusInfo?.icon || '📦'}</span>
+        <div className="text-center mb-4 md:mb-8">
+          <div className="inline-block mb-2">
+            <div className="bg-white rounded-xl shadow-md p-2 md:p-4 inline-block">
+              <span className="text-3xl md:text-5xl">{statusInfo?.icon || '📦'}</span>
             </div>
           </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
+          <h1 className="text-lg md:text-3xl font-extrabold text-gray-900 mb-1">
             {isCancelled ? 'Pedido cancelado' : statusInfo?.title || 'Estado del pedido'}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm md:text-base text-gray-600">
             Pedido <span className="font-bold text-green-600">#{order.orderNumber}</span> de {order.store.name}
           </p>
-          
-          {/* Solicitar permisos de notificación */}
+
           {permission === 'default' && (
             <button
               onClick={requestPermission}
-              className="mt-4 text-sm text-green-600 hover:text-green-700 underline"
+              className="mt-2 text-xs md:text-sm text-green-600 hover:text-green-700 underline"
             >
-              🔔 Activar notificaciones para recibir actualizaciones
+              🔔 Activar notificaciones
             </button>
           )}
         </div>
 
         {/* Panel de pago pendiente - mostrar si el pago no está verificado */}
         {order.status === 'PENDING' && order.paymentStatus !== 'VERIFIED' && (
-          <Card className="mb-6 border-2 border-orange-300 shadow-xl bg-gradient-to-br from-orange-50 to-yellow-50">
-            <CardContent className="pt-6">
+          <Card className="mb-4 md:mb-6 border-2 border-orange-300 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50">
+            <CardContent className="pt-4 md:pt-6">
               <div className="text-center">
-                <span className="text-5xl block mb-3 animate-bounce">💳</span>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {order.paymentStatus === 'UPLOADED' 
-                    ? '¡Comprobante enviado!' 
+                <span className="text-3xl md:text-5xl block mb-2 animate-bounce">💳</span>
+                <h3 className="text-base md:text-xl font-bold text-gray-900 mb-1">
+                  {order.paymentStatus === 'UPLOADED'
+                    ? '¡Comprobante enviado!'
                     : '¡Completa tu pago!'}
                 </h3>
-                <p className="text-gray-600 mb-4">
-                  {order.paymentStatus === 'UPLOADED' 
-                    ? 'Tu comprobante está siendo verificado por el vendedor.'
-                    : 'Envía tu comprobante de pago en el chat para que tu pedido sea procesado.'}
+                <p className="text-sm text-gray-600 mb-3">
+                  {order.paymentStatus === 'UPLOADED'
+                    ? 'Tu comprobante está siendo verificado.'
+                    : 'Envía tu comprobante en el chat.'}
                 </p>
-                
+
                 {order.paymentStatus === 'UPLOADED' ? (
-                  <div className="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-xl inline-flex items-center gap-2">
+                  <div className="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-lg inline-flex items-center gap-2 text-sm">
                     <span className="animate-spin">⏳</span>
                     <span className="font-medium">Esperando verificación...</span>
                   </div>
                 ) : (
                   <Link href={`/pedido/${order.id}/chat`}>
-                    <Button 
-                      size="lg" 
-                      className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-                    >
+                    <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold px-6 py-2 text-sm md:text-base shadow-lg">
                       💬 Ir al chat para pagar
                     </Button>
                   </Link>
@@ -350,41 +339,35 @@ export default function OrderPage({
 
         {/* Timeline de estado */}
         {!isCancelled && (
-          <Card className="mb-6 border-2 border-green-100 shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-green-50 to-orange-50 p-4 border-b-2 border-green-100">
-              <h2 className="font-bold text-gray-900 flex items-center gap-2">
+          <Card className="mb-4 md:mb-6 border-2 border-green-100 shadow-lg overflow-hidden">
+            <div className="bg-gradient-to-r from-green-50 to-orange-50 px-3 py-2 md:p-4 border-b-2 border-green-100">
+              <h2 className="font-bold text-sm md:text-base text-gray-900 flex items-center gap-2">
                 📍 Seguimiento del pedido
               </h2>
             </div>
-            <CardContent className="pt-6">
+            <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
               <div className="relative">
-                {/* Progress bar background */}
-                <div className="absolute top-5 left-5 right-5 h-1 bg-gray-200 rounded-full" />
-                
-                {/* Progress bar filled */}
-                <div 
-                  className="absolute top-5 left-5 h-1 bg-gradient-to-r from-green-500 to-orange-500 rounded-full transition-all duration-500"
-                  style={{ width: `${(currentStatusIndex / (STATUS_STEPS.length - 1)) * 100}%`, maxWidth: 'calc(100% - 40px)' }}
+                <div className="absolute top-4 md:top-5 left-4 md:left-5 right-4 md:right-5 h-1 bg-gray-200 rounded-full" />
+                <div
+                  className="absolute top-4 md:top-5 left-4 md:left-5 h-1 bg-gradient-to-r from-green-500 to-orange-500 rounded-full transition-all duration-500"
+                  style={{ width: `${(currentStatusIndex / (STATUS_STEPS.length - 1)) * 100}%`, maxWidth: 'calc(100% - 32px)' }}
                 />
-
-                {/* Steps */}
                 <div className="relative flex justify-between">
                   {STATUS_STEPS.map((step, index) => {
                     const isCompleted = index <= currentStatusIndex
                     const isCurrent = index === currentStatusIndex
-                    
                     return (
                       <div key={step.status} className="flex flex-col items-center">
-                        <div 
-                          className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-medium transition-all duration-300 ${
-                            isCompleted 
-                              ? 'bg-gradient-to-r from-green-500 to-orange-500 text-white shadow-lg' 
+                        <div
+                          className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-sm md:text-lg font-medium transition-all duration-300 ${
+                            isCompleted
+                              ? 'bg-gradient-to-r from-green-500 to-orange-500 text-white shadow-md'
                               : 'bg-gray-200 text-gray-400'
-                          } ${isCurrent ? 'ring-4 ring-green-200 scale-110' : ''}`}
+                          } ${isCurrent ? 'ring-2 md:ring-4 ring-green-200 scale-110' : ''}`}
                         >
                           {step.icon}
                         </div>
-                        <span className={`text-xs mt-2 font-medium text-center ${
+                        <span className={`text-[10px] md:text-xs mt-1 font-medium text-center leading-tight ${
                           isCompleted ? 'text-gray-900' : 'text-gray-400'
                         }`}>
                           {step.label}
@@ -394,10 +377,8 @@ export default function OrderPage({
                   })}
                 </div>
               </div>
-              
-              {/* Status message */}
-              <div className="mt-6 text-center bg-gray-50 rounded-xl p-4">
-                <p className="text-gray-700">{statusInfo?.message}</p>
+              <div className="mt-4 text-center bg-gray-50 rounded-lg p-2 md:p-4">
+                <p className="text-sm text-gray-700">{statusInfo?.message}</p>
               </div>
             </CardContent>
           </Card>
@@ -405,25 +386,25 @@ export default function OrderPage({
 
         {/* Estado cancelado */}
         {isCancelled && (
-          <Card className="mb-6 border-2 border-red-200 shadow-xl">
-            <CardContent className="pt-6 text-center">
-              <span className="text-5xl block mb-4">❌</span>
-              <p className="text-red-600 font-medium">Este pedido ha sido cancelado</p>
+          <Card className="mb-4 md:mb-6 border-2 border-red-200 shadow-lg">
+            <CardContent className="pt-4 text-center">
+              <span className="text-3xl block mb-2">❌</span>
+              <p className="text-sm text-red-600 font-medium">Este pedido ha sido cancelado</p>
             </CardContent>
           </Card>
         )}
 
         {/* Detalles del pedido */}
-        <Card className="mb-6 border-2 border-green-100 shadow-xl">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-gray-500">Estado actual</span>
+        <Card className="mb-4 md:mb-6 border-2 border-green-100 shadow-lg">
+          <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs md:text-sm text-gray-500">Estado actual</span>
               <Badge className={getOrderStatusColor(order.status)}>
                 {getOrderStatusLabel(order.status)}
               </Badge>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Pedido #</span>
                 <span className="font-medium">{order.orderNumber}</span>
@@ -437,13 +418,13 @@ export default function OrderPage({
                 <span className="font-medium">{formatDate(order.createdAt)}</span>
               </div>
               {order.driver && (
-                <div className="flex justify-between items-center bg-green-50 -mx-6 px-6 py-3 rounded-lg">
-                  <span className="text-gray-600 flex items-center gap-2">
+                <div className="flex justify-between items-center bg-green-50 -mx-3 md:-mx-6 px-3 md:px-6 py-2 rounded-lg">
+                  <span className="text-gray-600 flex items-center gap-1">
                     🏍️ Repartidor
                   </span>
                   <div className="text-right">
-                    <span className="font-medium block">{order.driver.name}</span>
-                    <a href={`tel:${order.driver.phone}`} className="text-sm text-green-600 hover:underline">
+                    <span className="font-medium block text-sm">{order.driver.name}</span>
+                    <a href={`tel:${order.driver.phone}`} className="text-xs text-green-600 hover:underline">
                       {order.driver.phone}
                     </a>
                   </div>
@@ -451,21 +432,21 @@ export default function OrderPage({
               )}
             </div>
 
-            <div className="border-t mt-4 pt-4">
-              <h3 className="font-medium mb-3 flex items-center gap-2">🛒 Productos</h3>
-              <div className="space-y-2">
+            <div className="border-t mt-3 pt-3">
+              <h3 className="font-medium text-sm mb-2 flex items-center gap-1">🛒 Productos</h3>
+              <div className="space-y-1">
                 {order.items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm bg-gray-50 p-2 rounded-lg">
+                  <div key={item.id} className="flex justify-between text-xs md:text-sm bg-gray-50 p-2 rounded-lg">
                     <span>
                       <span className="font-medium">{item.quantity}x</span> {item.product.name}
                     </span>
-                    <span className="font-medium">{formatPrice(item.totalPrice)}</span>
+                    <span className="font-medium ml-2 whitespace-nowrap">{formatPrice(item.totalPrice)}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="border-t mt-4 pt-4 space-y-2">
+            <div className="border-t mt-3 pt-3 space-y-2 text-sm">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
                 <span>{formatPrice(order.subtotal)}</span>
@@ -494,12 +475,12 @@ export default function OrderPage({
                   <span>{formatPrice(order.deliveryFee)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-xl font-extrabold pt-2 border-t bg-gradient-to-r from-green-50 to-orange-50 -mx-6 px-6 py-3 rounded-lg">
+              <div className="flex justify-between text-base md:text-xl font-extrabold pt-2 border-t bg-gradient-to-r from-green-50 to-orange-50 -mx-3 md:-mx-6 px-3 md:px-6 py-2 md:py-3 rounded-lg">
                 <span>Total productos</span>
                 <span className="text-green-600">{formatPrice(order.subtotal)}</span>
               </div>
               {order.actualDeliveryFee && (
-                <div className="flex justify-between text-xl font-extrabold pt-2 border-t bg-gradient-to-r from-yellow-50 to-orange-50 -mx-6 px-6 py-3 rounded-lg">
+                <div className="flex justify-between text-base md:text-xl font-extrabold pt-2 border-t bg-gradient-to-r from-yellow-50 to-orange-50 -mx-3 md:-mx-6 px-3 md:px-6 py-2 md:py-3 rounded-lg">
                   <span>Total con envío</span>
                   <span className="text-orange-600">{formatPrice(order.subtotal + order.actualDeliveryFee)}</span>
                 </div>
@@ -523,14 +504,14 @@ export default function OrderPage({
          order.actualDeliveryFee && 
          order.actualDeliveryFee > 0 &&
          !order.deliveryPaymentStatus && (
-          <Card className="mb-6 border-2 border-yellow-300 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-50">
-            <CardContent className="pt-6">
-              <div className="text-center mb-4">
-                <span className="text-4xl block mb-2">💰</span>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <Card className="mb-4 md:mb-6 border-2 border-yellow-300 shadow-lg bg-gradient-to-br from-yellow-50 to-orange-50">
+            <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
+              <div className="text-center mb-3">
+                <span className="text-3xl block mb-1">💰</span>
+                <h3 className="text-base md:text-xl font-bold text-gray-900 mb-1">
                   Pagar envío al repartidor
                 </h3>
-                <p className="text-lg font-extrabold text-yellow-700 mb-1">
+                <p className="text-sm md:text-lg font-extrabold text-yellow-700">
                   El viaje cuesta: {formatPrice(order.actualDeliveryFee)}
                 </p>
                 {order.store.minDeliveryFee !== undefined && order.store.maxDeliveryFee !== undefined && (
@@ -620,11 +601,13 @@ export default function OrderPage({
         )}
 
         {/* Acciones */}
-        <div className="text-center space-y-4">
-          <p className="text-sm text-gray-500 bg-white p-3 rounded-xl shadow">
-            🔔 Esta página se actualiza automáticamente cuando hay cambios en tu pedido
+        <div className="text-center space-y-3">
+          <p className="text-xs text-gray-500 bg-white p-2 rounded-lg shadow">
+            {pusherAvailable
+              ? '🔔 Se actualiza en tiempo real'
+              : '🔄 Se actualiza automáticamente'}
           </p>
-          <div className="flex gap-3 justify-center flex-wrap">
+          <div className="flex gap-2 justify-center flex-wrap">
             {/* Botón al chat si el pago está pendiente o subido */}
             {order.status === 'PENDING' && order.paymentStatus !== 'VERIFIED' && (
               <Link href={`/pedido/${order.id}/chat`}>

@@ -199,8 +199,27 @@ export function OrderChat({
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="animate-pulse text-gray-500">Cargando chat...</div>
+      <div className="flex-1 flex flex-col bg-gray-50">
+        <div className="bg-gradient-to-r from-green-600 to-green-700 p-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-white/20 animate-pulse" />
+            <div className="flex-1 space-y-1">
+              <div className="h-3 bg-white/20 rounded w-24 animate-pulse" />
+              <div className="h-2 bg-white/20 rounded w-16 animate-pulse" />
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 p-3 space-y-3">
+          <div className="flex justify-start">
+            <div className="w-2/3 h-16 bg-gray-200 rounded-2xl animate-pulse" />
+          </div>
+          <div className="flex justify-end">
+            <div className="w-1/2 h-12 bg-green-200 rounded-2xl animate-pulse" />
+          </div>
+          <div className="flex justify-start">
+            <div className="w-3/5 h-10 bg-gray-200 rounded-2xl animate-pulse" />
+          </div>
+        </div>
       </div>
     )
   }
@@ -209,12 +228,16 @@ export function OrderChat({
     <div className="flex flex-col h-full bg-gray-50">
       {/* Visor de imagen en pantalla completa */}
       {viewingImage && (
-        <div 
+        <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Visor de imagen"
           onClick={() => setViewingImage(null)}
         >
           <button
             onClick={() => setViewingImage(null)}
+            aria-label="Cerrar imagen"
             className="absolute top-4 right-4 w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white text-2xl transition-colors z-10"
           >
             ✕
@@ -405,6 +428,7 @@ export function OrderChat({
               <button
                 type="submit"
                 disabled={!newMessage.trim() || sending}
+                aria-label="Enviar mensaje"
                 className="w-10 h-10 rounded-full bg-green-600 hover:bg-green-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0"
               >
                 {sending ? '⏳' : '➤'}

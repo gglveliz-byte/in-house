@@ -13,6 +13,7 @@ export async function GET() {
         description: true,
         latitude: true,
         longitude: true,
+        currency: true,
       },
     })
 

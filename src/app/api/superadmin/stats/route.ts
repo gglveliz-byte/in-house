@@ -2,36 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-
-// Función para calcular el monto a cobrar según el modelo de precios
-function calculateAmountDue(completedOrders: number): number {
-  // 0-30 pedidos: $10 (fijo)
-  // Cada 20 pedidos adicionales: +$10
-  // Máximo $100 hasta 300 pedidos
-  // Después de 1000: reinicia en $110
-  
-  if (completedOrders <= 0) return 10
-  
-  // Ciclo base (0-1000)
-  const cycleBase = Math.floor(completedOrders / 1000)
-  const ordersInCycle = completedOrders % 1000 || (completedOrders >= 1000 ? 1000 : 0)
-  
-  let amount = 10 + (cycleBase * 10) // Base aumenta $10 cada 1000 pedidos
-  
-  if (ordersInCycle <= 30) {
-    // Primeros 30 pedidos: $10 base
-    return amount
-  }
-  
-  // Calcular incrementos de $10 cada 20 pedidos después de los primeros 30
-  const additionalOrders = ordersInCycle - 30
-  const increments = Math.ceil(additionalOrders / 20)
-  amount += increments * 10
-  
-  // Máximo $100 por ciclo base (antes de 1000 pedidos)
-  const maxForCycle = 100 + (cycleBase * 10)
-  return Math.min(amount, maxForCycle)
-}
+import { calculateAmountDue } from '@/lib/billing'
 
 // GET /api/superadmin/stats - Obtener estadísticas del dashboard
 export async function GET() {
@@ -78,35 +49,38 @@ export async function GET() {
 
     const adminsWithStats = await Promise.all(
       admins.map(async (admin) => {
-        // Obtener tiendas de la zona del admin
-        const stores = admin.zone ? await prisma.store.findMany({
-          where: { zoneId: admin.zone.id },
-          select: { id: true },
-        }) : []
-        
-        const storeIds = stores.map(s => s.id)
+        if (!admin.zone) {
+          return {
+            id: admin.id, name: admin.name, email: admin.email,
+            zoneName: null, registeredAt: admin.registeredAt,
+            totalStores: 0, totalDrivers: 0, totalOrders: 0,
+            completedOrders: 0, totalDeliveryRevenue: 0,
+            amountDue: 10, billingStatus: 'PENDING_PAYMENT',
+          }
+        }
 
-        // Obtener pedidos
-        const orders = storeIds.length > 0 ? await prisma.order.findMany({
-          where: { storeId: { in: storeIds } },
-          select: {
-            status: true,
-            actualDeliveryFee: true,
-          },
-        }) : []
+        const zoneId = admin.zone.id
 
-        const completedOrders = orders.filter(o => o.status === 'DELIVERED').length
-        const deliveryRevenue = orders
-          .filter(o => o.status === 'DELIVERED')
-          .reduce((sum, o) => sum + (o.actualDeliveryFee || 0), 0)
+        // Queries optimizadas con count/aggregate en vez de findMany
+        const [
+          storeCount,
+          orderCount,
+          completedOrderCount,
+          deliveryRevenueAgg,
+          driversCount,
+        ] = await Promise.all([
+          prisma.store.count({ where: { zoneId } }),
+          prisma.order.count({ where: { store: { zoneId } } }),
+          prisma.order.count({ where: { store: { zoneId }, status: 'DELIVERED' } }),
+          prisma.order.aggregate({
+            where: { store: { zoneId }, status: 'DELIVERED' },
+            _sum: { actualDeliveryFee: true },
+          }),
+          prisma.user.count({ where: { role: 'DRIVER', zoneId } }),
+        ])
 
-        // Contar repartidores asignados a la zona del admin
-        const driversCount = admin.zone ? await prisma.user.count({
-          where: {
-            role: 'DRIVER',
-            zoneId: admin.zone.id,
-          },
-        }) : 0
+        const completedOrders = completedOrderCount
+        const deliveryRevenue = deliveryRevenueAgg._sum.actualDeliveryFee || 0
 
         // Calcular monto a cobrar
         const amountDue = calculateAmountDue(completedOrders)
@@ -141,7 +115,7 @@ export async function GET() {
           }
         }
 
-        totalOrders += orders.length
+        totalOrders += orderCount
         totalRevenue += deliveryRevenue
         if (billingStatus !== 'PAID') {
           pendingBilling += amountDue
@@ -153,9 +127,9 @@ export async function GET() {
           email: admin.email,
           zoneName: admin.zone?.name || null,
           registeredAt: admin.registeredAt,
-          totalStores: storeIds.length,
+          totalStores: storeCount,
           totalDrivers: driversCount,
-          totalOrders: orders.length,
+          totalOrders: orderCount,
           completedOrders,
           totalDeliveryRevenue: deliveryRevenue,
           amountDue,

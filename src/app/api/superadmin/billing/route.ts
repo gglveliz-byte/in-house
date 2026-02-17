@@ -2,29 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-
-// Función para calcular el monto a pagar según pedidos completados
-function calculateAmountDue(completedOrders: number): number {
-  // Ciclos de 1000 pedidos
-  const cycleNumber = Math.floor(completedOrders / 1000)
-  const ordersInCycle = completedOrders % 1000
-
-  // Base del ciclo (cada 1000 pedidos sube $10 al mínimo)
-  const cycleBase = cycleNumber * 10
-
-  // Calcular tarifa según el rango dentro del ciclo
-  if (ordersInCycle <= 30) {
-    return 10 + cycleBase // $10 base + ciclo
-  }
-
-  // Después de 30, cada 20 pedidos aumenta $10
-  // 31-50 = $20, 51-70 = $30, 71-90 = $40...
-  const rangesAfter30 = Math.ceil((ordersInCycle - 30) / 20)
-  const amount = 10 + rangesAfter30 * 10
-
-  // Máximo $100 por ciclo (se alcanza a los ~300 pedidos)
-  return Math.min(amount, 100) + cycleBase
-}
+import { calculateAmountDue } from '@/lib/billing'
 
 // GET /api/superadmin/billing - Obtener resumen de facturación
 export async function GET() {

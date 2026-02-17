@@ -39,6 +39,7 @@ export function ProductCard({ product, store }: ProductCardProps) {
               fill
               className="object-contain transition-transform duration-300"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           </div>
         ) : (
@@ -68,9 +69,10 @@ export function ProductCard({ product, store }: ProductCardProps) {
               {formatPrice(product.price)}
             </span>
           </div>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             onClick={handleAddToCart}
+            aria-label={`Agregar ${product.name} al carrito`}
             className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
             + Agregar

@@ -4,64 +4,63 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { pusherServer, CHANNELS, EVENTS } from '@/lib/pusher'
 
-// GET /api/orders - Obtener pedidos (con filtros)
+// GET /api/orders - Obtener pedidos (con filtros y paginación)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const storeId = searchParams.get('storeId')
     const driverId = searchParams.get('driverId')
     const status = searchParams.get('status')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
+    const skip = (page - 1) * limit
 
-    // Obtener sesión para filtrar por zona si es admin
     const session = await getServerSession(authOptions)
 
     const where: Record<string, unknown> = {}
     if (storeId) where.storeId = storeId
     if (driverId) where.driverId = driverId
     if (status) where.status = status
-    
-    // Si es admin, solo ver pedidos de tiendas en su zona
+
     if (session?.user?.role === 'ADMIN' && session.user.zoneId) {
-      where.store = {
-        zoneId: session.user.zoneId
-      }
+      where.store = { zoneId: session.user.zoneId }
     }
-    
-    // Si es repartidor, solo ver pedidos de tiendas en su zona
+
     if (session?.user?.role === 'DRIVER' && session.user.zoneId) {
-      where.store = {
-        zoneId: session.user.zoneId
-      }
+      where.store = { zoneId: session.user.zoneId }
     }
 
-    const orders = await prisma.order.findMany({
-      where,
-      include: {
-        items: {
-          include: {
-            product: true,
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        include: {
+          items: {
+            include: { product: true },
+          },
+          store: {
+            select: {
+              name: true,
+              address: true,
+              whatsapp: true,
+              minDeliveryFee: true,
+              maxDeliveryFee: true,
+            },
+          },
+          driver: {
+            select: { name: true, phone: true },
           },
         },
-        store: {
-          select: {
-            name: true,
-            address: true,
-            whatsapp: true,
-            minDeliveryFee: true,
-            maxDeliveryFee: true,
-          },
-        },
-        driver: {
-          select: {
-            name: true,
-            phone: true,
-          },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    })
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.order.count({ where }),
+    ])
 
-    return NextResponse.json(orders)
+    return NextResponse.json({
+      data: orders,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    })
   } catch (error) {
     console.error('Error fetching orders:', error)
     return NextResponse.json({ error: 'Error al obtener pedidos' }, { status: 500 })
@@ -83,7 +82,28 @@ export async function POST(request: NextRequest) {
       items,
     } = body
 
-    // Obtener info de la tienda (incluyendo zona)
+    // Validación de inputs
+    if (!storeId || !customerName?.trim() || !customerPhone?.trim() || !customerAddress?.trim()) {
+      return NextResponse.json(
+        { error: 'Tienda, nombre, teléfono y dirección son requeridos' },
+        { status: 400 }
+      )
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json(
+        { error: 'El pedido debe tener al menos un producto' },
+        { status: 400 }
+      )
+    }
+
+    if (customerPhone.trim().length < 7) {
+      return NextResponse.json(
+        { error: 'Número de teléfono inválido' },
+        { status: 400 }
+      )
+    }
+
     const store = await prisma.store.findUnique({
       where: { id: storeId },
       select: {
@@ -113,6 +133,10 @@ export async function POST(request: NextRequest) {
       const product = productMap.get(item.productId)
       if (!product) throw new Error(`Producto ${item.productId} no encontrado`)
 
+      if (!item.quantity || item.quantity < 1 || !Number.isInteger(item.quantity)) {
+        throw new Error(`Cantidad inválida para producto ${item.productId}`)
+      }
+
       const totalPrice = product.price * item.quantity
       subtotal += totalPrice
 
@@ -125,60 +149,54 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Si hay rango de envío configurado, no incluir en el total (se cobrará al entregar)
-    // Si no hay rango, usar el deliveryFee fijo
-    const hasDeliveryRange = store.minDeliveryFee !== undefined && 
-                             store.maxDeliveryFee !== undefined &&
-                             store.maxDeliveryFee >= store.minDeliveryFee
-    const total = hasDeliveryRange ? subtotal : subtotal + store.deliveryFee
+    // Corregido: verificar si hay rango de delivery configurado (> 0)
+    const hasDeliveryRange = store.minDeliveryFee > 0 || store.maxDeliveryFee > 0
+    const deliveryFee = hasDeliveryRange ? 0 : (store.deliveryFee || 0)
+    const total = subtotal + deliveryFee
 
-    // Obtener y actualizar el contador de pedidos
-    const counter = await prisma.counter.upsert({
-      where: { id: 'order_counter' },
-      update: { value: { increment: 1 } },
-      create: { id: 'order_counter', value: 1001 },
-    })
+    // Transacción atómica para evitar race condition en counter
+    const order = await prisma.$transaction(async (tx) => {
+      const counter = await tx.counter.upsert({
+        where: { id: 'order_counter' },
+        update: { value: { increment: 1 } },
+        create: { id: 'order_counter', value: 1001 },
+      })
 
-    // Crear el pedido (asignar zona automáticamente desde la tienda)
-    const order = await prisma.order.create({
-      data: {
-        storeId,
-        zoneId: store.zoneId, // Asignar zona de la tienda
-        orderNumber: counter.value,
-        customerName,
-        customerPhone,
-        customerAddress,
-        customerLat,
-        customerLng,
-        customerNotes,
-        subtotal,
-        deliveryFee: hasDeliveryRange ? 0 : store.deliveryFee, // 0 si hay rango, se cobrará al entregar
-        total,
-        items: {
-          create: orderItems,
-        },
-      },
-      include: {
-        items: {
-          include: {
-            product: true,
+      return tx.order.create({
+        data: {
+          storeId,
+          zoneId: store.zoneId,
+          orderNumber: counter.value,
+          customerName: customerName.trim(),
+          customerPhone: customerPhone.trim(),
+          customerAddress: customerAddress.trim(),
+          customerLat,
+          customerLng,
+          customerNotes: customerNotes?.trim() || null,
+          subtotal,
+          deliveryFee,
+          total,
+          items: {
+            create: orderItems,
           },
         },
-        store: true,
-      },
+        include: {
+          items: {
+            include: { product: true },
+          },
+          store: true,
+        },
+      })
     })
 
-    // Emitir eventos de nuevo pedido por Pusher
     try {
-      // Notificar a la tienda
       await pusherServer.trigger(CHANNELS.STORE(storeId), EVENTS.NEW_ORDER, {
         orderId: order.id,
         orderNumber: order.orderNumber,
         customerName: order.customerName,
         total: order.total,
       })
-      
-      // Notificar al admin
+
       await pusherServer.trigger(CHANNELS.ADMIN, EVENTS.NEW_ORDER, {
         orderId: order.id,
         orderNumber: order.orderNumber,
@@ -186,8 +204,7 @@ export async function POST(request: NextRequest) {
         customerName: order.customerName,
         total: order.total,
       })
-      
-      // Crear canal para que el cliente pueda escuchar actualizaciones
+
       await pusherServer.trigger(CHANNELS.ORDER(order.id), EVENTS.ORDER_UPDATED, {
         orderId: order.id,
         status: order.status,

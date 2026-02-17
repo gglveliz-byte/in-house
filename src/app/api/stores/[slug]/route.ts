@@ -35,6 +35,7 @@ export async function GET(
             name: true,
             latitude: true,
             longitude: true,
+            currency: true,
           },
         },
       },
@@ -67,6 +68,7 @@ export async function GET(
               name: true,
               latitude: true,
               longitude: true,
+              currency: true,
             },
           },
         },
@@ -94,12 +96,14 @@ export async function PATCH(
     const { slug } = await params
     const body = await request.json()
     
-    // Obtener sesión para validar autorización
     const { getServerSession } = await import('next-auth')
     const { authOptions } = await import('@/lib/auth')
     const session = await getServerSession(authOptions)
-    
-    // Obtener la tienda para verificar autorización
+
+    if (!session) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
     const existingStore = await prisma.store.findUnique({
       where: { slug },
       select: { zoneId: true, ownerId: true },

@@ -13,7 +13,6 @@ function getPusherInstance(): Pusher | null {
   const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER
 
   if (!key || !cluster) {
-    console.warn('Pusher not configured - real-time notifications disabled')
     return null
   }
 
@@ -313,6 +312,15 @@ function showSystemNotification(title: string, body: string) {
       badge: '/logo.png',
     })
   }
+}
+
+// Hook para verificar si Pusher está disponible
+export function usePusherAvailable(): boolean {
+  const [available, setAvailable] = useState(false)
+  useEffect(() => {
+    setAvailable(getPusherInstance() !== null)
+  }, [])
+  return available
 }
 
 // Hook para solicitar permiso de notificaciones

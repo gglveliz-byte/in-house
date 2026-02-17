@@ -36,7 +36,8 @@ export default function DriverActivePage() {
 
     try {
       const response = await fetch(`/api/orders?driverId=${session.user.id}`)
-      const data = await response.json()
+      const json = await response.json()
+      const data = json.data || json
       // Filtrar solo pedidos activos (no entregados ni cancelados)
       const activeOrders = data.filter(
         (o: Order) => o.status === 'PICKED_UP'

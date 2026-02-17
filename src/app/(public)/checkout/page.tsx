@@ -15,7 +15,9 @@ export default function CheckoutPage() {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [storeInfo, setStoreInfo] = useState<{ 
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+  const [storeInfo, setStoreInfo] = useState<{
     minDeliveryFee: number
     maxDeliveryFee: number
     zoneLatitude?: number
@@ -57,89 +59,117 @@ export default function CheckoutPage() {
     setMounted(true)
   }, [])
 
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {}
+
+    if (!formData.customerName.trim()) {
+      errors.customerName = 'El nombre es requerido'
+    }
+
+    const phone = formData.customerPhone.replace(/\D/g, '')
+    if (!phone || phone.length < 7) {
+      errors.customerPhone = 'Ingresa un teléfono válido (mínimo 7 dígitos)'
+    }
+
+    if (!formData.customerAddress.trim()) {
+      errors.customerAddress = 'La dirección es requerida'
+    }
+
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitError(null)
 
     if (items.length === 0) {
-      alert('Tu carrito está vacío')
+      setSubmitError('Tu carrito está vacío')
       return
     }
 
+    if (!validateForm()) return
+
     setLoading(true)
 
-    try {
-      // Crear el pedido en la base de datos
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          storeId: storeId || items[0].product.storeId,
-          customerName: formData.customerName,
-          customerPhone: formData.customerPhone,
-          customerAddress: formData.customerAddress,
-          customerLat: formData.customerLat,
-          customerLng: formData.customerLng,
-          customerNotes: formData.customerNotes,
-          items: items.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-          })),
-        }),
-      })
+    const maxRetries = 2
+    let lastError: Error | null = null
 
-      if (!response.ok) {
-        throw new Error('Error al crear el pedido')
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          await new Promise(r => setTimeout(r, 1000 * attempt))
+        }
+
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            storeId: storeId || items[0].product.storeId,
+            customerName: formData.customerName.trim(),
+            customerPhone: formData.customerPhone.trim(),
+            customerAddress: formData.customerAddress.trim(),
+            customerLat: formData.customerLat,
+            customerLng: formData.customerLng,
+            customerNotes: formData.customerNotes.trim(),
+            items: items.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+            })),
+          }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(errorData.error || 'Error al crear el pedido')
+        }
+
+        const order = await response.json()
+
+        const productsSummary = items
+          .map((item) => `• ${item.quantity}x ${item.product.name} - ${formatPrice(item.product.price * item.quantity)}`)
+          .join('\n')
+
+        const hasDeliveryRange = storeInfo &&
+          storeInfo.minDeliveryFee !== undefined &&
+          storeInfo.maxDeliveryFee !== undefined &&
+          storeInfo.maxDeliveryFee >= storeInfo.minDeliveryFee
+
+        const finalTotal = hasDeliveryRange ? getSubtotal() : getTotal()
+
+        const totalMessage = `📋 *Mi pedido #${order.orderNumber}:*\n\n${productsSummary}\n\n💰 Total productos: ${formatPrice(finalTotal)}${hasDeliveryRange ? `\n🚚 Envío: Entre ${formatPrice(storeInfo.minDeliveryFee)} y ${formatPrice(storeInfo.maxDeliveryFee)} (se pagará al repartidor)` : ''}\n\n¡Hola! Soy ${formData.customerName}. ¿Podrían confirmar disponibilidad y forma de pago?`
+
+        await fetch(`/api/orders/${order.id}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: totalMessage,
+            senderType: 'CUSTOMER',
+            senderName: formData.customerName,
+          }),
+        })
+
+        setActiveOrder({
+          id: order.id,
+          orderNumber: order.orderNumber,
+          status: 'PENDING',
+          storeName: storeName || 'Tienda',
+          total: order.total,
+          createdAt: order.createdAt,
+        })
+
+        clearCart()
+        router.push(`/pedido/${order.id}/chat`)
+        return
+      } catch (error) {
+        lastError = error as Error
+        if (attempt < maxRetries) continue
       }
-
-      const order = await response.json()
-
-      // Crear resumen de productos para el mensaje
-      const productsSummary = items
-        .map((item) => `• ${item.quantity}x ${item.product.name} - ${formatPrice(item.product.price * item.quantity)}`)
-        .join('\n')
-      
-      // Si hay rango de envío configurado, solo mostrar subtotal; si no, mostrar total con envío
-      const hasDeliveryRange = storeInfo && 
-        storeInfo.minDeliveryFee !== undefined && 
-        storeInfo.maxDeliveryFee !== undefined && 
-        storeInfo.maxDeliveryFee >= storeInfo.minDeliveryFee
-      
-      const finalTotal = hasDeliveryRange ? getSubtotal() : getTotal()
-      
-      const totalMessage = `📋 *Mi pedido #${order.orderNumber}:*\n\n${productsSummary}\n\n💰 Total productos: ${formatPrice(finalTotal)}${hasDeliveryRange ? `\n🚚 Envío: Entre ${formatPrice(storeInfo.minDeliveryFee)} y ${formatPrice(storeInfo.maxDeliveryFee)} (se pagará al repartidor)` : ''}\n\n¡Hola! Soy ${formData.customerName}. ¿Podrían confirmar disponibilidad y forma de pago?`
-
-      // Enviar mensaje inicial con detalle del pedido al chat
-      await fetch(`/api/orders/${order.id}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: totalMessage,
-          senderType: 'CUSTOMER',
-          senderName: formData.customerName,
-        }),
-      })
-      
-      // Guardar como pedido activo
-      setActiveOrder({
-        id: order.id,
-        orderNumber: order.orderNumber,
-        status: 'PENDING',
-        storeName: storeName || 'Tienda',
-        total: order.total,
-        createdAt: order.createdAt,
-      })
-      
-      // Limpiar carrito
-      clearCart()
-      
-      // Redirigir al chat del pedido
-      router.push(`/pedido/${order.id}/chat`)
-    } catch (error) {
-      console.error('Error submitting order:', error)
-      alert('Hubo un error al procesar tu pedido. Por favor intenta de nuevo.')
-    } finally {
-      setLoading(false)
     }
+
+    console.error('Error submitting order after retries:', lastError)
+    setSubmitError(lastError?.message || 'Hubo un error al procesar tu pedido. Por favor intenta de nuevo.')
+    setLoading(false)
   }
 
   if (!mounted) {
@@ -207,65 +237,67 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50 py-8">
-      <div className="max-w-5xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50 py-4 md:py-8">
+      <div className="max-w-5xl mx-auto px-3 md:px-4">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-block mb-4">
-            <div className="bg-white rounded-2xl shadow-lg p-4 inline-block">
-              <span className="text-5xl">🛒</span>
+        <div className="text-center mb-4 md:mb-8">
+          <div className="inline-block mb-2">
+            <div className="bg-white rounded-xl shadow-md p-2 md:p-4 inline-block">
+              <span className="text-3xl md:text-5xl">🛒</span>
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent">
+          <h1 className="text-xl md:text-4xl font-extrabold text-gray-900 mb-1 bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent">
             Finalizar pedido
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-sm md:text-lg text-gray-600">
             Pedido de <span className="font-bold text-green-600">{storeName}</span>
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+        <div className="grid md:grid-cols-2 gap-4 md:gap-8">
           {/* Cart Items */}
-          <Card className="border-2 border-green-100 shadow-xl">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-orange-50 border-b-2 border-green-100">
-            <h2 className="font-bold text-xl text-gray-900 flex items-center gap-2">
+          <Card className="border-2 border-green-100 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-orange-50 border-b-2 border-green-100 py-2 md:py-4">
+            <h2 className="font-bold text-sm md:text-xl text-gray-900 flex items-center gap-2">
               🛒 Tu pedido
             </h2>
           </CardHeader>
-          <CardContent className="space-y-4 p-6">
+          <CardContent className="space-y-3 p-3 md:p-6">
             {items.map((item) => (
-              <div key={item.productId} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                <div className="flex-1">
-                  <p className="font-bold text-gray-900">{item.product.name}</p>
-                  <p className="text-sm text-gray-600 mt-1">
+              <div key={item.productId} className="flex items-center gap-2 md:gap-4 p-2 md:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm text-gray-900 truncate">{item.product.name}</p>
+                  <p className="text-xs text-gray-600">
                     {formatPrice(item.product.price)} c/u
                   </p>
                 </div>
-                <div className="flex items-center gap-2 bg-white rounded-full p-1 border-2 border-gray-200">
+                <div className="flex items-center gap-1 bg-white rounded-full p-0.5 border border-gray-200">
                   <button
                     type="button"
                     onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                    className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center font-bold text-gray-700 transition-colors"
+                    aria-label={`Reducir cantidad de ${item.product.name}`}
+                    className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center font-bold text-xs text-gray-700"
                   >
                     −
                   </button>
-                  <span className="w-10 text-center font-bold text-gray-900">{item.quantity}</span>
+                  <span className="w-7 text-center font-bold text-sm text-gray-900">{item.quantity}</span>
                   <button
                     type="button"
                     onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                    className="w-8 h-8 rounded-full bg-green-100 hover:bg-green-200 flex items-center justify-center font-bold text-green-700 transition-colors"
+                    aria-label={`Aumentar cantidad de ${item.product.name}`}
+                    className="w-7 h-7 rounded-full bg-green-100 hover:bg-green-200 flex items-center justify-center font-bold text-xs text-green-700"
                   >
                     +
                   </button>
                 </div>
-                <div className="text-right min-w-[100px]">
-                  <p className="font-bold text-lg text-gray-900">
+                <div className="text-right min-w-[70px] md:min-w-[100px]">
+                  <p className="font-bold text-sm text-gray-900">
                     {formatPrice(item.product.price * item.quantity)}
                   </p>
                   <button
                     type="button"
                     onClick={() => removeItem(item.productId)}
-                    className="text-xs text-red-600 hover:text-red-700 font-medium hover:underline mt-1"
+                    className="text-[10px] text-red-600 hover:text-red-700 font-medium hover:underline"
                   >
                     Eliminar
                   </button>
@@ -273,26 +305,23 @@ export default function CheckoutPage() {
               </div>
             ))}
 
-            <div className="border-t-2 border-gray-200 pt-4 space-y-3 mt-6">
+            <div className="border-t-2 border-gray-200 pt-3 space-y-2 mt-4 text-sm">
               <div className="flex justify-between text-gray-700">
                 <span className="font-medium">Subtotal</span>
                 <span className="font-semibold">{formatPrice(getSubtotal())}</span>
               </div>
               {storeInfo && storeInfo.minDeliveryFee !== undefined && storeInfo.maxDeliveryFee !== undefined && storeInfo.maxDeliveryFee >= storeInfo.minDeliveryFee ? (
-                <div className="flex justify-between items-center text-gray-700 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                <div className="flex justify-between items-center text-gray-700 bg-yellow-50 p-2 rounded-lg border border-yellow-200">
                   <div>
-                    <span className="font-medium block">🚚 Envío aproximado</span>
-                    <span className="text-xs text-gray-600 mt-1 block">
-                      Según la distancia de tu casa al lugar del pedido
+                    <span className="font-medium text-xs block">🚚 Envío aprox.</span>
+                    <span className="text-[10px] text-gray-600 block">
+                      Según distancia
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="font-semibold text-yellow-700">
+                    <span className="font-semibold text-yellow-700 text-xs">
                       {formatPrice(storeInfo.minDeliveryFee)} - {formatPrice(storeInfo.maxDeliveryFee)}
                     </span>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Prepara efectivo o transferencia
-                    </p>
                   </div>
                 </div>
               ) : (
@@ -301,13 +330,13 @@ export default function CheckoutPage() {
                   <span className="font-semibold">{formatPrice(deliveryFee || 0)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-2xl font-extrabold pt-3 border-t-2 border-green-200 bg-gradient-to-r from-green-50 to-orange-50 -mx-6 px-6 py-3 rounded-lg">
-                <span className="text-gray-900">Total productos</span>
+              <div className="flex justify-between text-base md:text-2xl font-extrabold pt-2 border-t-2 border-green-200 bg-gradient-to-r from-green-50 to-orange-50 -mx-3 md:-mx-6 px-3 md:px-6 py-2 md:py-3 rounded-lg">
+                <span className="text-gray-900">Total</span>
                 <span className="text-green-600">{formatPrice(getSubtotal())}</span>
               </div>
               {storeInfo && storeInfo.minDeliveryFee !== undefined && storeInfo.maxDeliveryFee !== undefined && storeInfo.maxDeliveryFee >= storeInfo.minDeliveryFee && (
-                <div className="text-xs text-yellow-700 bg-yellow-50 p-2 rounded-lg -mx-6 px-6">
-                  ⚠️ El envío se pagará al repartidor al momento de la entrega
+                <div className="text-[10px] md:text-xs text-yellow-700 bg-yellow-50 p-2 rounded-lg -mx-3 md:-mx-6 px-3 md:px-6">
+                  ⚠️ El envío se paga al repartidor al entregar
                 </div>
               )}
             </div>
@@ -315,57 +344,92 @@ export default function CheckoutPage() {
           </Card>
 
           {/* Customer Form */}
-          <Card className="border-2 border-orange-100 shadow-xl">
-          <CardHeader className="bg-gradient-to-r from-orange-50 to-green-50 border-b-2 border-orange-100">
-            <h2 className="font-bold text-xl text-gray-900 flex items-center gap-2">
+          <Card className="border-2 border-orange-100 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-orange-50 to-green-50 border-b-2 border-orange-100 py-2 md:py-4">
+            <h2 className="font-bold text-sm md:text-xl text-gray-900 flex items-center gap-2">
               👤 Tus datos
             </h2>
           </CardHeader>
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <Input
-                label="Nombre completo"
-                id="customerName"
-                required
-                value={formData.customerName}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, customerName: e.target.value }))
-                }
-                placeholder="Tu nombre"
-              />
+          <CardContent className="p-3 md:p-6">
+            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-5">
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                  <span className="text-xl flex-shrink-0">⚠️</span>
+                  <div>
+                    <p className="text-sm font-medium text-red-800">{submitError}</p>
+                    <button
+                      type="button"
+                      onClick={() => setSubmitError(null)}
+                      className="text-xs text-red-600 underline mt-1"
+                    >
+                      Cerrar
+                    </button>
+                  </div>
+                </div>
+              )}
 
-              <Input
-                label="Teléfono"
-                id="customerPhone"
-                type="tel"
-                required
-                value={formData.customerPhone}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, customerPhone: e.target.value }))
-                }
-                placeholder="52 123 456 7890"
-              />
+              <div>
+                <Input
+                  label="Nombre completo"
+                  id="customerName"
+                  required
+                  value={formData.customerName}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, customerName: e.target.value }))
+                    if (formErrors.customerName) setFormErrors(prev => ({ ...prev, customerName: '' }))
+                  }}
+                  placeholder="Tu nombre"
+                />
+                {formErrors.customerName && (
+                  <p className="text-xs text-red-600 mt-1">{formErrors.customerName}</p>
+                )}
+              </div>
 
-              <LocationPicker
-                label="Dirección de entrega"
-                address={formData.customerAddress}
-                latitude={formData.customerLat}
-                longitude={formData.customerLng}
-                defaultLatitude={storeInfo?.zoneLatitude}
-                defaultLongitude={storeInfo?.zoneLongitude}
-                onAddressChange={(address) =>
-                  setFormData((prev) => ({ ...prev, customerAddress: address }))
-                }
-                onLocationChange={(lat, lng, address) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    customerLat: lat,
-                    customerLng: lng,
-                    customerAddress: address,
-                  }))
-                }
-                required
-              />
+              <div>
+                <Input
+                  label="Teléfono"
+                  id="customerPhone"
+                  type="tel"
+                  required
+                  value={formData.customerPhone}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, customerPhone: e.target.value }))
+                    if (formErrors.customerPhone) setFormErrors(prev => ({ ...prev, customerPhone: '' }))
+                  }}
+                  placeholder="52 123 456 7890"
+                />
+                {formErrors.customerPhone && (
+                  <p className="text-xs text-red-600 mt-1">{formErrors.customerPhone}</p>
+                )}
+              </div>
+
+              <div>
+                <LocationPicker
+                  label="Dirección de entrega"
+                  address={formData.customerAddress}
+                  latitude={formData.customerLat}
+                  longitude={formData.customerLng}
+                  defaultLatitude={storeInfo?.zoneLatitude}
+                  defaultLongitude={storeInfo?.zoneLongitude}
+                  onAddressChange={(address) => {
+                    setFormData((prev) => ({ ...prev, customerAddress: address }))
+                    if (formErrors.customerAddress) setFormErrors(prev => ({ ...prev, customerAddress: '' }))
+                  }}
+                  onLocationChange={(lat, lng, address) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      customerLat: lat,
+                      customerLng: lng,
+                      customerAddress: address,
+                    }))
+                    if (formErrors.customerAddress) setFormErrors(prev => ({ ...prev, customerAddress: '' }))
+                  }}
+                  required
+                />
+                {formErrors.customerAddress && (
+                  <p className="text-xs text-red-600 mt-1">{formErrors.customerAddress}</p>
+                )}
+              </div>
 
               <div>
                 <label
@@ -388,7 +452,7 @@ export default function CheckoutPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-green-600 to-orange-500 hover:from-green-700 hover:to-orange-600 text-white font-bold py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                className="w-full bg-gradient-to-r from-green-600 to-orange-500 hover:from-green-700 hover:to-orange-600 text-white font-bold py-3 text-sm md:text-lg rounded-xl shadow-lg"
                 size="lg"
                 loading={loading}
                 disabled={loading}
@@ -396,9 +460,8 @@ export default function CheckoutPage() {
                 💬 Realizar pedido
               </Button>
 
-              <p className="text-xs text-gray-500 text-center bg-gray-50 p-3 rounded-lg border border-gray-200">
-                Al hacer tu pedido, se abrirá un chat directo con la tienda para coordinar
-                el pago y la entrega de forma rápida y segura.
+              <p className="text-[10px] md:text-xs text-gray-500 text-center bg-gray-50 p-2 rounded-lg border border-gray-200">
+                Se abrirá un chat con la tienda para coordinar pago y entrega.
               </p>
             </form>
           </CardContent>

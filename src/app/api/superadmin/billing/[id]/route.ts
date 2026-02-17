@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { calculateAmountDue } from '@/lib/billing'
 
 // PATCH /api/superadmin/billing/[id] - Marcar ciclo como pagado
 export async function PATCH(
@@ -54,18 +55,6 @@ export async function PATCH(
           },
         },
       })
-
-      // Calcular monto
-      const calculateAmountDue = (orders: number): number => {
-        const cycleNumber = Math.floor(orders / 1000)
-        const ordersInCycle = orders % 1000
-        const cycleBase = cycleNumber * 10
-
-        if (ordersInCycle <= 30) return 10 + cycleBase
-        const rangesAfter30 = Math.ceil((ordersInCycle - 30) / 20)
-        const amount = 10 + rangesAfter30 * 10
-        return Math.min(amount, 100) + cycleBase
-      }
 
       const amountDue = calculateAmountDue(completedOrders)
 

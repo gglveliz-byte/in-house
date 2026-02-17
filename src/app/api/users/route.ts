@@ -17,33 +17,33 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = {}
     if (role) where.role = role
     
-    // Si es admin, solo ver usuarios que él creó o que pertenecen a su zona
+    // Si es admin, solo ver usuarios de su zona filtrados por rol si se pide
     if (session?.user?.role === 'ADMIN' && session.user.id) {
-      // Filtrar: usuarios creados por este admin O que pertenecen a su zona
-      where.OR = [
-        {
-          // Usuarios creados por este admin (vendedores y repartidores)
-          createdByAdminId: session.user.id
-        },
-        {
-          // Vendedores con tiendas en la zona del admin
+      const orConditions = []
+
+      if (!role || role === 'VENDOR') {
+        orConditions.push({
           role: 'VENDOR',
-          stores: {
-            some: {
-              zoneId: session.user.zoneId
-            }
-          }
-        },
-        {
-          // Repartidores asignados a la zona del admin
-          role: 'DRIVER',
-          zoneId: session.user.zoneId
-        }
-      ]
-      // No filtrar por role si ya estamos filtrando con OR
-      if (where.role) {
-        delete where.role
+          OR: [
+            { createdByAdminId: session.user.id },
+            { stores: { some: { zoneId: session.user.zoneId } } },
+          ],
+        })
       }
+      if (!role || role === 'DRIVER') {
+        orConditions.push({
+          role: 'DRIVER',
+          OR: [
+            { createdByAdminId: session.user.id },
+            { zoneId: session.user.zoneId },
+          ],
+        })
+      }
+
+      if (orConditions.length > 0) {
+        where.OR = orConditions
+      }
+      delete where.role
     }
 
     const users = await prisma.user.findMany({

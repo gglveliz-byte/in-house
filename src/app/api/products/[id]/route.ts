@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // PATCH /api/products/[id] - Actualizar producto
@@ -9,13 +11,12 @@ export async function PATCH(
   try {
     const { id } = await params
     const body = await request.json()
-
-    // Obtener sesión para validar autorización
-    const { getServerSession } = await import('next-auth')
-    const { authOptions } = await import('@/lib/auth')
     const session = await getServerSession(authOptions)
 
-    // Obtener el producto para verificar autorización
+    if (!session) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
     const existingProduct = await prisma.product.findUnique({
       where: { id },
       include: { store: { select: { ownerId: true, zoneId: true } } },
@@ -25,23 +26,36 @@ export async function PATCH(
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    // Si es vendedor, solo puede editar productos de sus tiendas
-    if (session?.user?.role === 'VENDOR' && session.user.id) {
+    if (session.user.role === 'VENDOR' && session.user.id) {
       if (existingProduct.store.ownerId !== session.user.id) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
       }
     }
 
-    // Si es admin, solo puede editar productos de tiendas en su zona
-    if (session?.user?.role === 'ADMIN' && session.user.zoneId) {
+    if (session.user.role === 'ADMIN' && session.user.zoneId) {
       if (existingProduct.store.zoneId !== session.user.zoneId) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
       }
     }
 
+    // Whitelist de campos permitidos
+    const allowedFields = ['name', 'description', 'price', 'image', 'isAvailable', 'categoryId']
+    const updateData: Record<string, unknown> = {}
+    for (const field of allowedFields) {
+      if (field in body) {
+        updateData[field] = body[field]
+      }
+    }
+
+    if (updateData.price !== undefined) {
+      if (typeof updateData.price !== 'number' || updateData.price < 0) {
+        return NextResponse.json({ error: 'Precio inválido' }, { status: 400 })
+      }
+    }
+
     const product = await prisma.product.update({
       where: { id },
-      data: body,
+      data: updateData,
     })
 
     return NextResponse.json(product)
@@ -58,13 +72,12 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-
-    // Obtener sesión para validar autorización
-    const { getServerSession } = await import('next-auth')
-    const { authOptions } = await import('@/lib/auth')
     const session = await getServerSession(authOptions)
 
-    // Obtener el producto para verificar autorización
+    if (!session) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
     const existingProduct = await prisma.product.findUnique({
       where: { id },
       include: { store: { select: { ownerId: true, zoneId: true } } },
@@ -74,23 +87,19 @@ export async function DELETE(
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    // Si es vendedor, solo puede eliminar productos de sus tiendas
-    if (session?.user?.role === 'VENDOR' && session.user.id) {
+    if (session.user.role === 'VENDOR' && session.user.id) {
       if (existingProduct.store.ownerId !== session.user.id) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
       }
     }
 
-    // Si es admin, solo puede eliminar productos de tiendas en su zona
-    if (session?.user?.role === 'ADMIN' && session.user.zoneId) {
+    if (session.user.role === 'ADMIN' && session.user.zoneId) {
       if (existingProduct.store.zoneId !== session.user.zoneId) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
       }
     }
 
-    await prisma.product.delete({
-      where: { id },
-    })
+    await prisma.product.delete({ where: { id } })
 
     return NextResponse.json({ success: true })
   } catch (error) {

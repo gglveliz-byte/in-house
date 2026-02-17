@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { pusherServer, CHANNELS, EVENTS } from '@/lib/pusher'
 
@@ -12,7 +14,19 @@ export async function PATCH(
     const body = await request.json()
     const { actualDeliveryFee, deliveryPaymentStatus, deliveryPaymentProof } = body
 
-    // Validar que el valor esté dentro del rango
+    // Validar estados permitidos
+    const validStatuses = ['PENDING', 'PAID_CASH', 'PAID_TRANSFER']
+    if (deliveryPaymentStatus && !validStatuses.includes(deliveryPaymentStatus)) {
+      return NextResponse.json({ error: 'Estado de pago de delivery inválido' }, { status: 400 })
+    }
+
+    // Validar que el valor del delivery fee sea un número positivo
+    if (actualDeliveryFee !== null && actualDeliveryFee !== undefined) {
+      if (typeof actualDeliveryFee !== 'number' || actualDeliveryFee < 0) {
+        return NextResponse.json({ error: 'Valor de envío inválido' }, { status: 400 })
+      }
+    }
+
     const order = await prisma.order.findUnique({
       where: { id },
       include: { store: true },
@@ -24,9 +38,8 @@ export async function PATCH(
 
     // Validar rango de envío
     if (actualDeliveryFee !== null && actualDeliveryFee !== undefined) {
-      if (order.store.minDeliveryFee !== undefined && 
-          order.store.maxDeliveryFee !== undefined &&
-          order.store.maxDeliveryFee >= order.store.minDeliveryFee) {
+      const hasRange = order.store.minDeliveryFee > 0 || order.store.maxDeliveryFee > 0
+      if (hasRange) {
         if (actualDeliveryFee < order.store.minDeliveryFee || actualDeliveryFee > order.store.maxDeliveryFee) {
           return NextResponse.json(
             { error: `El valor del envío debe estar entre ${order.store.minDeliveryFee} y ${order.store.maxDeliveryFee}` },
@@ -36,42 +49,33 @@ export async function PATCH(
       }
     }
 
-    // Actualizar el pedido
     const updateData: Record<string, unknown> = {}
-    
+
     if (actualDeliveryFee !== null && actualDeliveryFee !== undefined) {
       updateData.actualDeliveryFee = actualDeliveryFee
     }
-    
+
     if (deliveryPaymentStatus) {
       updateData.deliveryPaymentStatus = deliveryPaymentStatus
     }
-    
+
     if (deliveryPaymentProof !== undefined) {
       updateData.deliveryPaymentProof = deliveryPaymentProof
     }
 
-    // Si el cliente confirmó el pago, actualizar el total (pero NO marcar como entregado todavía)
-    // El repartidor debe validar y marcar como entregado manualmente
     if (deliveryPaymentStatus === 'PAID_CASH' || deliveryPaymentStatus === 'PAID_TRANSFER') {
-      // Usar el actualDeliveryFee que ya está guardado o el que viene en el request
-      const feeToUse = actualDeliveryFee !== null && actualDeliveryFee !== undefined 
-        ? actualDeliveryFee 
+      const feeToUse = actualDeliveryFee !== null && actualDeliveryFee !== undefined
+        ? actualDeliveryFee
         : order.actualDeliveryFee || 0
-      const finalTotal = order.subtotal + feeToUse
-      updateData.total = finalTotal
-      // NO marcar como entregado automáticamente - el repartidor lo hará después de validar
+      updateData.total = order.subtotal + feeToUse
     }
 
     const updatedOrder = await prisma.order.update({
       where: { id },
       data: updateData,
-      include: {
-        store: true,
-      },
+      include: { store: true },
     })
 
-    // Emitir eventos por Pusher a todos los interesados
     try {
       const eventData = {
         orderId: id,
@@ -81,16 +85,10 @@ export async function PATCH(
         deliveryPaymentProof: updatedOrder.deliveryPaymentProof,
         actualDeliveryFee: updatedOrder.actualDeliveryFee,
       }
-      
-      // 1. Notificar al cliente (canal del pedido)
+
       await pusherServer.trigger(CHANNELS.ORDER(id), EVENTS.ORDER_UPDATED, eventData)
-      
-      // 2. Notificar a los repartidores (para actualizar la vista activa)
       await pusherServer.trigger(CHANNELS.DRIVER, EVENTS.ORDER_UPDATED, eventData)
-      
-      // 3. Notificar a la tienda
       await pusherServer.trigger(CHANNELS.STORE(order.storeId), EVENTS.ORDER_UPDATED, eventData)
-      
     } catch (pusherError) {
       console.warn('Pusher event error:', pusherError)
     }

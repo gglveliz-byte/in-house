@@ -27,9 +27,9 @@ export default function AdminOrdersPage() {
 
   const fetchOrders = useCallback(async () => {
     try {
-      const response = await fetch('/api/orders')
-      const data = await response.json()
-      setOrders(data)
+      const response = await fetch('/api/orders?limit=100')
+      const json = await response.json()
+      setOrders(json.data || json)
     } catch (error) {
       console.error('Error fetching orders:', error)
     } finally {
