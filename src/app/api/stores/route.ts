@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const onlyOpen = searchParams.get('onlyOpen') === 'true'
     const zoneId = searchParams.get('zoneId')
+    const query = searchParams.get('query')?.trim()
 
     // Obtener sesión para filtrar por zona si es admin
     const session = await getServerSession(authOptions)
@@ -16,13 +17,20 @@ export async function GET(request: NextRequest) {
     // Construir filtro dinámico
     const where: Record<string, unknown> = {}
     if (onlyOpen) where.isOpen = true
-    
+
     // Si es un admin, solo ver tiendas de su zona
     if (session?.user?.role === 'ADMIN' && session.user.zoneId) {
       where.zoneId = session.user.zoneId
     } else if (zoneId) {
       // Si se especifica zoneId en query (para clientes)
       where.zoneId = zoneId
+    }
+
+    if (query) {
+      where.OR = [
+        { name: { contains: query, mode: 'insensitive' } },
+        { description: { contains: query, mode: 'insensitive' } },
+      ]
     }
 
     const stores = await prisma.store.findMany({

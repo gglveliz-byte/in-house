@@ -8,16 +8,17 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const storeId = searchParams.get('storeId')
+    const query = searchParams.get('query')?.trim()
 
-    if (!storeId) {
-      return NextResponse.json({ error: 'storeId es requerido' }, { status: 400 })
+    if (!storeId && !query) {
+      return NextResponse.json({ error: 'storeId o query es requerido' }, { status: 400 })
     }
 
     // Obtener sesión para validar autorización si es admin
     const session = await getServerSession(authOptions)
 
     // Si es admin, verificar que la tienda pertenece a su zona
-    if (session?.user?.role === 'ADMIN' && session.user.zoneId) {
+    if (session?.user?.role === 'ADMIN' && session.user.zoneId && storeId) {
       const store = await prisma.store.findUnique({
         where: { id: storeId },
         select: { zoneId: true },
@@ -28,13 +29,32 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const where: Record<string, unknown> = {
+      isAvailable: true,
+    }
+
+    if (storeId) {
+      where.storeId = storeId
+    }
+
+    if (query) {
+      where.OR = [
+        { name: { contains: query, mode: 'insensitive' } },
+        { description: { contains: query, mode: 'insensitive' } },
+      ]
+    }
+
     const products = await prisma.product.findMany({
-      where: {
-        storeId,
-        isAvailable: true,
-      },
+      where,
       include: {
         category: true,
+        store: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
       },
       orderBy: { name: 'asc' },
     })

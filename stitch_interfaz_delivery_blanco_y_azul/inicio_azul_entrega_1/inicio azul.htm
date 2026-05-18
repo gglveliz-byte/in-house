@@ -1,0 +1,72 @@
+/* 
+   Azul Entrega - Sistema de Diseño (Design Tokens)
+   Base: Tailwind CSS compatible
+*/
+
+@layer base {
+  :root {
+    /* Colores Principales */
+    --color-primary: #0056b3;
+    --color-on-primary: #ffffff;
+    
+    /* Superficies y Fondos */
+    --color-surface: #f8f9fa;
+    --color-surface-dim: #d9dadb;
+    --color-surface-bright: #f8f9fa;
+    --color-surface-container-lowest: #ffffff;
+    --color-surface-container-low: #f3f4f5;
+    --color-surface-container: #eeeeef;
+    --color-surface-container-high: #e8e9ea;
+    --color-surface-container-highest: #e2e3e4;
+    
+    /* Texto */
+    --color-on-surface: #1a1c1e;
+    --color-on-surface-variant: #44474e;
+    
+    /* Bordes y Formas */
+    --radius-eight: 8px;
+    --radius-full: 9999px;
+
+    /* Tipografía */
+    --font-family-main: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Utilidades de Clase para Integración Rápida */
+
+.bg-azul-primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.text-azul-primary {
+  color: var(--color-primary);
+}
+
+.bg-azul-surface {
+  background-color: var(--color-surface);
+}
+
+.card-azul {
+  background-color: var(--color-surface-container-lowest);
+  border-radius: var(--radius-eight);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn-azul-primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: var(--radius-full);
+  padding: 12px 24px;
+  font-weight: 600;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+
+.btn-azul-primary:active {
+  opacity: 0.8;
+}
+
+.font-inter {
+  font-family: var(--font-family-main);
+}

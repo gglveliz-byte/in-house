@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Centro de Ayuda</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-primary-container": "#bbd0ff",
+                        "surface-container": "#edeeef",
+                        "on-background": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-primary": "#ffffff",
+                        "secondary": "#526069",
+                        "outline-variant": "#c2c6d4",
+                        "primary-container": "#0056b3",
+                        "primary": "#003f87",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#cfd0d0",
+                        "inverse-surface": "#2e3132",
+                        "inverse-primary": "#acc7ff",
+                        "primary-fixed-dim": "#acc7ff",
+                        "on-secondary-fixed": "#0f1d25",
+                        "surface-dim": "#d9dadb",
+                        "outline": "#727784",
+                        "on-secondary-container": "#56656e",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "on-primary-fixed": "#001a40",
+                        "on-surface-variant": "#424752",
+                        "on-primary-fixed-variant": "#004491",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "tertiary-container": "#575959",
+                        "error-container": "#ffdad6",
+                        "background": "#f8f9fa",
+                        "surface-tint": "#115cb9",
+                        "primary-fixed": "#d7e2ff",
+                        "surface-variant": "#e1e3e4",
+                        "secondary-container": "#d3e2ed",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d6e5ef",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "surface-container-high": "#e7e8e9",
+                        "tertiary": "#404242",
+                        "surface-bright": "#f8f9fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "12px",
+                        "stack-lg": "24px",
+                        "base": "8px",
+                        "gutter-mobile": "16px",
+                        "stack-sm": "4px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col font-body-md">
+<!-- Sub-page Header (Navigation shell suppressed per guidelines) -->
+<header class="sticky top-0 z-50 bg-surface/90 backdrop-blur-md px-margin-mobile h-16 flex items-center shadow-sm">
+<button aria-label="Volver" class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-95">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="ml-4 font-headline-md text-headline-md text-on-surface">Centro de Ayuda</h1>
+</header>
+<main class="flex-1 px-margin-mobile py-stack-lg flex flex-col gap-stack-lg max-w-md mx-auto w-full">
+<!-- Search -->
+<section>
+<div class="bg-surface-container-lowest shadow-[0px_4px_12px_rgba(0,0,0,0.06)] rounded-full px-4 py-3 flex items-center gap-3 border border-transparent focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary">search</span>
+<input class="bg-transparent border-none outline-none w-full font-body-md text-body-md text-on-surface placeholder:text-outline p-0 focus:ring-0" placeholder="¿En qué podemos ayudarte?" type="text"/>
+</div>
+</section>
+<!-- Categories Bento Grid -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Categorías de ayuda</h2>
+<div class="grid grid-cols-2 gap-gutter-mobile">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] p-stack-md flex flex-col items-start gap-stack-sm active:scale-95 transition-transform cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-primary flex items-center justify-center mb-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Problemas con mi pedido</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] p-stack-md flex flex-col items-start gap-stack-sm active:scale-95 transition-transform cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-primary flex items-center justify-center mb-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Pagos y reembolsos</span>
+</div>
+<div class="col-span-2 bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] p-stack-md flex flex-row items-center gap-4 active:scale-95 transition-transform cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Mi cuenta y configuración</span>
+<span class="material-symbols-outlined text-outline ml-auto">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- FAQ Accordions -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Preguntas frecuentes</h2>
+<div class="flex flex-col gap-stack-sm">
+<!-- Accordion Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-4 text-left active:bg-surface-container-low transition-colors">
+<span class="font-body-md text-body-md font-semibold text-on-surface">¿Cómo rastreo mi pedido?</span>
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</button>
+</div>
+<!-- Accordion Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-4 text-left active:bg-surface-container-low transition-colors">
+<span class="font-body-md text-body-md font-semibold text-on-surface">¿Puedo cancelar un pedido?</span>
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</button>
+</div>
+<!-- Accordion Item 3 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-4 text-left active:bg-surface-container-low transition-colors">
+<span class="font-body-md text-body-md font-semibold text-on-surface">Mi pedido llegó incompleto</span>
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Contact Support -->
+<section class="mt-auto pt-stack-lg pb-safe">
+<div class="bg-secondary-container rounded-xl p-4 flex flex-col items-center text-center gap-stack-md">
+<span class="font-body-md text-body-md text-on-secondary-container">¿No encontraste lo que buscabas?</span>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md rounded-xl py-3 flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-[0px_4px_12px_rgba(0,0,0,0.06)]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">support_agent</span>
+                    Contactar soporte
+                </button>
+</div>
+</section>
+</main>
+</body></html>

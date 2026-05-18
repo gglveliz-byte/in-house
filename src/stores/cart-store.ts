@@ -10,7 +10,16 @@ interface CartStore {
   deliveryFee: number
 
   // Actions
-  addItem: (product: Product, quantity?: number) => void
+  addItem: (
+    product: Product,
+    quantity?: number,
+    storeMeta?: {
+      storeId: string
+      storeName: string
+      whatsapp: string
+      deliveryFee: number
+    }
+  ) => boolean
   removeItem: (productId: string) => void
   updateQuantity: (productId: string, quantity: number) => void
   clearCart: () => void
@@ -31,7 +40,7 @@ export const useCartStore = create<CartStore>()(
       storeWhatsapp: null,
       deliveryFee: 0,
 
-      addItem: (product, quantity = 1) => {
+      addItem: (product, quantity = 1, storeMeta) => {
         const { items, storeId } = get()
 
         // Si el carrito tiene productos de otra tienda, preguntar
@@ -39,15 +48,25 @@ export const useCartStore = create<CartStore>()(
           const confirm = window.confirm(
             'Tienes productos de otra tienda en el carrito. ¿Deseas vaciar el carrito y agregar este producto?'
           )
-          if (!confirm) return
-          set({ items: [], storeId: null, storeName: null, storeWhatsapp: null })
+          if (!confirm) return false
+          set({ items: [], storeId: null, storeName: null, storeWhatsapp: null, deliveryFee: 0 })
         }
 
-        const existingItem = items.find((item) => item.productId === product.id)
+        // Si el carrito está vacío y recibimos meta de tienda, configúralo
+        if (!get().storeId && storeMeta) {
+          set({
+            storeId: storeMeta.storeId,
+            storeName: storeMeta.storeName,
+            storeWhatsapp: storeMeta.whatsapp,
+            deliveryFee: storeMeta.deliveryFee,
+          })
+        }
+
+        const existingItem = get().items.find((item) => item.productId === product.id)
 
         if (existingItem) {
           set({
-            items: items.map((item) =>
+            items: get().items.map((item) =>
               item.productId === product.id
                 ? { ...item, quantity: item.quantity + quantity }
                 : item
@@ -55,9 +74,11 @@ export const useCartStore = create<CartStore>()(
           })
         } else {
           set({
-            items: [...items, { productId: product.id, product, quantity }],
+            items: [...get().items, { productId: product.id, product, quantity }],
           })
         }
+
+        return true
       },
 
       removeItem: (productId) => {

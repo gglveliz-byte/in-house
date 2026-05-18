@@ -20,11 +20,12 @@ export function ProductCard({ product, store }: ProductCardProps) {
   const { addItem, setStore, storeId } = useCartStore()
 
   const handleAddToCart = () => {
-    // Si es el primer producto o de la misma tienda
-    if (!storeId || storeId === store.id) {
-      setStore(store.id, store.name, store.whatsapp, store.deliveryFee)
-    }
-    addItem(product)
+    addItem(product, 1, {
+      storeId: store.id,
+      storeName: store.name,
+      whatsapp: store.whatsapp,
+      deliveryFee: store.deliveryFee,
+    })
   }
 
   return (

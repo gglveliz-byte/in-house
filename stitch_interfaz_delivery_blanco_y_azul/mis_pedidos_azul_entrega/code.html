@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mis Pedidos - Azul Entrega</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-primary-container": "#bbd0ff",
+                    "surface-container": "#edeeef",
+                    "on-background": "#191c1d",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-surface": "#191c1d",
+                    "on-primary": "#ffffff",
+                    "secondary": "#526069",
+                    "outline-variant": "#c2c6d4",
+                    "primary-container": "#0056b3",
+                    "primary": "#003f87",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#cfd0d0",
+                    "inverse-surface": "#2e3132",
+                    "inverse-primary": "#acc7ff",
+                    "primary-fixed-dim": "#acc7ff",
+                    "on-secondary-fixed": "#0f1d25",
+                    "surface-dim": "#d9dadb",
+                    "outline": "#727784",
+                    "on-secondary-container": "#56656e",
+                    "error": "#ba1a1a",
+                    "surface": "#f8f9fa",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed-variant": "#3b4951",
+                    "inverse-on-surface": "#f0f1f2",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-primary-fixed": "#001a40",
+                    "on-surface-variant": "#424752",
+                    "on-primary-fixed-variant": "#004491",
+                    "surface-container-low": "#f3f4f5",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed-dim": "#bac9d3",
+                    "tertiary-container": "#575959",
+                    "error-container": "#ffdad6",
+                    "background": "#f8f9fa",
+                    "surface-tint": "#115cb9",
+                    "primary-fixed": "#d7e2ff",
+                    "surface-variant": "#e1e3e4",
+                    "secondary-container": "#d3e2ed",
+                    "tertiary-fixed": "#e2e2e2",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "secondary-fixed": "#d6e5ef",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "surface-container-high": "#e7e8e9",
+                    "tertiary": "#404242",
+                    "surface-bright": "#f8f9fa"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "12px",
+                    "stack-lg": "24px",
+                    "base": "8px",
+                    "gutter-mobile": "16px",
+                    "stack-sm": "4px",
+                    "margin-mobile": "20px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                    "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                    "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                    "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                    "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                    "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                    "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .soft-shadow { box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-[100px] md:pb-8 pt-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface-dim flat no shadows flex items-center justify-between px-margin-mobile h-16 max-w-md mx-auto md:max-w-full md:px-8 left-0 right-0">
+<div class="flex items-center gap-3">
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 transition-transform md:hidden">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">Mis Pedidos</span>
+</div>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-3 py-2 rounded-md font-body-md text-body-md flex items-center gap-2" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span> Inicio
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-3 py-2 rounded-md font-body-md text-body-md flex items-center gap-2" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span> Búsqueda
+            </a>
+<a class="text-primary font-bold hover:bg-surface-container-high transition-colors px-3 py-2 rounded-md font-body-md text-body-md flex items-center gap-2" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long" data-weight="fill" style="font-variation-settings: 'FILL' 1;">receipt_long</span> Mis Pedidos
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-3 py-2 rounded-md font-body-md text-body-md flex items-center gap-2" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span> Perfil
+            </a>
+</div>
+<div class="flex items-center">
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-3xl mx-auto px-margin-mobile md:px-0">
+<!-- Tabbed Navigation (Active / Past) -->
+<div class="flex border-b border-outline-variant mb-stack-lg mt-4">
+<button class="flex-1 pb-3 text-center border-b-2 border-primary font-label-md text-label-md text-primary">Activos</button>
+<button class="flex-1 pb-3 text-center border-b-2 border-transparent font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Historial</button>
+</div>
+<!-- Section: Active Orders -->
+<section class="mb-stack-lg flex flex-col gap-stack-md">
+<!-- Active Order Card -->
+<div class="bg-surface-container-lowest rounded-lg soft-shadow p-stack-md flex flex-col md:flex-row gap-gutter-mobile border border-surface-container-highest">
+<div class="w-full md:w-24 h-24 rounded-md overflow-hidden bg-surface-container shrink-0">
+<img alt="Burger" class="w-full h-full object-cover" data-alt="A close up, mouth-watering shot of a classic double cheeseburger from a fast casual restaurant. The burger is stacked high with two juicy beef patties, melted bright orange cheddar cheese, crisp green lettuce, and fresh red tomato slices, all housed in a perfectly toasted sesame seed bun. The lighting is bright and appetizing, highlighting the textures of the ingredients against a clean, modern white background. The overall aesthetic is professional food photography meant to entice a hungry customer in a high-end delivery app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3A3q0Cu83eiTaklurlICXntz0ws4jxC2T3amQE5Ee5E8EBsnFnfkqXJgxjNM7d-RKNQQ2wZINpf_wKkxX7qA16ln3IXKJ9ABFi7y4O1kB3RG8UYWdDu8y90jZlaWnhOphoQMufyO66cFGgvNNPpd9awf805XHhPfYjZirfP45UStC_DgaWmgvwp0gco2MAaXgyFCCRG7rjH0NKpy_xTFdWXtvrlTkJqMO5oQgQcVq0lLd6pg169B2DEztlcTYTLbk9tVjtJ_eJdA"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Burger Joint Center</h3>
+<span class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-2 py-1 rounded-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="motorcycle">motorcycle</span> En curso
+                            </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">Hoy, 14:30 • 2 artículos</p>
+<p class="font-label-md text-label-md text-on-surface">Total: $24.50</p>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 bg-surface-container text-on-surface font-label-md text-label-md py-2 px-4 rounded-md hover:bg-surface-container-high transition-colors active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="map">map</span> Rastrear
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<h2 class="font-headline-md text-headline-md text-on-background mt-8 mb-stack-md">Historial de Pedidos</h2>
+<!-- Section: Past Orders -->
+<section class="flex flex-col gap-stack-md">
+<!-- Past Order Card 1 -->
+<div class="bg-surface-container-lowest rounded-lg soft-shadow p-stack-md flex flex-col md:flex-row gap-gutter-mobile">
+<div class="w-full md:w-20 h-20 rounded-md overflow-hidden bg-surface-container shrink-0">
+<img alt="Sushi" class="w-full h-full object-cover" data-alt="A top-down, beautifully styled photograph of an elegant sushi platter. The platter features an assortment of fresh nigiri and vibrant maki rolls, arranged neatly on a dark slate board. Small bowls of bright green wasabi, pink pickled ginger, and dark soy sauce accompany the sushi. The scene is lit with soft, diffused natural light that accentuates the glistening texture of the raw fish and the crispness of the nori. The aesthetic is clean, sophisticated, and appetizing, fitting for a premium restaurant listing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkzlHELAstUtoV_xHF71ETnFjJxdv6kLUSi8K5YfiSuLuXBgRRSGgLPrjlWBdX9Lo0uFkEbhC-iZcUc3zHIxv1X3Rj-C5Hz5bz-Hm1u-a6eVRnlByaDO321QW_eYvLNMVXu0_rRYbKcf5H81jvqOTBU-oI56lwPNcV6tSyBNWqalGUwxlf1c1AWfJvVHz8dsv5fgafrHTpw8OYpA5uVEqsJOXc1THix9fHi6V5bpE3mggM32SA-gbzdIDyHsVyTlQlckS9eaMV22A"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Sushi Zen</h3>
+<span class="text-outline font-label-sm text-label-sm px-2 py-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span> Entregado
+                            </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">12 Oct, 2023 • 4 artículos</p>
+<p class="font-label-md text-label-md text-on-surface">Total: $45.00</p>
+</div>
+<div class="mt-3 flex justify-end">
+<button class="bg-[#E3F2FD] text-primary font-label-md text-label-md py-2 px-4 rounded-md hover:bg-[#D0E8FC] transition-colors active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="replay">replay</span> Pedir de nuevo
+                        </button>
+</div>
+</div>
+</div>
+<!-- Past Order Card 2 -->
+<div class="bg-surface-container-lowest rounded-lg soft-shadow p-stack-md flex flex-col md:flex-row gap-gutter-mobile opacity-80">
+<div class="w-full md:w-20 h-20 rounded-md overflow-hidden bg-surface-container shrink-0">
+<img alt="Pizza" class="w-full h-full object-cover grayscale-[30%]" data-alt="A warm, inviting shot of a large, freshly baked pepperoni pizza straight out of the oven. The pizza is resting on a rustic wooden peel, with golden-brown, blistered crust edges and gooey, melted mozzarella cheese stretching slightly. Copious amounts of mildly charred, slightly curled pepperoni slices cover the surface. The lighting highlights the glistening oil on the pepperoni and the steamy freshness of the pie. The aesthetic is classic comfort food, designed to trigger immediate cravings in a modern delivery interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvJ8yb0olNO0hyd1B5YZBaQAdR5LnRFcpU_2uTsxrHKx9oq9YL7xBUPzhaEGVkIOK1YkBUrw2OGXSmUjK8yXzx2uNJHNYHwoWmH9q-ukesOG2hrDvA1PyQWjE5Pgsd6pDuv_4KlCqFAe_uATFw_G78-gz6oan-8r-SxPSKSY7Mlru5L6lnBqqPbBUqxyZQ4Dd_AhtkcccAmFZV8HKa5nOqTWBQV6Ktk_iE6gFTCoWnrpn5YDox1xGGfrcocUTdnbQbKXIokJmRnFo"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Pizzería Napoli</h3>
+<span class="text-error font-label-sm text-label-sm px-2 py-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="cancel">cancel</span> Cancelado
+                            </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">05 Oct, 2023 • 1 artículo</p>
+<p class="font-label-md text-label-md text-on-surface">Total: $18.90</p>
+</div>
+<div class="mt-3 flex justify-end">
+<button class="bg-[#E3F2FD] text-primary font-label-md text-label-md py-2 px-4 rounded-md hover:bg-[#D0E8FC] transition-colors active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="replay">replay</span> Pedir de nuevo
+                        </button>
+</div>
+</div>
+</div>
+<!-- Past Order Card 3 -->
+<div class="bg-surface-container-lowest rounded-lg soft-shadow p-stack-md flex flex-col md:flex-row gap-gutter-mobile">
+<div class="w-full md:w-20 h-20 rounded-md overflow-hidden bg-surface-container shrink-0">
+<img alt="BBQ" class="w-full h-full object-cover" data-alt="A close-up, highly detailed shot of a hearty serving of smoked BBQ pork ribs and brisket. The meat is glazed with a rich, dark, sticky barbecue sauce, resting on a bed of simple white butcher paper. Sides of creamy coleslaw and golden crinkle-cut fries are visible in the blurred background. The lighting is warm and directional, emphasizing the smoky bark on the brisket and the tender texture of the ribs. The overall aesthetic is rich, savory, and perfectly suited for a high-end casual dining listing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOj66k7jlqsZjl5tTETQxXKDtjiZtUPtxdUtOeK0-DBM9tG6MFcoayIEjCQuj3czW9rTvYYFB7WsxLFv_C1wYXsNRqA1sXTFh6rWK1sQd4cxUeviF0Xv_ZIAGHTFOyQI6fFFnPj9wSflRyDEtmDmfgDawsDjahGvzlCpxtW87nKsGgySnlGhd-RYhfnBbiY7sEBbZD1OqhkWWPkyxlkVhi45t4gWiXL4HSoGfja2FAJpF-pHvuWppu18C8HBE_JXIO8qNNzHzQXio"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Texas BBQ Smokehouse</h3>
+<span class="text-outline font-label-sm text-label-sm px-2 py-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span> Entregado
+                           </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">28 Sep, 2023 • 3 artículos</p>
+<p class="font-label-md text-label-md text-on-surface">Total: $52.00</p>
+</div>
+<div class="mt-3 flex justify-end">
+<button class="bg-[#E3F2FD] text-primary font-label-md text-label-md py-2 px-4 rounded-md hover:bg-[#D0E8FC] transition-colors active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="replay">replay</span> Pedir de nuevo
+                       </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full rounded-t-xl z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] flex justify-around items-center h-20 px-4 pb-safe">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Inicio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="search">search</span>
+<span class="font-label-sm text-label-sm">Búsqueda</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="receipt_long" data-weight="fill" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-label-sm text-label-sm">Mis Pedidos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Perfil</span>
+</a>
+</nav>
+</body></html>

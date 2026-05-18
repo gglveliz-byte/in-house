@@ -40,12 +40,16 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/logo.png" />
         <link rel="icon" href="/logo.png" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className={inter.className}>
+      <body className="bg-surface-container-low text-on-surface antialiased min-h-screen">
+        <div className="max-w-md mx-auto bg-background min-h-screen relative shadow-2xl overflow-x-hidden">
         <Providers>{children}</Providers>
         <CurrencyProvider />
         <ServiceWorkerRegister />
-        <InstallPrompt />
+          <InstallPrompt />
+        </div>
       </body>
     </html>
   )

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Categorías</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#e1e3e4",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-container": "#bbd0ff",
+                    "on-primary": "#ffffff",
+                    "surface-variant": "#e1e3e4",
+                    "background": "#f8f9fa",
+                    "tertiary-container": "#575959",
+                    "surface-bright": "#f8f9fa",
+                    "on-primary-fixed-variant": "#004491",
+                    "on-secondary-fixed": "#0f1d25",
+                    "secondary": "#526069",
+                    "on-tertiary-container": "#cfd0d0",
+                    "inverse-primary": "#acc7ff",
+                    "on-background": "#191c1d",
+                    "on-secondary-fixed-variant": "#3b4951",
+                    "surface-container-high": "#e7e8e9",
+                    "on-error": "#ffffff",
+                    "surface": "#f8f9fa",
+                    "outline-variant": "#c2c6d4",
+                    "on-primary-fixed": "#001a40",
+                    "primary-container": "#0056b3",
+                    "secondary-container": "#d3e2ed",
+                    "error-container": "#ffdad6",
+                    "tertiary": "#404242",
+                    "tertiary-fixed": "#e2e2e2",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#191c1d",
+                    "on-surface-variant": "#424752",
+                    "surface-tint": "#115cb9",
+                    "inverse-surface": "#2e3132",
+                    "inverse-on-surface": "#f0f1f2",
+                    "primary-fixed-dim": "#acc7ff",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "surface-container": "#edeeef",
+                    "surface-container-low": "#f3f4f5",
+                    "on-secondary-container": "#56656e",
+                    "secondary-fixed-dim": "#bac9d3",
+                    "primary": "#003f87",
+                    "on-secondary": "#ffffff",
+                    "outline": "#727784",
+                    "secondary-fixed": "#d6e5ef",
+                    "primary-fixed": "#d7e2ff",
+                    "surface-dim": "#d9dadb",
+                    "on-tertiary-fixed-variant": "#454747"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter-mobile": "16px",
+                    "margin-mobile": "20px",
+                    "stack-sm": "4px",
+                    "base": "8px",
+                    "stack-md": "12px",
+                    "stack-lg": "24px"
+            },
+            "fontFamily": {
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-sm": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "label-md": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-sm": [
+                            "18px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-sm": [
+                            "11px",
+                            {
+                                    "lineHeight": "14px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        /* Base typography overrides to ensure crisp rendering */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-[100px]">
+<!-- TopAppBar -->
+<header class="bg-surface fixed top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 w-full max-w-md mx-auto">
+<div class="flex items-center gap-stack-sm text-primary font-bold active:scale-95 transition-transform hover:bg-surface-container-high transition-colors rounded-full p-2 -ml-2 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="location_on" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<h1 class="font-headline-sm text-headline-sm text-primary">Dirección de entrega</h1>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</div>
+<button class="text-on-surface-variant active:scale-95 transition-transform hover:bg-surface-container-high transition-colors p-2 rounded-full cursor-pointer">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- Main Content Container -->
+<main class="pt-[88px] px-margin-mobile max-w-md mx-auto flex flex-col gap-stack-lg">
+<!-- Page Title & Search -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Categorías</h2>
+<div class="bg-surface-container-lowest rounded-full py-3 px-4 flex items-center gap-base shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-surface-container-highest focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="search">search</span>
+<input class="bg-transparent border-none outline-none w-full font-body-md text-body-md text-on-surface placeholder:text-outline-variant p-0 m-0 focus:ring-0" placeholder="Buscar comida o locales" type="text"/>
+</div>
+</section>
+<!-- Bento Grid: Comida -->
+<section class="flex flex-col gap-stack-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Comida</h3>
+<div class="grid grid-cols-2 gap-gutter-mobile">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md flex flex-col items-center justify-center gap-stack-sm shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-transparent hover:border-primary-fixed transition-colors cursor-pointer active:scale-95">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-primary" data-icon="lunch_dining" style="font-variation-settings: 'FILL' 1;">lunch_dining</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface text-center">Hamburguesas</span>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md flex flex-col items-center justify-center gap-stack-sm shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-transparent hover:border-primary-fixed transition-colors cursor-pointer active:scale-95">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-primary" data-icon="local_pizza" style="font-variation-settings: 'FILL' 1;">local_pizza</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface text-center">Pizza</span>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md flex flex-col items-center justify-center gap-stack-sm shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-transparent hover:border-primary-fixed transition-colors cursor-pointer active:scale-95">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-primary" data-icon="set_meal" style="font-variation-settings: 'FILL' 1;">set_meal</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface text-center">Sushi</span>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md flex flex-col items-center justify-center gap-stack-sm shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-transparent hover:border-primary-fixed transition-colors cursor-pointer active:scale-95">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-primary" data-icon="spa" style="font-variation-settings: 'FILL' 1;">spa</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface text-center">Saludable</span>
+</div>
+</div>
+</section>
+<!-- Asymmetric Row: Mercados & Kioscos -->
+<section class="flex flex-col gap-stack-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Explorar más</h3>
+<div class="grid grid-cols-1 gap-gutter-mobile">
+<!-- Large Card: Mercados -->
+<div class="bg-surface-container-lowest rounded-xl p-4 flex items-center gap-stack-md shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-transparent hover:border-primary-fixed transition-colors cursor-pointer active:scale-[0.98]">
+<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="shopping_basket" style="font-variation-settings: 'FILL' 1;">shopping_basket</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">Mercados</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Supermercados y tiendas</span>
+</div>
+<span class="material-symbols-outlined text-outline ml-auto">chevron_right</span>
+</div>
+<!-- Large Card: Kioscos -->
+<div class="bg-surface-container-lowest rounded-xl p-4 flex items-center gap-stack-md shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-transparent hover:border-primary-fixed transition-colors cursor-pointer active:scale-[0.98]">
+<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="storefront" style="font-variation-settings: 'FILL' 1;">storefront</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">Kioscos</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Snacks y bebidas rápidas</span>
+</div>
+<span class="material-symbols-outlined text-outline ml-auto">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-surface-container-lowest shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] fixed bottom-0 w-full rounded-t-xl z-50 flex justify-around items-center w-full h-20 px-4 pb-safe max-w-md mx-auto left-0 right-0">
+<!-- Item 1: Inicio (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform gap-1" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Inicio</span>
+</a>
+<!-- Item 2: Búsqueda (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform gap-1" href="#">
+<span class="material-symbols-outlined" data-icon="search" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="font-label-sm text-label-sm">Búsqueda</span>
+</a>
+<!-- Item 3: Mis Pedidos (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform gap-1" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-sm text-label-sm">Mis Pedidos</span>
+</a>
+<!-- Item 4: Perfil (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform gap-1" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Perfil</span>
+</a>
+</nav>
+</body></html>

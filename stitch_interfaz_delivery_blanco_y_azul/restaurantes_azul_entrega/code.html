@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hamburguesas - Listado de Restaurantes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-highest": "#e1e3e4",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#bbd0ff",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "background": "#f8f9fa",
+                        "tertiary-container": "#575959",
+                        "surface-bright": "#f8f9fa",
+                        "on-primary-fixed-variant": "#004491",
+                        "on-secondary-fixed": "#0f1d25",
+                        "secondary": "#526069",
+                        "on-tertiary-container": "#cfd0d0",
+                        "inverse-primary": "#acc7ff",
+                        "on-background": "#191c1d",
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-high": "#e7e8e9",
+                        "on-error": "#ffffff",
+                        "surface": "#f8f9fa",
+                        "outline-variant": "#c2c6d4",
+                        "on-primary-fixed": "#001a40",
+                        "primary-container": "#0056b3",
+                        "secondary-container": "#d3e2ed",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#404242",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#424752",
+                        "surface-tint": "#115cb9",
+                        "inverse-surface": "#2e3132",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed-dim": "#acc7ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "surface-container": "#edeeef",
+                        "surface-container-low": "#f3f4f5",
+                        "on-secondary-container": "#56656e",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "primary": "#003f87",
+                        "on-secondary": "#ffffff",
+                        "outline": "#727784",
+                        "secondary-fixed": "#d6e5ef",
+                        "primary-fixed": "#d7e2ff",
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-fixed-variant": "#454747"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter-mobile": "16px",
+                        "margin-mobile": "20px",
+                        "stack-sm": "4px",
+                        "base": "8px",
+                        "stack-md": "12px",
+                        "stack-lg": "24px"
+                    },
+                    fontFamily: {
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col items-center">
+<div class="w-full max-w-md bg-surface min-h-screen relative shadow-[0px_0px_24px_rgba(0,0,0,0.05)]">
+<!-- Header -->
+<header class="sticky top-0 z-40 bg-surface bg-opacity-95 backdrop-blur-md pt-safe">
+<div class="flex items-center h-16 px-margin-mobile">
+<button aria-label="Volver" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high active:scale-95 transition-all text-on-surface">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface ml-base flex-1">Hamburguesas</h1>
+<button aria-label="Buscar" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high active:scale-95 transition-all text-primary">
+<span class="material-symbols-outlined text-[24px]">search</span>
+</button>
+</div>
+<!-- Quick Filters -->
+<div class="px-margin-mobile pb-stack-md pt-base overflow-x-auto hide-scrollbar flex gap-base snap-x">
+<button class="snap-start shrink-0 h-8 px-3 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md flex items-center gap-1 active:bg-surface-container-low transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                    Envío Gratis
+                </button>
+<button class="snap-start shrink-0 h-8 px-3 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md flex items-center gap-1 active:bg-surface-container-low transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[16px]">star</span>
+                    Mejor puntuados
+                </button>
+<button class="snap-start shrink-0 h-8 px-3 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md flex items-center gap-1 active:bg-surface-container-low transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[16px]">local_offer</span>
+                    Promociones
+                </button>
+<button class="snap-start shrink-0 h-8 px-3 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md flex items-center gap-1 active:bg-surface-container-low transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+                    Filtros
+                </button>
+</div>
+<div class="h-[1px] w-full bg-surface-container-highest"></div>
+</header>
+<!-- Main Content -->
+<main class="px-margin-mobile py-stack-lg flex flex-col gap-gutter-mobile">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col active:scale-[0.98] transition-transform cursor-pointer relative group">
+<div class="h-36 w-full relative bg-surface-container overflow-hidden">
+<img alt="Hamburguesa de Burger King" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A delicious looking double cheeseburger from Burger King with sesame seed bun, fresh lettuce, and melting cheese. The food is professionally lit in a studio setting, creating a mouth-watering commercial food photography style. Background is slightly blurred, emphasizing the burger's texture. Corporate modern aesthetic, clean and appetizing presentation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRN3wH0Y1B-2FZdHr6OmXaJioHplMWChVoPXFCEbgViaVRhd2WIbQFfidx5yy5A3QXGlRO1_VTtgsa3HEGG3XDsyaa9TQ5yPfaqL2N1mFa7zZFykWE6xj1md6GeFxJJTDMeUNZjdw3ROlZZqWM6lVftzf5rekhUm53iaNvQbAQcosNXf-1BYr4mZhqj7We5ZRVz40iQ77dTkIUBMqMyD_-Gj-6jtRBO8ukQTqCGEwCgn-9NGiq2YtmGL4cAJ3DlD5-eJ8VsxskflM"/>
+<div class="absolute top-2 right-2 bg-surface-container-lowest bg-opacity-90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-[#F4B400]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm text-on-surface">4.5</span>
+</div>
+</div>
+<div class="p-stack-md relative">
+<div class="absolute -top-6 left-stack-md w-12 h-12 bg-surface-container-lowest rounded-lg shadow-sm border border-surface-container flex items-center justify-center p-1">
+<img alt="Logo Burger King" class="w-full h-full object-contain" data-alt="A clean, isolated close-up of a generic burger brand logo on a white background. Modern, corporate food delivery icon style. Simple shapes, bold colors, highly legible." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4_Cf_hmDm5eSwV4gFX4QS8tQrfW_FS9WLcw4Td3Fog_fvUdDIzb6f_vtdgmylzDQWGPqECdcPEmFT5w-M53M1zL9-HhFrJLQgNyRS2SCJ3gRDLeEc8SD2XDeDk27yQMu22E2gFFcMd4Et-wI_Ll1L2BV9zg52JVqgqQihAhaPiToDTR803OzZ3pOYwmEYzpT9fAaPqFAQSMEsN6UmO9uC9I9KqTEcJyHrKLAQvg5vE8i_BH-w5RwxOHDO4zkmYDRuKYUANnGf-Lc"/>
+</div>
+<div class="mt-4 flex flex-col gap-stack-sm">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Burguer King</h2>
+<div class="flex items-center gap-3 text-on-surface-variant font-body-md text-body-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                20-30 min
+                            </div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">two_wheeler</span>
+                                Envío $150
+                            </div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col active:scale-[0.98] transition-transform cursor-pointer relative group">
+<div class="h-36 w-full relative bg-surface-container overflow-hidden">
+<img alt="Hamburguesa de La Birra Bar" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="An artisanal craft burger from La Birra Bar featuring a thick juicy patty, crispy bacon, and artisan brioche bun. The shot is a close-up food photography with a shallow depth of field, highlighting the premium ingredients. Soft, warm directional lighting enhances the textures. Set against a clean, modern dark background for contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0Hy2wOwvp3Z4EfnVE3d0YUg6uj0VklYn7YBXMXHdXHMFt6Be-sViZJ23B3Awdi_at-nedNCv2bjCo1DdMRDXkAJPaxnHpRhuxpDp--yIcXWkxC7KYqwmvGOXKtfZXndxOnWdmnH7Ss5Q6QgCxNNSxbzkciVsoyEZUPGelg2ro5AZsyGlxRstVH9qjOq8hd_ylbsCu2NUXl_U8IIozKd9-T1syP6wKncSBf9pQWwhnKM9Ad3ptMsEIE2y3IuVtLKDTmNXpPTqTWnw"/>
+<div class="absolute top-2 right-2 bg-surface-container-lowest bg-opacity-90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-[#F4B400]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm text-on-surface">4.8</span>
+</div>
+<div class="absolute top-2 left-2 bg-primary-container text-on-primary-container rounded px-2 py-1 flex items-center shadow-sm">
+<span class="font-label-md text-label-md">Envío Gratis</span>
+</div>
+</div>
+<div class="p-stack-md relative">
+<div class="absolute -top-6 left-stack-md w-12 h-12 bg-surface-container-lowest rounded-lg shadow-sm border border-surface-container flex items-center justify-center p-1">
+<img alt="Logo La Birra Bar" class="w-full h-full object-contain rounded-md" data-alt="A stylized minimalist logo for an artisanal burger bar. Features a simple line-art illustration of a burger and a beer glass. High contrast black and white design, modern corporate aesthetic suitable for a premium food delivery app interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXC1fZOnpzYxw1g-xHxAgDJGkjhu3yn8UuWnzAuuoh6D3TwjUWg4i_eUZZtubQ0oF58zzJemINY_bRAFEvbyZ3tQy-f9ragp8jVd93uzKsOA8z9nncsXPdGC7rS3WUAcbI0oGD1WKUkLtgGnFIcsv6cSChsi52GGNHUIPCgvcQy_WH8SAdi8qD5ZQjlAAb3a2SjqlszwLwNg2aAieQkjlmp06ji-912by94ViBk4_mOouMPEFDRJnbWhfeflnSMU-2f2TalEcMc2I"/>
+</div>
+<div class="mt-4 flex flex-col gap-stack-sm">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">La Birra Bar</h2>
+<div class="flex items-center gap-3 text-on-surface-variant font-body-md text-body-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                35-50 min
+                            </div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px]">two_wheeler</span>
+                                Envío Gratis
+                            </div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col active:scale-[0.98] transition-transform cursor-pointer relative group">
+<div class="h-36 w-full relative bg-surface-container overflow-hidden">
+<img alt="Hamburguesa de McDonald's" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A classic fast-food style burger resembling a Big Mac, featuring two beef patties, special sauce, lettuce, cheese, pickles, and onions on a sesame seed bun. Bright, high-key commercial lighting creates a clean, uniform look. The presentation is neat and highly standardized, typical of modern corporate food delivery visuals." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3sLHj2wHhn9dNpfMvHBapUSiuR55lOCEpDVTfvOrbFy7jn73Wpg4_jzWsWpYppQwHJMIcWnNurA3Hd8zjzU9NDjrX_W68TwkFzcVqmnwzAHxx6hLHKvQ8lVCXkiKFUdkBqdhSyMYpZChAu2O7x7hLzWPNTCKxAm0biEdfQdHTRBAhYAIWnGAPu4nmUG9NO-c_aGZngIIpuIwQ_K-LaqS6pniD4v9Zxb3qT3P8JjWViQf1JOaKNPjW6c9SAb84Q8eDyhDMj-MvrYg"/>
+<div class="absolute top-2 right-2 bg-surface-container-lowest bg-opacity-90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-[#F4B400]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm text-on-surface">4.2</span>
+</div>
+</div>
+<div class="p-stack-md relative">
+<div class="absolute -top-6 left-stack-md w-12 h-12 bg-surface-container-lowest rounded-lg shadow-sm border border-surface-container flex items-center justify-center p-1">
+<img alt="Logo McDonald's" class="w-full h-full object-contain rounded-md" data-alt="A simplified, recognizable fast food M logo graphic on a solid red background. Clean lines, vector style, representing a global fast food chain. High resolution, isolated icon for an app interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7TRMJHfmB7rzITDN5pHuFx7Y59XkUvTTB-4lYnB-XksDkxdh4-hAX3kiVNC7Q2apo677gCqhuMlsIfOQoXKe2VdJUntiU1y82onO56k752vKpNcOyanSkmvAkh2xHc3DAg2dhj2gj2RVR0ybdGF1ceHZMyA8O0ddJdGJ3WIVecl29dB2Bhy99PEIZ4TytIKD4esAWrAG9oJjcikq6yDR4uRe-kFEiuBG40DYzZy2JwE0c53w4Mjnzel2xWbOcEILI7X0V4coH7ro"/>
+</div>
+<div class="mt-4 flex flex-col gap-stack-sm">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Mc Donald's</h2>
+<div class="flex items-center gap-3 text-on-surface-variant font-body-md text-body-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                15-25 min
+                            </div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">two_wheeler</span>
+                                Envío $100
+                            </div>
+</div>
+</div>
+</div>
+</article>
+</main>
+<!-- Spacing for absent bottom nav if it were present, but suppressed due to task focus -->
+<div class="h-8"></div>
+</div>
+</body></html>

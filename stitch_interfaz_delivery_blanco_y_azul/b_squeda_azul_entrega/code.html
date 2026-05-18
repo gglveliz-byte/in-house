@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Búsqueda - Delivery App</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "outline-variant": "#c2c6d4",
+                "secondary": "#526069",
+                "surface-container-highest": "#e1e3e4",
+                "surface-container": "#edeeef",
+                "primary-fixed": "#d7e2ff",
+                "on-secondary": "#ffffff",
+                "on-primary": "#ffffff",
+                "error-container": "#ffdad6",
+                "surface-container-low": "#f3f4f5",
+                "tertiary-fixed-dim": "#c6c6c7",
+                "primary-container": "#0056b3",
+                "tertiary-fixed": "#e2e2e2",
+                "primary-fixed-dim": "#acc7ff",
+                "on-tertiary-container": "#cfd0d0",
+                "inverse-on-surface": "#f0f1f2",
+                "tertiary": "#404242",
+                "on-secondary-fixed": "#0f1d25",
+                "background": "#f8f9fa",
+                "surface-container-high": "#e7e8e9",
+                "on-primary-fixed-variant": "#004491",
+                "on-primary-fixed": "#001a40",
+                "on-surface-variant": "#424752",
+                "on-background": "#191c1d",
+                "surface-container-lowest": "#ffffff",
+                "surface-bright": "#f8f9fa",
+                "surface": "#f8f9fa",
+                "on-secondary-fixed-variant": "#3b4951",
+                "secondary-fixed": "#d6e5ef",
+                "secondary-container": "#d3e2ed",
+                "error": "#ba1a1a",
+                "surface-tint": "#115cb9",
+                "primary": "#003f87",
+                "secondary-fixed-dim": "#bac9d3",
+                "outline": "#727784",
+                "on-tertiary-fixed-variant": "#454747",
+                "on-secondary-container": "#56656e",
+                "inverse-surface": "#2e3132",
+                "tertiary-container": "#575959",
+                "on-error-container": "#93000a",
+                "on-surface": "#191c1d",
+                "on-tertiary": "#ffffff",
+                "surface-dim": "#d9dadb",
+                "on-error": "#ffffff",
+                "on-primary-container": "#bbd0ff",
+                "surface-variant": "#e1e3e4",
+                "on-tertiary-fixed": "#1a1c1c",
+                "inverse-primary": "#acc7ff"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "stack-sm": "4px",
+                "stack-lg": "24px",
+                "gutter-mobile": "16px",
+                "margin-mobile": "20px",
+                "stack-md": "12px",
+                "base": "8px"
+        },
+        "fontFamily": {
+                "label-sm": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "headline-sm": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ],
+                "headline-lg": [
+                        "Inter"
+                ],
+                "label-md": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "14px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-sm": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  body {
+    background-color: #f8f9fa; /* force bg-background */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-sans antialiased selection:bg-primary-container selection:text-on-primary-container">
+<div class="max-w-md mx-auto relative min-h-screen pb-24 bg-background shadow-2xl">
+<!-- Shared Component: TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface-dim max-w-md mx-auto">
+<div class="flex items-center justify-between px-margin-mobile h-16 w-full max-w-md mx-auto flat no shadows bg-surface dark:bg-surface-dim">
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">location_on</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm-mobile text-primary font-bold">Dirección de entrega</h1>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Search Canvas -->
+<main class="pt-16 px-margin-mobile flex flex-col gap-stack-lg">
+<!-- Sticky Search Header Area -->
+<div class="sticky top-16 z-40 bg-background pt-stack-md pb-stack-sm -mx-margin-mobile px-margin-mobile">
+<!-- Search Bar -->
+<div class="relative w-full shadow-[0px_4px_12px_rgba(0,0,0,0.06)] rounded-full bg-surface-container-lowest flex items-center px-4 h-14 border border-surface-container-high focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary mr-3" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface placeholder:text-secondary outline-none h-full" placeholder="Buscar comida o locales..." type="text" value="Sushi"/>
+<button class="p-1 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors ml-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">close</span>
+</button>
+</div>
+<!-- Quick Filters -->
+<div class="flex items-center gap-2 mt-stack-md overflow-x-auto no-scrollbar pb-2">
+<button class="flex items-center gap-1 px-4 py-2 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+          Filtros
+        </button>
+<button class="flex items-center gap-1 px-4 py-2 rounded-full border border-primary text-primary bg-primary-fixed-dim/20 font-label-md text-label-md transition-colors whitespace-nowrap">
+          Precio: $$
+          <span class="material-symbols-outlined text-[16px]">keyboard_arrow_down</span>
+</button>
+<button class="flex items-center gap-1 px-4 py-2 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors whitespace-nowrap">
+          Tiempo: &lt; 30 min
+        </button>
+<button class="flex items-center gap-1 px-4 py-2 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors whitespace-nowrap">
+          Calificación 4.5+
+        </button>
+</div>
+</div>
+<!-- Active Results Area -->
+<section class="flex flex-col gap-stack-md">
+<!-- Content Toggle -->
+<div class="flex w-full bg-surface-container p-1 rounded-lg mb-stack-sm">
+<button class="flex-1 py-2 text-center rounded bg-surface-container-lowest shadow-[0px_2px_4px_rgba(0,0,0,0.04)] font-label-md text-label-md text-primary">Tiendas</button>
+<button class="flex-1 py-2 text-center rounded font-label-md text-label-md text-secondary hover:text-on-surface transition-colors">Platos</button>
+</div>
+<!-- Bento Grid Results (Tiendas) -->
+<div class="grid grid-cols-2 gap-gutter-mobile">
+<!-- Featured Large Card -->
+<article class="col-span-2 bg-surface-container-lowest rounded-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+<div class="relative w-full pt-[56.25%] bg-surface-variant">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A pristine, modern sushi restaurant interior showcasing an elegant wooden counter and high-end minimalist decor. The scene is brightly lit with cool, white corporate lighting, creating a clean, trustworthy atmosphere. The focus is on a meticulously prepared premium sushi platter resting on a pristine white marble surface." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCICojXNwgs--u3sWLw5sTJ9MhPwbSYFCELcmu7OK1JjW4qcmfPiAur_aX-3Om89QNChGmFHa7kqkByc8OQZxRC6mqoKdW4xnNsGdWl1D46EsWOIIHBieNzgF7Wn-lYn1Wl1FenxF8hhwAaMJPDelHRfpOau4GsRakfJp8Y4mHrrx6KG02KcT1Ypo0aTBbmXpw8HrSoyiZnNCQ_IrcgLF9StjIqSoiC9wWsany0hoG6B1jWp6-Rne2u0Vtkf1jBhnA_PhMg9VXBRTA');"></div>
+<div class="absolute top-3 left-3 bg-surface-container-lowest text-primary font-label-sm text-label-sm px-2 py-1 rounded shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-surface-tint">verified</span> Promocionado
+            </div>
+<button class="absolute top-3 right-3 p-1.5 rounded-full bg-surface-container-lowest/80 backdrop-blur text-secondary hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</div>
+<div class="p-stack-md flex flex-col gap-stack-sm">
+<div class="flex justify-between items-start">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Sakura Premium Sushi</h2>
+<div class="flex items-center gap-1 bg-surface-container px-1.5 py-0.5 rounded text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span> 4.9
+              </div>
+</div>
+<p class="font-body-md text-body-md text-secondary">Japonesa • Sushi • Fusión</p>
+<div class="flex items-center gap-3 mt-1 font-body-md text-body-md text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">schedule</span> 15-25 min</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">local_shipping</span> Envío gratis</span>
+</div>
+</div>
+</article>
+<!-- Standard Card 1 -->
+<article class="bg-surface-container-lowest rounded-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+<div class="relative w-full pt-[75%] bg-surface-variant">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A close-up shot of a modern, gourmet poke bowl with fresh salmon, edamame, and avocado. The bowl rests on a clean, light grey stone table in a brightly lit, modern environment. The styling is minimal and highly professional, reflecting a high-quality light-mode corporate brand identity." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAn8nWAOqgA6yyoIyKaST6n7EEbxuMcI9_S4SjNRC2-J4QpIhM55_7o3As3A2SIVr_YWp7PjzYX1WwVBGcpzJ6EroOIow_UH14mpxULftLpKn4VZapi2A14SgAW1Hn_pPRu6x-SODaMLvsh0K9gO4ipQXplYjuIXcEtGBfNhzRvfsPCxtT4OhQ19vX2txGnb1c7QyXZk5D-e3GZzJ18wxqPOBTyaK4m21glBJ_q2T7hX9Ptx5n2JTAnKtrs9C5Bdu_SXuFbATLjuX4');"></div>
+</div>
+<div class="p-3 flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-sm text-headline-sm text-on-surface truncate pr-2">Maki &amp; Poke House</h3>
+</div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="flex items-center text-on-surface"><span class="material-symbols-outlined text-[14px] text-primary mr-0.5" style="font-variation-settings: 'FILL' 1;">star</span> 4.6</span>
+<span>•</span>
+<span>20-35 min</span>
+</div>
+</div>
+</article>
+<!-- Standard Card 2 -->
+<article class="bg-surface-container-lowest rounded-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+<div class="relative w-full pt-[75%] bg-surface-variant">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Elegant presentation of classic nigiri sushi on a rectangular white ceramic plate. The background is a soft, out-of-focus light gray tone, ensuring the bright colors of the fresh fish stand out. The lighting is diffused and bright, creating a highly polished, trustworthy, and clean corporate food photography aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDnVOJ6oMXy2A79MET48NMY9amtWInMoFdFiFKFwjSr01ocb4k7IkL7BRNC1yM5tExPkqxuquTKAzw4jl_uwokRRi7OuTatduBHIDxXCOF64ERACXqS8aHLAStT3wmeR4RVyZfI3T8Q7TbN79FG0G_-0_iy8QfBeGWgitMga2-sRrZdFKa8G1SmDcX9wm3IEZzRK1wjkI6wHlaHHvxXUNB4OVuEFalunLfRPwm97d53ZQrf7EM3UOjhxVmx2XqimTdFbcKmUF0gxTs');"></div>
+<div class="absolute top-2 left-2 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-1.5 py-0.5 rounded shadow-sm">
+                Nuevo
+            </div>
+</div>
+<div class="p-3 flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-sm text-headline-sm text-on-surface truncate pr-2">Nigiri Express</h3>
+</div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="flex items-center text-on-surface"><span class="material-symbols-outlined text-[14px] text-primary mr-0.5" style="font-variation-settings: 'FILL' 1;">star</span> 4.8</span>
+<span>•</span>
+<span>10-20 min</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+</main>
+<!-- Shared Component: BottomNavBar -->
+<nav class="fixed bottom-0 w-full max-w-md mx-auto rounded-t-xl z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-[0px_-4px_12px_rgba(0,0,0,0.06)]">
+<div class="flex justify-around items-center w-full h-20 px-4 pb-safe bg-surface-container-lowest dark:bg-inverse-surface shadow-[0px_-4px_12px_rgba(0,0,0,0.06)]">
+<!-- Inactive: Inicio -->
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-sm text-label-sm">Inicio</span>
+</button>
+<!-- Active: Búsqueda -->
+<button class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="font-label-sm text-label-sm">Búsqueda</span>
+</button>
+<!-- Inactive: Mis Pedidos -->
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">receipt_long</span>
+<span class="font-label-sm text-label-sm">Mis Pedidos</span>
+</button>
+<!-- Inactive: Perfil -->
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-sm text-label-sm">Perfil</span>
+</button>
+</div>
+</nav>
+</div>
+</body></html>

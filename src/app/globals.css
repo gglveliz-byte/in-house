@@ -2,14 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Azul Entrega - Sistema de Diseño (Design Tokens) Base: Tailwind CSS compatible */
 @layer base {
   :root {
-    --background: 255 255 255;
-    --foreground: 10 10 10;
+    /* Colores Principales */
+    --color-primary: #0056b3;
+    --color-on-primary: #ffffff;
+    
+    /* Superficies y Fondos */
+    --color-surface: #f8f9fa;
+    --color-surface-dim: #d9dadb;
+    --color-surface-bright: #f8f9fa;
+    --color-surface-container-lowest: #ffffff;
+    --color-surface-container-low: #f3f4f5;
+    --color-surface-container: #eeeeef;
+    --color-surface-container-high: #e8e9ea;
+    --color-surface-container-highest: #e2e3e4;
+    
+    /* Texto */
+    --color-on-surface: #1a1c1e;
+    --color-on-surface-variant: #44474e;
+    
+    /* Bordes y Formas */
+    --radius-eight: 8px;
+    --radius-full: 9999px;
+
+    /* Tipografía */
+    --font-family-main: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply antialiased;
+    min-height: max(884px, 100dvh);
   }
 }
 
@@ -19,7 +43,7 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+    @apply btn bg-primary text-white hover:opacity-90 focus:ring-primary;
   }
 
   .btn-secondary {
@@ -31,7 +55,7 @@
   }
 
   .input {
-    @apply w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500;
+    @apply w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary;
   }
 
   .card {
@@ -76,4 +100,57 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Hide scrollbar for horizontal scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Utilidades de Clase para Integración Rápida */
+@layer utilities {
+  .bg-azul-primary {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  .text-azul-primary {
+    color: var(--color-primary);
+  }
+
+  .bg-azul-surface {
+    background-color: var(--color-surface);
+  }
+
+  .card-azul {
+    background-color: var(--color-surface-container-lowest);
+    border-radius: var(--radius-eight);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-azul-primary {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    border-radius: var(--radius-full);
+    padding: 12px 24px;
+    font-weight: 600;
+    text-align: center;
+    transition: opacity 0.2s;
+  }
+
+  .btn-azul-primary:active {
+    opacity: 0.8;
+  }
+
+  .font-inter {
+    font-family: var(--font-family-main);
+  }
 }
