@@ -183,7 +183,7 @@ export default function MessagesPage() {
                   key={admin.id}
                   onClick={() => setSelectedAdmin(admin)}
                   className={`w-full p-4 text-left hover:bg-gray-50 transition-colors ${
-                    selectedAdmin?.id === admin.id ? 'bg-purple-50 border-l-4 border-purple-500' : ''
+                    selectedAdmin?.id === admin.id ? 'bg-blue-50 border-l-4 border-[#003f87]' : ''
                   }`}
                 >
                   <p className="font-medium text-gray-900">{admin.name}</p>
@@ -201,13 +201,13 @@ export default function MessagesPage() {
         <Card className="lg:col-span-2">
           {selectedAdmin ? (
             <>
-              <CardHeader className="border-b bg-purple-50">
+              <CardHeader className="border-b bg-blue-50">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="font-bold text-gray-900">{selectedAdmin.name}</h2>
                     <p className="text-sm text-gray-500">{selectedAdmin.zone?.name}</p>
                   </div>
-                  <Badge className="bg-purple-100 text-purple-700">
+                  <Badge className="bg-[#003f87]/10 text-[#003f87]">
                     {selectedAdmin.email}
                   </Badge>
                 </div>
@@ -232,7 +232,7 @@ export default function MessagesPage() {
                           <div
                             className={`max-w-[80%] rounded-2xl p-3 ${
                               isFromMe
-                                ? 'bg-purple-600 text-white'
+                                ? 'bg-[#003f87] text-white'
                                 : 'bg-gray-100 text-gray-900'
                             }`}
                           >
@@ -250,7 +250,7 @@ export default function MessagesPage() {
                             )}
                             <p className="text-sm">{msg.content}</p>
                             <div className={`flex items-center gap-2 mt-1 text-xs ${
-                              isFromMe ? 'text-purple-200' : 'text-gray-400'
+                              isFromMe ? 'text-blue-200' : 'text-gray-400'
                             }`}>
                               <span>{formatDate(msg.createdAt)}</span>
                               {msg.messageType !== 'GENERAL' && (
@@ -307,7 +307,7 @@ export default function MessagesPage() {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Escribe un mensaje..."
-                        className="flex-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-purple-500"
+                        className="flex-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#003f87]"
                       />
                       <Button type="submit" disabled={sending || !newMessage.trim()}>
                         {sending ? '...' : 'Enviar'}

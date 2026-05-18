@@ -11,12 +11,15 @@ interface Store {
   isOpen: boolean
 }
 
+type ToastType = 'success' | 'error'
+
 export default function AdminQRPage() {
   const [stores, setStores] = useState<Store[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedStore, setSelectedStore] = useState<Store | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
   const [showIframe, setShowIframe] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null)
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -35,11 +38,16 @@ export default function AdminQRPage() {
     fetchStores()
   }, [])
 
+  const showToast = (message: string, type: ToastType = 'success') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
+
   const getStoreUrl = (slug: string) => {
     if (typeof window !== 'undefined') {
-      return `${window.location.origin}/tienda/${slug}`
+      return `${window.location.origin}/azul/restaurant/${slug}`
     }
-    return `/tienda/${slug}`
+    return `/azul/restaurant/${slug}`
   }
 
   const copyToClipboard = async (slug: string) => {
@@ -47,6 +55,7 @@ export default function AdminQRPage() {
     try {
       await navigator.clipboard.writeText(url)
       setCopied(slug)
+      showToast('Enlace copiado al portapapeles', 'success')
       setTimeout(() => setCopied(null), 2000)
     } catch {
       // Fallback
@@ -57,6 +66,7 @@ export default function AdminQRPage() {
       document.execCommand('copy')
       document.body.removeChild(textArea)
       setCopied(slug)
+      showToast('Enlace copiado', 'success')
       setTimeout(() => setCopied(null), 2000)
     }
   }
@@ -68,65 +78,83 @@ export default function AdminQRPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3" />
-          <div className="h-48 bg-gray-200 rounded" />
-        </div>
+      <div className="space-y-4 max-w-4xl mx-auto">
+        <div className="h-8 bg-gray-200 rounded w-56 animate-pulse" />
+        <div className="h-24 bg-gray-200 rounded-xl animate-pulse" />
+        {[1, 2].map((i) => <div key={i} className="h-20 bg-gray-200 rounded-xl animate-pulse" />)}
       </div>
     )
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        📱 Generar Codigo QR para Tiendas
-      </h1>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-medium flex items-center gap-2 ${
+          toast.type === 'success' ? 'bg-emerald-600' : 'bg-red-600'
+        }`}>
+          {toast.type === 'success' ? '✓' : '✕'} {toast.message}
+        </div>
+      )}
+
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">📱 Generar Código QR para Tiendas</h1>
+        <p className="text-sm text-gray-500 mt-0.5">Crea códigos QR para que tus clientes accedan directamente a las tiendas</p>
+      </div>
 
       {/* Instrucciones */}
-      <Card className="mb-6 border-blue-200 bg-blue-50">
-        <CardContent className="pt-4">
-          <p className="text-sm text-blue-800">
-            <strong>Instrucciones:</strong> Copia el enlace de la tienda, luego haz clic en
-            &quot;Generar QR&quot; para abrir la herramienta. Pega el enlace en el generador
-            para crear el codigo QR de la tienda.
-          </p>
+      <Card className="border border-[#003f87]/20 bg-blue-50">
+        <CardContent className="pt-4 pb-4">
+          <div className="flex gap-3">
+            <span className="text-2xl flex-shrink-0">ℹ️</span>
+            <div>
+              <p className="font-semibold text-[#003f87] mb-1">Instrucciones</p>
+              <ol className="text-sm text-[#003f87]/80 space-y-1 list-decimal pl-4">
+                <li>Copia el enlace de la tienda que deseas con el botón <strong>Copiar Link</strong></li>
+                <li>Haz clic en <strong>Generar QR</strong> para abrir el generador</li>
+                <li>Pega el enlace en el campo &quot;URL de la página&quot; del generador</li>
+                <li>Configura el QR a tu gusto y descárgalo</li>
+              </ol>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
       {/* Lista de tiendas */}
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3">
         {stores.length === 0 ? (
-          <Card className="text-center py-12">
-            <p className="text-4xl mb-4">🏪</p>
-            <p className="text-gray-500">No hay tiendas registradas</p>
+          <Card className="text-center py-16">
+            <span className="text-5xl block mb-4">🏪</span>
+            <p className="text-gray-500 font-medium">No hay tiendas registradas</p>
+            <p className="text-gray-400 text-sm mt-1">Crea tiendas primero en la sección Tiendas</p>
           </Card>
         ) : (
           stores.map((store) => (
             <Card
               key={store.id}
-              className={`transition-all ${
+              className={`transition-all duration-200 ${
                 selectedStore?.id === store.id
-                  ? 'border-2 border-green-500 ring-2 ring-green-200'
-                  : ''
+                  ? 'border-2 border-[#003f87] ring-2 ring-[#003f87]/20'
+                  : 'hover:shadow-sm'
               }`}
             >
-              <CardContent className="pt-4">
+              <CardContent className="pt-4 pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-gray-900">{store.name}</h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-bold text-gray-900">{store.name}</h3>
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${
+                        className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
                           store.isOpen
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700'
+                            ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                            : 'bg-red-100 text-red-700 border border-red-200'
                         }`}
                       >
-                        {store.isOpen ? 'Abierta' : 'Cerrada'}
+                        {store.isOpen ? '● Abierta' : '○ Cerrada'}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1 truncate">
+                    <p className="text-xs text-gray-500 mt-1 font-mono truncate max-w-md">
                       {getStoreUrl(store.slug)}
                     </p>
                   </div>
@@ -138,7 +166,7 @@ export default function AdminQRPage() {
                       onClick={() => copyToClipboard(store.slug)}
                       className={
                         copied === store.slug
-                          ? 'bg-green-100 text-green-700'
+                          ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
                           : ''
                       }
                     >
@@ -147,7 +175,7 @@ export default function AdminQRPage() {
                     <Button
                       size="sm"
                       onClick={() => handleGenerateQR(store)}
-                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      className={selectedStore?.id === store.id ? 'bg-[#002d6b]' : ''}
                     >
                       📱 Generar QR
                     </Button>
@@ -160,19 +188,15 @@ export default function AdminQRPage() {
       </div>
 
       {/* Iframe del generador QR */}
-      {showIframe && (
-        <Card className="border-2 border-purple-300">
+      {showIframe && selectedStore && (
+        <Card className="border-2 border-[#003f87]/30">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-bold text-lg">
-                  Generador de Codigo QR
-                </h2>
-                {selectedStore && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Tienda: <strong>{selectedStore.name}</strong>
-                  </p>
-                )}
+                <h2 className="font-bold text-lg text-gray-900">Generador de Código QR</h2>
+                <p className="text-sm text-gray-500 mt-0.5">
+                  Tienda: <strong className="text-[#003f87]">{selectedStore.name}</strong>
+                </p>
               </div>
               <Button
                 size="sm"
@@ -182,48 +206,46 @@ export default function AdminQRPage() {
                   setSelectedStore(null)
                 }}
               >
-                Cerrar
+                ✕ Cerrar
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            {/* Link para copiar */}
-            {selectedStore && (
-              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-xs font-medium text-yellow-800 mb-2">
-                  Copia este enlace y pegalo en el generador de abajo:
-                </p>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 text-sm bg-white px-3 py-2 rounded border border-yellow-300 truncate">
-                    {getStoreUrl(selectedStore.slug)}
-                  </code>
-                  <Button
-                    size="sm"
-                    onClick={() => copyToClipboard(selectedStore.slug)}
-                    className={
-                      copied === selectedStore.slug
-                        ? 'bg-green-600 text-white'
-                        : 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                    }
-                  >
-                    {copied === selectedStore.slug ? '✓' : '📋'}
-                  </Button>
-                </div>
+            {/* Enlace para copiar */}
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+              <p className="text-xs font-semibold text-amber-800 mb-2 uppercase tracking-wider">
+                📋 Copia este enlace y pégalo en el campo URL del generador:
+              </p>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 text-sm bg-white px-3 py-2 rounded-lg border border-amber-300 truncate font-mono text-gray-800">
+                  {getStoreUrl(selectedStore.slug)}
+                </code>
+                <Button
+                  size="sm"
+                  onClick={() => copyToClipboard(selectedStore.slug)}
+                  className={
+                    copied === selectedStore.slug
+                      ? 'bg-emerald-600 hover:bg-emerald-700'
+                      : 'bg-amber-600 hover:bg-amber-700'
+                  }
+                >
+                  {copied === selectedStore.slug ? '✓' : '📋'}
+                </Button>
               </div>
-            )}
+            </div>
 
             {/* Iframe */}
-            <div className="rounded-lg overflow-hidden border border-gray-200">
+            <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
               <iframe
                 src="https://www.qrgratis.es/"
                 className="w-full border-0"
                 style={{ height: '600px' }}
-                title="Generador de Codigo QR"
+                title="Generador de Código QR"
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"
               />
             </div>
 
-            <p className="text-xs text-gray-400 mt-2 text-center">
+            <p className="text-xs text-gray-400 mt-3 text-center">
               Herramienta proporcionada por qrgratis.es
             </p>
           </CardContent>

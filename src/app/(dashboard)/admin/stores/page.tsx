@@ -48,6 +48,13 @@ export default function AdminStoresPage() {
   const [editingStoreId, setEditingStoreId] = useState<string | null>(null)
   const [ownerMode, setOwnerMode] = useState<'existing' | 'new'>('existing')
   const [selectedVendorId, setSelectedVendorId] = useState('')
+  const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null)
+  const [togglingId, setTogglingId] = useState<string | null>(null)
+
+  const showToast = (msg: string, ok = true) => {
+    setToast({ msg, ok })
+    setTimeout(() => setToast(null), 3500)
+  }
   const [formData, setFormData] = useState({
     // Datos de la tienda
     storeName: '',
@@ -167,7 +174,7 @@ export default function AdminStoresPage() {
       setShowModal(true)
     } catch (error) {
       console.error('Error loading store:', error)
-      alert('Error al cargar la tienda')
+      showToast('Error al cargar la tienda', false)
     }
   }
 
@@ -205,7 +212,7 @@ export default function AdminStoresPage() {
           throw new Error(error.error || 'Error al actualizar tienda')
         }
 
-        alert('Tienda actualizada correctamente')
+        showToast('Tienda actualizada correctamente')
         setShowModal(false)
         resetForm()
         fetchStores()
@@ -269,14 +276,14 @@ export default function AdminStoresPage() {
         throw new Error(error.error || 'Error al crear tienda')
       }
 
-      alert('Tienda creada correctamente')
+      showToast('Tienda creada correctamente')
       setShowModal(false)
       resetForm()
       fetchStores()
       fetchVendors()
     } catch (error) {
       console.error('Error:', error)
-      alert(error instanceof Error ? error.message : 'Error al procesar tienda')
+      showToast(error instanceof Error ? error.message : 'Error al procesar tienda', false)
     } finally {
       setSaving(false)
     }
@@ -299,8 +306,16 @@ export default function AdminStoresPage() {
 
   return (
     <div className="max-w-6xl mx-auto">
+      {toast && (
+        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-semibold ${
+          toast.ok ? 'bg-emerald-600' : 'bg-red-600'
+        }`}>{toast.msg}</div>
+      )}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Tiendas</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">🏪 Tiendas</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{stores.length} tienda{stores.length !== 1 ? 's' : ''} registrada{stores.length !== 1 ? 's' : ''}</p>
+        </div>
         <Button onClick={() => setShowModal(true)}>+ Nueva tienda</Button>
       </div>
 
@@ -339,9 +354,9 @@ export default function AdminStoresPage() {
                 )}
 
                 <div className="flex gap-2">
-                  <Link href={`/tienda/${store.slug}`} className="flex-1">
+                  <Link href={`/azul/restaurant/${store.slug}`} target="_blank" className="flex-1">
                     <Button variant="secondary" size="sm" className="w-full">
-                      Ver tienda
+                      👁️ Ver tienda
                     </Button>
                   </Link>
                   <Button
@@ -352,26 +367,26 @@ export default function AdminStoresPage() {
                     Editar
                   </Button>
                   <Button
-                    variant={store.isOpen ? "secondary" : "primary"}
+                    variant={store.isOpen ? 'danger' : 'primary'}
                     size="sm"
+                    loading={togglingId === store.id}
                     onClick={async () => {
-                      if (!confirm(store.isOpen ? '¿Cerrar esta tienda?' : '¿Abrir esta tienda?')) return
+                      setTogglingId(store.id)
                       try {
-                        const response = await fetch(`/api/stores/${store.slug}`, {
+                        const res = await fetch(`/api/stores/${store.slug}`, {
                           method: 'PATCH',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ isOpen: !store.isOpen }),
                         })
-                        if (response.ok) {
+                        if (res.ok) {
                           fetchStores()
+                          showToast(store.isOpen ? 'Tienda cerrada' : 'Tienda abierta')
                         } else {
-                          const error = await response.json()
-                          alert(error.error || 'Error al actualizar estado')
+                          const err = await res.json()
+                          showToast(err.error || 'Error al actualizar', false)
                         }
-                      } catch (error) {
-                        console.error('Error:', error)
-                        alert('Error al actualizar estado')
-                      }
+                      } catch { showToast('Error al actualizar', false) }
+                      finally { setTogglingId(null) }
                     }}
                     title={store.isOpen ? 'Cerrar tienda' : 'Abrir tienda'}
                   >
@@ -581,7 +596,7 @@ export default function AdminStoresPage() {
                       onClick={() => setOwnerMode('existing')}
                       className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                         ownerMode === 'existing'
-                          ? 'bg-primary-600 text-white'
+                          ? 'bg-[#003f87] text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -592,7 +607,7 @@ export default function AdminStoresPage() {
                       onClick={() => setOwnerMode('new')}
                       className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                         ownerMode === 'new'
-                          ? 'bg-primary-600 text-white'
+                          ? 'bg-[#003f87] text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -610,7 +625,7 @@ export default function AdminStoresPage() {
                           <button
                             type="button"
                             onClick={() => setOwnerMode('new')}
-                            className="text-sm text-primary-600 hover:underline"
+                            className="text-sm text-[#003f87] hover:underline font-medium"
                           >
                             Crear nuevo vendedor
                           </button>

@@ -10,400 +10,236 @@ import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusColor } fro
 import { useStoreOrders, useNotificationPermission } from '@/hooks/use-pusher'
 import type { Order } from '@/types'
 
-interface StoreInfo {
-  id: string
-  name: string
-  isOpen: boolean
-}
+interface StoreInfo { id: string; name: string; isOpen: boolean }
 
 export default function VendorOrdersPage() {
   const { data: session, status } = useSession()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<string>('all')
+  const [filter, setFilter] = useState('all')
   const [storeInfo, setStoreInfo] = useState<StoreInfo | null>(null)
   const [noStoreAssigned, setNoStoreAssigned] = useState(false)
-  
-  // Permisos de notificación
+  const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null)
+
   const { permission, requestPermission } = useNotificationPermission()
 
-  // Buscar la tienda del usuario por su ID (por si el storeId no está en la sesión)
-  const findUserStore = async () => {
-    if (!session?.user?.id) return null
-
-    try {
-      const response = await fetch('/api/stores')
-      const stores = await response.json()
-
-      // Buscar si alguna tienda pertenece a este usuario
-      const userStore = stores.find((store: { ownerId: string }) =>
-        store.ownerId === session.user.id
-      )
-
-      return userStore || null
-    } catch (error) {
-      console.error('Error finding store:', error)
-      return null
-    }
+  const showToast = (msg: string, ok = true) => {
+    setToast({ msg, ok })
+    setTimeout(() => setToast(null), 3000)
   }
 
-  const fetchOrders = useCallback(async (storeId: string) => {
+  const fetchOrders = useCallback(async (sid: string) => {
     try {
-      const response = await fetch(`/api/orders?storeId=${storeId}`)
-      const json = await response.json()
+      const res = await fetch(`/api/orders?storeId=${sid}`)
+      const json = await res.json()
       setOrders(json.data || json)
-    } catch (error) {
-      console.error('Error fetching orders:', error)
-    } finally {
-      setLoading(false)
-    }
+    } catch { /* silent */ } finally { setLoading(false) }
   }, [])
 
-  // Hook para notificaciones en tiempo real
   const storeId = session?.user?.storeId || storeInfo?.id || null
-  const notification = useStoreOrders(
-    storeId,
-    () => {
-      // Callback cuando llega un nuevo pedido
-      if (storeId) fetchOrders(storeId)
-    },
-    () => {
-      // Callback cuando se actualiza un pedido
-      if (storeId) fetchOrders(storeId)
-    }
-  )
+  useStoreOrders(storeId, () => { if (storeId) fetchOrders(storeId) }, () => { if (storeId) fetchOrders(storeId) })
 
   useEffect(() => {
-    const initializeData = async () => {
+    const init = async () => {
       if (status === 'loading') return
-
-      let currentStoreId = session?.user?.storeId
-
-      // Si no hay storeId en la sesión, buscar por userId
-      if (!currentStoreId && session?.user?.id) {
-        const foundStore = await findUserStore()
-        if (foundStore) {
-          currentStoreId = foundStore.id
-          setStoreInfo(foundStore)
-        }
+      let sid = session?.user?.storeId
+      if (!sid && session?.user?.id) {
+        try {
+          const stores = await (await fetch('/api/stores')).json()
+          const found = stores.find((s: { ownerId: string }) => s.ownerId === session.user.id)
+          if (found) { sid = found.id; setStoreInfo(found) }
+        } catch {}
       }
-
-      if (currentStoreId) {
-        // Si tenemos storeId en sesión pero no info de tienda, obtenerla
+      if (sid) {
         if (!storeInfo) {
           try {
-            const res = await fetch(`/api/stores`)
-            const stores = await res.json()
-            const store = stores.find((s: { id: string }) => s.id === currentStoreId)
-            if (store) setStoreInfo(store)
+            const stores = await (await fetch('/api/stores')).json()
+            const s = stores.find((s: { id: string }) => s.id === sid)
+            if (s) setStoreInfo(s)
           } catch {}
         }
-
-        await fetchOrders(currentStoreId)
-        setNoStoreAssigned(false)
+        await fetchOrders(sid)
       } else {
         setLoading(false)
         setNoStoreAssigned(true)
       }
     }
-
-    initializeData()
+    init()
   }, [session, status, fetchOrders, storeInfo])
 
-  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+  const updateStatus = async (orderId: string, newStatus: string) => {
     try {
       await fetch(`/api/orders/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       })
-      const storeId = session?.user?.storeId || storeInfo?.id
-      if (storeId) fetchOrders(storeId)
-    } catch (error) {
-      console.error('Error updating order:', error)
-    }
+      const sid = session?.user?.storeId || storeInfo?.id
+      if (sid) fetchOrders(sid)
+      showToast(
+        newStatus === 'CONFIRMED' ? '✓ Pedido confirmado' :
+        newStatus === 'READY' ? '🍽️ Marcado como listo' : 'Pedido cancelado',
+        newStatus !== 'CANCELLED'
+      )
+    } catch { showToast('Error al actualizar', false) }
   }
 
-  const handleRefreshSession = async () => {
-    // Cerrar sesión y redirigir a login para obtener el storeId actualizado
-    await signOut({ callbackUrl: '/login' })
-  }
+  const filtered = orders.filter(o => filter === 'all' || o.status === filter)
+  const counts = { PENDING: 0, CONFIRMED: 0, READY: 0, DELIVERED: 0, CANCELLED: 0 }
+  orders.forEach(o => { if (o.status in counts) counts[o.status as keyof typeof counts]++ })
 
-  const filteredOrders = orders.filter((order) => {
-    if (filter === 'all') return true
-    return order.status === filter
-  })
+  const FILTERS = [
+    { v: 'all', label: 'Todos' },
+    { v: 'PENDING', label: '⏳ Pendientes' },
+    { v: 'CONFIRMED', label: '✓ Confirmados' },
+    { v: 'READY', label: '🍽️ Listos' },
+    { v: 'PICKED_UP', label: '🚗 En camino' },
+    { v: 'DELIVERED', label: '✅ Entregados' },
+  ]
 
-  const pendingCount = orders.filter((o) => o.status === 'PENDING').length
-  const confirmedCount = orders.filter((o) => o.status === 'CONFIRMED').length
-  const readyCount = orders.filter((o) => o.status === 'READY').length
+  if (status === 'loading' || loading) return (
+    <div className="space-y-4">
+      {[1,2,3].map(i => <div key={i} className="h-32 bg-gray-100 rounded-xl animate-pulse" />)}
+    </div>
+  )
 
-  if (status === 'loading' || loading) {
-    return (
-      <div className="max-w-4xl mx-auto">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3" />
-          <div className="h-32 bg-gray-200 rounded" />
-          <div className="h-32 bg-gray-200 rounded" />
-        </div>
-      </div>
-    )
-  }
-
-  // Mostrar notificación flotante de nuevo pedido
-  const NotificationBanner = () => {
-    if (!notification?.show) return null
-    
-    const getBannerStyle = () => {
-      switch (notification.type) {
-        case 'new':
-          return 'bg-gradient-to-r from-green-600 to-orange-500 text-white'
-        case 'message':
-          return 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white'
-        default:
-          return 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
-      }
-    }
-    
-    const getIcon = () => {
-      switch (notification.type) {
-        case 'new':
-          return '🔔'
-        case 'message':
-          return '💬'
-        default:
-          return '📎'
-      }
-    }
-    
-    const getTitle = () => {
-      switch (notification.type) {
-        case 'new':
-          return '¡Nuevo pedido!'
-        case 'message':
-          return 'Nuevo mensaje'
-        default:
-          return 'Comprobante recibido'
-      }
-    }
-    
-    return (
-      <div className="fixed top-4 right-4 z-50 animate-bounce">
-        <div className={`px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 ${getBannerStyle()}`}>
-          <span className="text-3xl">{getIcon()}</span>
-          <div>
-            <p className="font-bold">{getTitle()}</p>
-            <p className="text-sm opacity-90">{notification.message}</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Si no hay tienda asignada
-  if (noStoreAssigned) {
-    return (
-      <div className="max-w-md mx-auto text-center py-12">
-        <Card className="p-8">
-          <span className="text-6xl block mb-4">🏪</span>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
-            No tienes una tienda asignada
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Si acabas de crear tu cuenta, es posible que necesites cerrar sesión y volver a entrar para cargar los datos de tu tienda.
-          </p>
-          <div className="space-y-3">
-            <Button onClick={handleRefreshSession} className="w-full">
-              Cerrar sesión y volver a entrar
-            </Button>
-            <p className="text-xs text-gray-500">
-              Si el problema persiste, contacta al administrador.
-            </p>
-          </div>
-        </Card>
-      </div>
-    )
-  }
+  if (noStoreAssigned) return (
+    <div className="max-w-sm mx-auto py-12">
+      <Card className="p-8 text-center border-2 border-[#003f87]/20">
+        <span className="text-5xl block mb-3">🏪</span>
+        <h2 className="font-bold text-gray-900 mb-2">Sin tienda asignada</h2>
+        <p className="text-sm text-gray-500 mb-5">Cierra sesión y vuelve a entrar para cargar tu tienda.</p>
+        <Button onClick={() => signOut({ callbackUrl: '/login' })} className="w-full">Reiniciar sesión</Button>
+      </Card>
+    </div>
+  )
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Notificación flotante */}
-      <NotificationBanner />
-      
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-4xl mx-auto space-y-5">
+      {toast && (
+        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-semibold ${toast.ok ? 'bg-emerald-600' : 'bg-red-600'}`}>
+          {toast.msg}
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pedidos</h1>
+          <h1 className="text-2xl font-bold text-gray-900">📦 Pedidos</h1>
           {storeInfo && (
-            <p className="text-sm text-gray-500">
-              {storeInfo.name} • {storeInfo.isOpen ? '🟢 Abierto' : '🔴 Cerrado'}
+            <p className="text-sm text-gray-500 mt-0.5">
+              {storeInfo.name}
+              <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-medium ${storeInfo.isOpen ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                {storeInfo.isOpen ? '● Abierto' : '● Cerrado'}
+              </span>
             </p>
           )}
         </div>
         <div className="flex items-center gap-2">
-          {permission === 'default' && (
-            <Button onClick={requestPermission} variant="secondary" size="sm">
-              🔔 Activar notificaciones
-            </Button>
-          )}
-          {permission === 'granted' && (
-            <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
-              🔔 Notificaciones activas
-            </span>
-          )}
-          <Button onClick={() => {
-            const currentStoreId = session?.user?.storeId || storeInfo?.id
-            if (currentStoreId) fetchOrders(currentStoreId)
-          }} variant="secondary" size="sm">
-            🔄 Actualizar
-          </Button>
+          {permission === 'default' && <Button onClick={requestPermission} variant="secondary" size="sm">🔔 Notificaciones</Button>}
+          {permission === 'granted' && <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full font-medium">🔔 Activas</span>}
+          <Button onClick={() => { const sid = session?.user?.storeId || storeInfo?.id; if (sid) fetchOrders(sid) }} variant="secondary" size="sm">🔄</Button>
+          <Link href="/vendor/products"><Button size="sm" variant="secondary">🍽️ Productos</Button></Link>
+          <Link href="/vendor/settings"><Button size="sm" variant="secondary">⚙️ Tienda</Button></Link>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <Card className="text-center p-4">
-          <p className="text-3xl font-bold text-yellow-600">{pendingCount}</p>
-          <p className="text-sm text-gray-600">Pendientes</p>
-        </Card>
-        <Card className="text-center p-4">
-          <p className="text-3xl font-bold text-blue-600">{confirmedCount}</p>
-          <p className="text-sm text-gray-600">Confirmados</p>
-        </Card>
-        <Card className="text-center p-4">
-          <p className="text-3xl font-bold text-purple-600">{readyCount}</p>
-          <p className="text-sm text-gray-600">Listos</p>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+      <div className="grid grid-cols-3 gap-4">
         {[
-          { value: 'all', label: 'Todos' },
-          { value: 'PENDING', label: 'Pendientes' },
-          { value: 'CONFIRMED', label: 'Confirmados' },
-          { value: 'READY', label: 'Listos' },
-          { value: 'PICKED_UP', label: 'En camino' },
-          { value: 'DELIVERED', label: 'Entregados' },
-        ].map((f) => (
-          <button
-            key={f.value}
-            onClick={() => setFilter(f.value)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              filter === f.value
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+          { status: 'PENDING', label: 'Pendientes', color: 'text-amber-600', border: 'border-amber-300' },
+          { status: 'CONFIRMED', label: 'Confirmados', color: 'text-[#003f87]', border: 'border-[#003f87]' },
+          { status: 'READY', label: 'Listos', color: 'text-emerald-600', border: 'border-emerald-400' },
+        ].map(({ status: s, label, color, border }) => (
+          <Card
+            key={s}
+            className={`cursor-pointer hover:shadow-md transition-all ${filter === s ? `border-2 ${border}` : ''}`}
+            onClick={() => setFilter(filter === s ? 'all' : s)}
           >
-            {f.label}
-          </button>
+            <CardContent className="pt-5 pb-4 text-center">
+              <p className={`text-3xl font-bold ${color}`}>{counts[s as keyof typeof counts]}</p>
+              <p className="text-sm text-gray-500 mt-1">{label}</p>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      {/* Orders List */}
-      <div className="space-y-4">
-        {filteredOrders.length === 0 ? (
-          <Card className="text-center py-12">
-            <p className="text-gray-500">No hay pedidos {filter !== 'all' && 'en este estado'}</p>
-          </Card>
-        ) : (
-          filteredOrders.map((order) => (
-            <Card key={order.id}>
-              <CardHeader className="flex flex-row items-center justify-between">
+      {/* Filter pills */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {FILTERS.map(f => {
+          const cnt = f.v === 'all' ? orders.length : orders.filter(o => o.status === f.v).length
+          return (
+            <button key={f.v} onClick={() => setFilter(f.v)}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1.5 transition-all ${filter === f.v ? 'bg-[#003f87] text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+              {f.label}
+              {cnt > 0 && <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${filter === f.v ? 'bg-white/20' : 'bg-gray-200 text-gray-600'}`}>{cnt}</span>}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Orders list */}
+      {filtered.length === 0 ? (
+        <Card className="text-center py-16">
+          <span className="text-5xl block mb-3">📭</span>
+          <p className="text-gray-400">No hay pedidos {filter !== 'all' && 'en este estado'}</p>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {filtered.map(order => (
+            <Card key={order.id} className="border-l-4 border-l-[#003f87] hover:shadow-sm transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
-                  <h3 className="font-semibold">Pedido #{order.orderNumber}</h3>
-                  <p className="text-sm text-gray-500">{formatDate(order.createdAt)}</p>
+                  <h3 className="font-bold text-[#003f87]">#{order.orderNumber}</h3>
+                  <p className="text-xs text-gray-400">{formatDate(order.createdAt)}</p>
                 </div>
-                <Badge className={getOrderStatusColor(order.status)}>
-                  {getOrderStatusLabel(order.status)}
-                </Badge>
+                <Badge className={getOrderStatusColor(order.status)}>{getOrderStatusLabel(order.status)}</Badge>
               </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-700 mb-2">Cliente</h4>
-                    <p className="text-sm">{order.customerName}</p>
-                    <p className="text-sm text-gray-600">{order.customerPhone}</p>
-                    <p className="text-sm text-gray-600">{order.customerAddress}</p>
-                    {order.customerNotes && (
-                      <p className="text-sm text-gray-500 mt-1">
-                        Notas: {order.customerNotes}
-                      </p>
-                    )}
+              <CardContent className="pt-0">
+                <div className="grid md:grid-cols-2 gap-3 mb-4">
+                  <div className="bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-gray-400 uppercase mb-1">Cliente</p>
+                    <p className="text-sm font-semibold text-gray-900">{order.customerName}</p>
+                    <p className="text-xs text-gray-500">{order.customerPhone}</p>
+                    <p className="text-xs text-gray-500">{order.customerAddress}</p>
+                    {order.customerNotes && <p className="text-xs mt-1 text-amber-700 bg-amber-50 px-2 py-1 rounded-lg">📝 {order.customerNotes}</p>}
                   </div>
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-700 mb-2">Productos</h4>
-                    {order.items.map((item) => (
-                      <p key={item.id} className="text-sm">
-                        {item.quantity}x {item.product.name} - {formatPrice(item.totalPrice)}
+                  <div className="bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-gray-400 uppercase mb-1">Productos</p>
+                    {order.items.map(item => (
+                      <p key={item.id} className="text-sm flex justify-between">
+                        <span>{item.quantity}× {item.product.name}</span>
+                        <span className="font-medium">{formatPrice(item.totalPrice)}</span>
                       </p>
                     ))}
-                    <p className="font-semibold mt-2">Total: {formatPrice(order.total)}</p>
+                    <p className="font-bold text-[#003f87] text-sm border-t mt-2 pt-2">Total: {formatPrice(order.total)}</p>
                   </div>
                 </div>
-
-                {/* Actions */}
-                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
-                  {/* Si el pago está verificado y confirmado, mostrar botón de preparar pedido */}
+                <div className="flex flex-wrap gap-2 pt-3 border-t">
                   {order.status === 'CONFIRMED' && order.paymentStatus === 'VERIFIED' && (
-                    <Link href={`/vendor/order/${order.id}`}>
-                      <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
-                        📦 Ver pedido
-                      </Button>
-                    </Link>
+                    <Link href={`/vendor/order/${order.id}`}><Button size="sm">📦 Ver pedido</Button></Link>
                   )}
-                  
-                  {/* Botón de chat para pedidos pendientes o sin pago verificado */}
                   {(order.status === 'PENDING' || (order.status === 'CONFIRMED' && order.paymentStatus !== 'VERIFIED')) && (
-                    <Link href={`/vendor/chat/${order.id}`}>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                        💬 Abrir chat
-                      </Button>
-                    </Link>
+                    <Link href={`/vendor/chat/${order.id}`}><Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">💬 Chat</Button></Link>
                   )}
-                  
-                  {/* Estado del pago */}
                   {order.paymentStatus === 'UPLOADED' && order.status === 'PENDING' && (
-                    <Link href={`/vendor/chat/${order.id}`}>
-                      <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-black">
-                        📎 Verificar pago
-                      </Button>
-                    </Link>
+                    <Link href={`/vendor/chat/${order.id}`}><Button size="sm" className="bg-amber-500 hover:bg-amber-600">📎 Verificar pago</Button></Link>
                   )}
-                  
                   {order.status === 'PENDING' && order.paymentStatus !== 'UPLOADED' && (
-                    <Button
-                      size="sm"
-                      onClick={() => updateOrderStatus(order.id, 'CONFIRMED')}
-                    >
-                      ✓ Confirmar
-                    </Button>
+                    <Button size="sm" onClick={() => updateStatus(order.id, 'CONFIRMED')}>✓ Confirmar</Button>
                   )}
-                  
                   {order.status === 'CONFIRMED' && order.paymentStatus === 'VERIFIED' && (
-                    <Button
-                      size="sm"
-                      onClick={() => updateOrderStatus(order.id, 'READY')}
-                      className="bg-purple-600 hover:bg-purple-700"
-                    >
-                      🍽️ Listo para enviar
-                    </Button>
+                    <Button size="sm" className="bg-[#0056b3] hover:bg-[#003f87]" onClick={() => updateStatus(order.id, 'READY')}>🍽️ Listo para enviar</Button>
                   )}
-                  
                   {(order.status === 'PENDING' || order.status === 'CONFIRMED') && (
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      onClick={() => updateOrderStatus(order.id, 'CANCELLED')}
-                    >
-                      ✕
-                    </Button>
+                    <Button size="sm" variant="danger" onClick={() => updateStatus(order.id, 'CANCELLED')}>✕</Button>
                   )}
                 </div>
               </CardContent>
             </Card>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

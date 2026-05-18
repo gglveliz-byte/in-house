@@ -2,283 +2,297 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { formatPrice } from '@/lib/utils'
+import Link from 'next/link'
 
-interface StoreRevenue {
-  storeId: string
-  storeName: string
-  totalOrders: number
-  totalRevenue: number
-  todayRevenue: number
-  todayOrders: number
+interface DashboardData {
+  store: {
+    name: string
+    isOpen: boolean
+    totalProducts: number
+  } | null
+  revenue: {
+    today: number
+    total: number
+  }
+  orders: {
+    total: number
+    pending: number
+    confirmed: number
+    ready: number
+    delivered: number
+    cancelled: number
+  }
+  drivers: {
+    total: number
+  }
+  topStores: {
+    id: string
+    name: string
+    totalOrders: number
+    totalRevenue: number
+  }[]
+  recentOrders: {
+    id: string
+    orderNumber: number
+    customerName: string
+    total: number
+    status: string
+    createdAt: string
+  }[]
 }
 
-interface DriverRevenue {
-  driverId: string
-  driverName: string
-  driverPhone: string
-  totalDeliveries: number
-  totalDeliveryFees: number
-  todayDeliveryFees: number
-  todayDeliveries: number
-}
-
-interface Stats {
-  totalOrders: number
-  todayOrders: number
-  totalRevenue: number
-  todayRevenue: number
-  ordersByStatus: Record<string, number>
-  totalStores: number
-  totalProducts: number
-  revenueByStore: StoreRevenue[]
-  revenueByDriver: DriverRevenue[]
-  currency: string
+const statusMap: Record<string, { label: string; className: string }> = {
+  PENDING: { label: 'Pendiente', className: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
+  CONFIRMED: { label: 'Confirmado', className: 'bg-blue-100 text-[#003f87] border border-blue-200' },
+  READY: { label: 'Listo', className: 'bg-purple-100 text-purple-700 border border-purple-200' },
+  PICKED_UP: { label: 'En camino', className: 'bg-orange-100 text-orange-700 border border-orange-200' },
+  DELIVERED: { label: 'Entregado', className: 'bg-emerald-100 text-emerald-700 border border-emerald-200' },
+  CANCELLED: { label: 'Cancelado', className: 'bg-red-100 text-red-700 border border-red-200' },
 }
 
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState<Stats | null>(null)
+  const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch('/api/stats')
-        const data = await response.json()
-        setStats(data)
-      } catch (error) {
-        console.error('Error fetching stats:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchStats()
+    fetchDashboard()
   }, [])
+
+  const fetchDashboard = async () => {
+    try {
+      setError(null)
+      const response = await fetch('/api/admin/stats')
+      if (response.ok) {
+        const stats = await response.json()
+        setData(stats)
+      } else {
+        setError('Error al cargar el dashboard')
+      }
+    } catch {
+      setError('Error de conexión')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3" />
-          <div className="grid grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded" />
-            ))}
-          </div>
+      <div className="space-y-6">
+        <div className="h-8 bg-gray-200 rounded-lg w-48 animate-pulse" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-28 bg-gray-200 rounded-xl animate-pulse" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="h-64 bg-gray-200 rounded-xl animate-pulse" />
+          <div className="h-64 bg-gray-200 rounded-xl animate-pulse" />
         </div>
       </div>
     )
   }
 
-  if (!stats) {
+  if (error) {
     return (
-      <div className="max-w-6xl mx-auto text-center py-12">
-        <p className="text-gray-500">Error al cargar estadísticas</p>
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <span className="text-5xl">⚠️</span>
+        <p className="text-gray-600 font-medium">{error}</p>
+        <Button onClick={fetchDashboard} variant="secondary">Reintentar</Button>
       </div>
     )
   }
 
-  return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+  const orders = data?.orders
 
-      {/* Main Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <Card className="p-4">
-          <p className="text-sm text-gray-500">Ingresos Totales</p>
-          <p className="text-2xl font-bold text-green-600">
-            {formatPrice(stats.totalRevenue)}
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Resumen operativo de tu zona
           </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-sm text-gray-500">Ingresos Hoy</p>
-          <p className="text-2xl font-bold text-green-600">
-            {formatPrice(stats.todayRevenue)}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-sm text-gray-500">Pedidos Totales</p>
-          <p className="text-2xl font-bold text-blue-600">{stats.totalOrders}</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-sm text-gray-500">Pedidos Hoy</p>
-          <p className="text-2xl font-bold text-blue-600">{stats.todayOrders}</p>
+        </div>
+        <Button onClick={fetchDashboard} variant="secondary" size="sm">
+          🔄 Actualizar
+        </Button>
+      </div>
+
+      {/* Order Status Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Link href="/admin/orders?filter=PENDING">
+          <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="pt-5 pb-4">
+              <p className="text-4xl font-bold">{orders?.pending || 0}</p>
+              <p className="text-amber-200 mt-1 text-sm">Pendientes</p>
+              <p className="text-amber-300 text-xs mt-2">Ver →</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/admin/orders?filter=CONFIRMED">
+          <Card className="bg-gradient-to-br from-[#003f87] to-[#0056b3] text-white hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="pt-5 pb-4">
+              <p className="text-4xl font-bold">{orders?.confirmed || 0}</p>
+              <p className="text-blue-200 mt-1 text-sm">Confirmados</p>
+              <p className="text-blue-300 text-xs mt-2">Ver →</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/admin/orders?filter=DELIVERED">
+          <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="pt-5 pb-4">
+              <p className="text-4xl font-bold">{orders?.delivered || 0}</p>
+              <p className="text-emerald-200 mt-1 text-sm">Entregados</p>
+              <p className="text-emerald-300 text-xs mt-2">Total →</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Card className="bg-gradient-to-br from-teal-500 to-teal-600 text-white">
+          <CardContent className="pt-5 pb-4">
+            <p className="text-3xl font-bold">{formatPrice(data?.revenue.total || 0)}</p>
+            <p className="text-teal-200 mt-1 text-sm">Ingresos Totales</p>
+          </CardContent>
         </Card>
       </div>
 
-      {/* Revenue by Store */}
-      {stats.revenueByStore && stats.revenueByStore.length > 0 && (
-        <Card className="mb-6">
-          <CardHeader>
-            <h2 className="font-semibold text-lg flex items-center gap-2">
-              🏪 Ingresos por Tienda
-            </h2>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-2 font-medium text-gray-500">Tienda</th>
-                    <th className="text-right py-3 px-2 font-medium text-gray-500">Pedidos</th>
-                    <th className="text-right py-3 px-2 font-medium text-gray-500">Ingresos</th>
-                    <th className="text-right py-3 px-2 font-medium text-gray-500">Hoy</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats.revenueByStore.map((store) => (
-                    <tr key={store.storeId} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-2">
-                        <p className="font-medium text-gray-900">{store.storeName}</p>
-                      </td>
-                      <td className="text-right py-3 px-2">
-                        <span className="text-gray-700">{store.totalOrders}</span>
-                        {store.todayOrders > 0 && (
-                          <span className="text-xs text-green-600 ml-1">(+{store.todayOrders} hoy)</span>
-                        )}
-                      </td>
-                      <td className="text-right py-3 px-2">
-                        <span className="font-semibold text-green-600">{formatPrice(store.totalRevenue)}</span>
-                      </td>
-                      <td className="text-right py-3 px-2">
-                        <span className={`font-medium ${store.todayRevenue > 0 ? 'text-green-600' : 'text-gray-400'}`}>
-                          {formatPrice(store.todayRevenue)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2 border-gray-300 bg-gray-50">
-                    <td className="py-3 px-2 font-bold text-gray-900">Total</td>
-                    <td className="text-right py-3 px-2 font-bold">
-                      {stats.revenueByStore.reduce((sum, s) => sum + s.totalOrders, 0)}
-                    </td>
-                    <td className="text-right py-3 px-2 font-bold text-green-600">
-                      {formatPrice(stats.revenueByStore.reduce((sum, s) => sum + s.totalRevenue, 0))}
-                    </td>
-                    <td className="text-right py-3 px-2 font-bold text-green-600">
-                      {formatPrice(stats.revenueByStore.reduce((sum, s) => sum + s.todayRevenue, 0))}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          { href: '/admin/stores', icon: '🏪', label: 'Tiendas', desc: 'Gestionar tiendas' },
+          { href: '/admin/users', icon: '👥', label: 'Usuarios', desc: 'Repartidores y más' },
+          { href: '/admin/orders', icon: '📦', label: 'Pedidos', desc: 'Ver todos los pedidos' },
+          { href: '/admin/messages', icon: '💬', label: 'Mensajes', desc: 'Chat con Super Admin' },
+        ].map((action) => (
+          <Link key={action.href} href={action.href}>
+            <Card className="hover:shadow-md hover:border-[#003f87]/30 transition-all duration-200 cursor-pointer group">
+              <CardContent className="pt-4 pb-4 text-center">
+                <span className="text-3xl block mb-2">{action.icon}</span>
+                <p className="font-semibold text-gray-900 text-sm group-hover:text-[#003f87]">{action.label}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{action.desc}</p>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="text-center">
+          <CardContent className="pt-5 pb-4">
+            <p className="text-3xl font-bold text-[#003f87]">{data?.drivers.total || 0}</p>
+            <p className="text-sm text-gray-500 mt-1">🚗 Repartidores</p>
           </CardContent>
         </Card>
-      )}
-
-      {/* Revenue by Driver */}
-      {stats.revenueByDriver && stats.revenueByDriver.length > 0 && (
-        <Card className="mb-6">
-          <CardHeader>
-            <h2 className="font-semibold text-lg flex items-center gap-2">
-              🛵 Ingresos por Repartidor
-            </h2>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-2 font-medium text-gray-500">Repartidor</th>
-                    <th className="text-right py-3 px-2 font-medium text-gray-500">Entregas</th>
-                    <th className="text-right py-3 px-2 font-medium text-gray-500">Total Envíos</th>
-                    <th className="text-right py-3 px-2 font-medium text-gray-500">Hoy</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats.revenueByDriver.map((driver) => (
-                    <tr key={driver.driverId} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-2">
-                        <p className="font-medium text-gray-900">{driver.driverName}</p>
-                        <p className="text-xs text-gray-500">{driver.driverPhone}</p>
-                      </td>
-                      <td className="text-right py-3 px-2">
-                        <span className="text-gray-700">{driver.totalDeliveries}</span>
-                        {driver.todayDeliveries > 0 && (
-                          <span className="text-xs text-blue-600 ml-1">(+{driver.todayDeliveries} hoy)</span>
-                        )}
-                      </td>
-                      <td className="text-right py-3 px-2">
-                        <span className="font-semibold text-orange-600">{formatPrice(driver.totalDeliveryFees)}</span>
-                      </td>
-                      <td className="text-right py-3 px-2">
-                        <span className={`font-medium ${driver.todayDeliveryFees > 0 ? 'text-orange-600' : 'text-gray-400'}`}>
-                          {formatPrice(driver.todayDeliveryFees)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2 border-gray-300 bg-gray-50">
-                    <td className="py-3 px-2 font-bold text-gray-900">Total</td>
-                    <td className="text-right py-3 px-2 font-bold">
-                      {stats.revenueByDriver.reduce((sum, d) => sum + d.totalDeliveries, 0)}
-                    </td>
-                    <td className="text-right py-3 px-2 font-bold text-orange-600">
-                      {formatPrice(stats.revenueByDriver.reduce((sum, d) => sum + d.totalDeliveryFees, 0))}
-                    </td>
-                    <td className="text-right py-3 px-2 font-bold text-orange-600">
-                      {formatPrice(stats.revenueByDriver.reduce((sum, d) => sum + d.todayDeliveryFees, 0))}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+        <Card className="text-center">
+          <CardContent className="pt-5 pb-4">
+            <p className="text-3xl font-bold text-[#003f87]">{orders?.total || 0}</p>
+            <p className="text-sm text-gray-500 mt-1">📦 Total Pedidos</p>
           </CardContent>
         </Card>
-      )}
+        <Card className="text-center">
+          <CardContent className="pt-5 pb-4">
+            <p className="text-3xl font-bold text-red-500">{orders?.cancelled || 0}</p>
+            <p className="text-sm text-gray-500 mt-1">❌ Cancelados</p>
+          </CardContent>
+        </Card>
+        <Card className="text-center">
+          <CardContent className="pt-5 pb-4">
+            <p className="text-3xl font-bold text-amber-600">{formatPrice(data?.revenue.today || 0)}</p>
+            <p className="text-sm text-gray-500 mt-1">💰 Hoy</p>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Secondary Stats */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Orders by Status */}
+      {/* Recent Orders + Top Stores */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Orders */}
         <Card>
           <CardHeader>
-            <h2 className="font-semibold">Pedidos por Estado</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold text-gray-900">📋 Pedidos Recientes</h2>
+              <Link
+                href="/admin/orders"
+                className="text-[#003f87] hover:text-[#002d6b] text-sm font-medium"
+              >
+                Ver todos →
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {[
-                { key: 'PENDING', label: 'Pendientes', color: 'bg-yellow-500' },
-                { key: 'CONFIRMED', label: 'Confirmados', color: 'bg-blue-500' },
-                { key: 'READY', label: 'Listos', color: 'bg-purple-500' },
-                { key: 'PICKED_UP', label: 'En camino', color: 'bg-orange-500' },
-                { key: 'DELIVERED', label: 'Entregados', color: 'bg-green-500' },
-                { key: 'CANCELLED', label: 'Cancelados', color: 'bg-red-500' },
-              ].map((status) => (
-                <div key={status.key} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${status.color}`} />
-                    <span className="text-sm text-gray-700">{status.label}</span>
+            {data?.recentOrders && data.recentOrders.length > 0 ? (
+              <div className="space-y-3">
+                {data.recentOrders.map((order) => {
+                  const status = statusMap[order.status] || { label: order.status, className: 'bg-gray-100 text-gray-600' }
+                  return (
+                    <div key={order.id} className="flex items-center justify-between py-2 border-b last:border-0">
+                      <div>
+                        <p className="font-medium text-sm text-gray-900">#{order.orderNumber} - {order.customerName}</p>
+                        <p className="text-xs text-gray-500">{formatPrice(order.total)}</p>
+                      </div>
+                      <Badge className={status.className}>
+                        {status.label}
+                      </Badge>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-10 text-gray-400">
+                <span className="text-4xl block mb-2">📭</span>
+                <p>No hay pedidos recientes</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Top Stores */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold text-gray-900">🏆 Tiendas Destacadas</h2>
+              <Link
+                href="/admin/stores"
+                className="text-[#003f87] hover:text-[#002d6b] text-sm font-medium"
+              >
+                Ver todas →
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {data?.topStores && data.topStores.length > 0 ? (
+              <div className="space-y-3">
+                {data.topStores.slice(0, 5).map((store, index) => (
+                  <div key={store.id} className="flex items-center gap-3 py-2 border-b last:border-0">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                      index === 0 ? 'bg-amber-100 text-amber-700' :
+                      index === 1 ? 'bg-gray-100 text-gray-600' :
+                      index === 2 ? 'bg-orange-100 text-orange-600' :
+                      'bg-blue-50 text-[#003f87]'
+                    }`}>
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm text-gray-900">{store.name}</p>
+                      <p className="text-xs text-gray-500">{store.totalOrders} pedidos</p>
+                    </div>
+                    <p className="font-bold text-[#003f87] text-sm">{formatPrice(store.totalRevenue)}</p>
                   </div>
-                  <span className="font-medium">
-                    {stats.ordersByStatus[status.key] || 0}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Platform Stats */}
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold">Plataforma</h2>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-3xl font-bold text-primary-600">{stats.totalStores}</p>
-                <p className="text-sm text-gray-600">Tiendas</p>
+                ))}
               </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-3xl font-bold text-primary-600">{stats.totalProducts}</p>
-                <p className="text-sm text-gray-600">Productos</p>
+            ) : (
+              <div className="text-center py-10 text-gray-400">
+                <span className="text-4xl block mb-2">🏪</span>
+                <p>No hay tiendas activas</p>
+                <Link href="/admin/stores" className="text-[#003f87] hover:underline mt-2 inline-block text-sm font-medium">
+                  Crear tienda →
+                </Link>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>
