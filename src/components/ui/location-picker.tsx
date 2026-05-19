@@ -562,8 +562,8 @@ export function LocationPicker({
                         </p>
                         <ol className="text-xs text-orange-700 space-y-1 list-decimal list-inside">
                           <li>Haz clic en el icono de candado 🔒 en la barra de direcciones</li>
-                          <li>Busca "Ubicación" o "Location"</li>
-                          <li>Cambia a "Permitir" o "Allow"</li>
+                          <li>Busca &quot;Ubicación&quot; o &quot;Location&quot;</li>
+                          <li>Cambia a &quot;Permitir&quot; o &quot;Allow&quot;</li>
                           <li>Recarga la página</li>
                         </ol>
                       </div>

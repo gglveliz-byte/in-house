@@ -34,12 +34,12 @@ export function InstallPrompt() {
     // Verificar si está en iOS
     const iosCheck = /iPad|iPhone|iPod/.test(navigator.userAgent)
     setIsIOS(iosCheck)
-    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator as any).standalone
+    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator as Navigator & { standalone?: boolean }).standalone
 
     // Escuchar el evento beforeinstallprompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
-      setDeferredPrompt(e as any)
+      setDeferredPrompt(e as unknown as BeforeInstallPromptEvent)
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
@@ -114,7 +114,7 @@ export function InstallPrompt() {
                 <p>Para instalar en iOS:</p>
                 <ol className="list-decimal list-inside space-y-1 text-xs">
                   <li>Toca el botón de compartir <span className="inline-block">📤</span></li>
-                  <li>Selecciona "Agregar a pantalla de inicio"</li>
+                  <li>Selecciona &quot;Agregar a pantalla de inicio&quot;</li>
                   <li>Confirma la instalación</li>
                 </ol>
               </div>

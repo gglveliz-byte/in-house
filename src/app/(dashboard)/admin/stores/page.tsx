@@ -20,7 +20,12 @@ interface Store {
   whatsapp: string
   isOpen: boolean
   deliveryFee: number
+  minDeliveryFee?: number | null
+  maxDeliveryFee?: number | null
   minOrder: number
+  logo?: string | null
+  banner?: string | null
+  ownerId?: string
   owner?: {
     id: string
     name: string
@@ -149,26 +154,26 @@ export default function AdminStoresPage() {
     try {
       const response = await fetch(`/api/stores/${storeSlug}`)
       if (!response.ok) throw new Error('Error al cargar tienda')
-      const store = await response.json()
+      const store = (await response.json()) as Store
       
       setFormData({
         storeName: store.name,
         slug: store.slug,
         address: store.address,
-        latitude: store.latitude,
-        longitude: store.longitude,
+        latitude: store.latitude ?? null,
+        longitude: store.longitude ?? null,
         whatsapp: store.whatsapp,
         minOrder: store.minOrder?.toString() || '0',
         deliveryFee: store.deliveryFee?.toString() || '0',
-        minDeliveryFee: (store as any).minDeliveryFee?.toString() || '0',
-        maxDeliveryFee: (store as any).maxDeliveryFee?.toString() || '0',
+        minDeliveryFee: store.minDeliveryFee?.toString() || '0',
+        maxDeliveryFee: store.maxDeliveryFee?.toString() || '0',
         logo: store.logo || '',
         banner: store.banner || '',
         ownerName: '',
         ownerEmail: '',
         ownerPassword: '',
       })
-      setSelectedVendorId(store.ownerId)
+      setSelectedVendorId(store.ownerId ?? '')
       setOwnerMode('existing')
       setEditingStoreId(store.id)
       setShowModal(true)
@@ -560,7 +565,7 @@ export default function AdminStoresPage() {
                       />
                     </div>
                     <p className="text-xs text-blue-600 mt-2">
-                      Si configuras un rango, el cliente verá "El envío vale entre $X y $Y" y pagará al repartidor al entregar.
+                      Si configuras un rango, el cliente verá &quot;El envío vale entre $X y $Y&quot; y pagará al repartidor al entregar.
                     </p>
                   </div>
 

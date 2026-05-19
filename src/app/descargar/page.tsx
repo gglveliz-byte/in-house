@@ -74,7 +74,7 @@ export default function DownloadPage() {
             <div className="bg-surface-container-high border border-outline-variant p-6 rounded-2xl w-full max-w-md text-center">
               <span className="material-symbols-outlined text-5xl text-green-500 mb-4">check_circle</span>
               <h3 className="font-headline-sm font-bold text-on-surface mb-2">¡App ya instalada!</h3>
-              <p className="text-secondary mb-4">Abre "BlueExpress" desde tu pantalla de inicio.</p>
+              <p className="text-secondary mb-4">Abre &quot;BlueExpress&quot; desde tu pantalla de inicio.</p>
             </div>
           ) : (
             <div className="w-full max-w-sm flex flex-col gap-4">
@@ -99,7 +99,7 @@ export default function DownloadPage() {
 
                   {deviceType === 'android' && !deferredPrompt && (
                     <p className="text-xs text-secondary mt-2 text-center">
-                      Si el botón no funciona, abre el menú (⋮) de Chrome y toca "Instalar aplicación".
+                      Si el botón no funciona, abre el menú (⋮) de Chrome y toca &quot;Instalar aplicación&quot;.
                     </p>
                   )}
                 </>

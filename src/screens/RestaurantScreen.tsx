@@ -272,7 +272,7 @@ export const RestaurantScreen: React.FC<RestaurantScreenProps> = ({ slug }) => {
         </div>
       ) : null}
 
-      <div className="fixed bottom-margin-mobile left-0 right-0 w-full max-w-md mx-auto px-margin-mobile z-50">
+      <div className="fixed bottom-margin-mobile left-1/2 -translate-x-1/2 w-full max-w-md px-margin-mobile z-50">
         <Link href="/azul/cart" className="w-full bg-primary text-on-primary rounded-xl p-stack-md flex justify-between items-center shadow-lg active:scale-95 transition-transform hover:opacity-90">
           <div className="flex items-center gap-stack-sm bg-primary-container text-on-primary-container px-2 py-1 rounded-md font-label-md text-label-md">
             <span className="material-symbols-outlined text-[16px]">shopping_cart</span>

@@ -19,7 +19,7 @@ export async function PATCH(
     const body = await request.json()
 
     const allowedFields = ['name', 'description', 'latitude', 'longitude', 'radius', 'currency', 'isActive']
-    const updateData: Record<string, any> = {}
+    const updateData: Record<string, unknown> = {}
     for (const field of allowedFields) {
       if (body[field] !== undefined) {
         updateData[field] = body[field]

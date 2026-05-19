@@ -100,7 +100,7 @@ export const SearchScreen: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto relative min-h-screen pb-24 bg-background shadow-2xl">
-      <header className="fixed top-0 w-full z-50 bg-surface dark:bg-surface-dim max-w-md mx-auto left-0 right-0">
+      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface dark:bg-surface-dim">
         <div className="flex items-center justify-between px-margin-mobile h-16 w-full flat no-shadows bg-surface dark:bg-surface-dim">
           <button className="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 transition-transform flex items-center justify-center">
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>location_on</span>

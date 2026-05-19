@@ -5,7 +5,12 @@ import { signIn, getSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-function LoginForm() {
+interface LoginFormProps {
+  formData: { email: string; password: string };
+  setFormData: React.Dispatch<React.SetStateAction<{ email: string; password: string }>>;
+}
+
+function LoginForm({ formData, setFormData }: LoginFormProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/vendor'
@@ -13,7 +18,6 @@ function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [formData, setFormData] = useState({ email: '', password: '' })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,7 +36,7 @@ function LoginForm() {
       } else {
         const session = await getSession()
         const role = session?.user?.role
-        if (role === 'SUPERADMIN') router.push('/superadmin')
+        if (role === 'SUPER_ADMIN') router.push('/superadmin')
         else if (role === 'ADMIN') router.push('/admin')
         else if (role === 'VENDOR') router.push('/vendor')
         else if (role === 'DRIVER') router.push('/driver/active')
@@ -122,6 +126,18 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  const [formData, setFormData] = useState({ email: '', password: '' })
+
+  const handleRoleSelect = (role: string) => {
+    if (role === 'Vendedor') {
+      setFormData({ email: 'vendor@demo.com', password: 'Vendor2024!' })
+    } else if (role === 'Repartidor') {
+      setFormData({ email: 'driver@demo.com', password: 'Driver2024!' })
+    } else if (role === 'Administrador') {
+      setFormData({ email: 'lveliz213@hotmail.com', password: '20021985FreeS@IN-HOUSE' })
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-margin-mobile font-body-md text-on-surface antialiased">
       {/* Background decoration */}
@@ -152,7 +168,7 @@ export default function LoginPage() {
               {[1,2,3].map(i => <div key={i} className="h-14 bg-surface-container rounded-xl animate-pulse" />)}
             </div>
           }>
-            <LoginForm />
+            <LoginForm formData={formData} setFormData={setFormData} />
           </Suspense>
         </div>
 
@@ -163,10 +179,14 @@ export default function LoginPage() {
             { icon: 'two_wheeler', label: 'Repartidor', color: 'text-secondary' },
             { icon: 'admin_panel_settings', label: 'Administrador', color: 'text-on-surface-variant' },
           ].map(({ icon, label, color }) => (
-            <div key={label} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 text-center">
+            <button
+              key={label}
+              onClick={() => handleRoleSelect(label)}
+              className="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low transition-all rounded-xl p-3 text-center cursor-pointer outline-none hover:scale-105 active:scale-95 shadow-sm focus:ring-2 focus:ring-primary/20"
+            >
               <span className={`material-symbols-outlined ${color}`}>{icon}</span>
               <p className="text-label-md font-label-md text-on-surface-variant mt-1">{label}</p>
-            </div>
+            </button>
           ))}
         </div>
 

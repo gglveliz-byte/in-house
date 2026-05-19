@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { CartButton } from '@/components/cart/cart-button'
 import { ActiveOrderBadge } from '@/components/ui/active-order-badge'
 
@@ -11,10 +12,10 @@ export default function PublicLayout({
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl">🏠</span>
             <span className="font-bold text-xl text-[#003f87]">BlueExpress</span>
-          </a>
+          </Link>
           <CartButton />
         </div>
       </header>

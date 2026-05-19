@@ -44,7 +44,7 @@ export default function DriverActiveOrdersPage() {
     // Escuchar nuevos pedidos listos para auto-refrescar
     if (pusherClient) {
       const channel = pusherClient.subscribe(CHANNELS.DRIVER);
-      channel.bind(EVENTS.ORDER_READY, (data: any) => {
+      channel.bind(EVENTS.ORDER_READY, (data: { storeName: string }) => {
         showToast(`¡Nuevo pedido disponible en ${data.storeName}!`);
         fetchOrders();
       });

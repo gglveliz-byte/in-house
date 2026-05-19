@@ -91,7 +91,7 @@ export const PaymentScreen: React.FC = () => {
   if (!hasItems) {
     return (
       <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased max-w-md mx-auto relative">
-        <header className="fixed top-0 w-full z-50 bg-surface h-16 flex items-center px-margin-mobile max-w-md mx-auto left-0 right-0">
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile">
           <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
             <span className="material-symbols-outlined text-on-surface">arrow_back</span>
           </Link>
@@ -114,7 +114,7 @@ export const PaymentScreen: React.FC = () => {
 
   return (
     <div className="bg-background text-on-background antialiased max-w-md mx-auto relative min-h-screen pb-32">
-      <header className="fixed top-0 w-full z-50 bg-surface flex items-center justify-between px-margin-mobile h-16 max-w-md mx-auto left-0 right-0">
+      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface flex items-center justify-between px-margin-mobile h-16">
         <div className="flex items-center gap-3">
           <button type="button" className="text-primary hover:bg-surface-container-high transition-colors active:scale-95 p-2 -ml-2 rounded-full flex items-center justify-center">
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
@@ -303,7 +303,7 @@ export const PaymentScreen: React.FC = () => {
         </section>
       </main>
 
-      <div className="fixed bottom-0 w-full max-w-md mx-auto left-0 right-0 bg-surface-container-lowest px-margin-mobile pt-4 pb-8 shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] rounded-t-2xl z-50">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-surface-container-lowest px-margin-mobile pt-4 pb-8 shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] rounded-t-2xl z-50">
         <button
           type="button"
           onClick={handlePlaceOrder}

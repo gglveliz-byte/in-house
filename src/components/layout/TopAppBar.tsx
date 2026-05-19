@@ -14,7 +14,7 @@ interface TopAppBarProps {
 
 export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone = '', onZoneChange }) => {
   return (
-    <header className="fixed top-0 w-full z-50 bg-surface dark:bg-surface-dim flat no-shadows max-w-md mx-auto left-0 right-0">
+    <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface dark:bg-surface-dim flat no-shadows">
       <div className="flex items-center justify-between px-margin-mobile h-16 w-full">
         <button aria-label="Cambiar ubicación" className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high transition-colors active:scale-95 transition-transform text-primary dark:text-primary-fixed-dim">
           <span className="material-symbols-outlined">location_on</span>

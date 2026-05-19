@@ -57,7 +57,7 @@ export async function GET() {
       const amountDue = calculateAmountDue(completedOrders)
 
       // Verificar si ya existe un ciclo de facturación para este mes
-      let cycle = admin.billingCycles.find(
+      const cycle = admin.billingCycles.find(
         (c) =>
           new Date(c.startDate) >= startOfMonth &&
           new Date(c.endDate) <= endOfMonth

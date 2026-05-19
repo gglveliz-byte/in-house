@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cart-store';
 import { pusherClient, CHANNELS, EVENTS } from '@/lib/pusher';
-import { Order } from '@/types';
+import { Order, OrderStatus } from '@/types';
 
 interface TrackingOrder extends Order {
   store?: {
@@ -87,14 +87,14 @@ export const TrackingScreen: React.FC = () => {
     if (pusherClient) {
       const channel = pusherClient.subscribe(CHANNELS.ORDER(orderId));
       
-      channel.bind(EVENTS.ORDER_UPDATED, (data: any) => {
+      channel.bind(EVENTS.ORDER_UPDATED, (data: { status: OrderStatus }) => {
         setOrder((prev) => prev ? { ...prev, status: data.status } : null);
         if (data.status === 'DELIVERED' || data.status === 'CANCELLED') {
           setActiveOrderId(null);
         }
       });
 
-      channel.bind(EVENTS.ORDER_PICKED_UP, (data: any) => {
+      channel.bind(EVENTS.ORDER_PICKED_UP, (data: { driverId: string }) => {
         setOrder((prev) => prev ? { ...prev, status: 'PICKED_UP', driverId: data.driverId } : null);
         fetchOrder(); // Refrescar para obtener info del driver
       });
@@ -145,7 +145,7 @@ export const TrackingScreen: React.FC = () => {
       {/* Mobile Container */}
       <main className="w-full max-w-md mx-auto min-h-screen bg-surface relative shadow-2xl overflow-hidden flex flex-col">
         {/* TopAppBar */}
-        <header className="bg-surface dark:bg-surface-dim fixed top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 max-w-md mx-auto left-0 right-0 shadow-sm">
+        <header className="bg-surface dark:bg-surface-dim fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex items-center justify-between px-margin-mobile h-16 shadow-sm">
           <button type="button" onClick={() => router.push('/azul')} className="text-primary hover:bg-surface-container-high transition-colors active:scale-95 flex items-center justify-center p-2 -ml-2 rounded-full">
             <span className="material-symbols-outlined">arrow_back</span>
           </button>

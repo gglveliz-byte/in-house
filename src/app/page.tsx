@@ -460,7 +460,7 @@ export default function BlueExpressArtisanalLanding() {
               </div>
               <h3 className="text-xl font-bold text-white mb-4">2. El Comercio Prepara</h3>
               <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                El Dashboard del Vendedor recibe la alerta auditiva y visual al instante. El local acepta, procesa y marca la comanda como "Lista para enviar", lo que dispara un evento Pusher global a los repartidores cercanos.
+                El Dashboard del Vendedor recibe la alerta auditiva y visual al instante. El local acepta, procesa y marca la comanda como &quot;Lista para enviar&quot;, lo que dispara un evento Pusher global a los repartidores cercanos.
               </p>
               <div className="border-t border-slate-800/60 pt-4 text-xs text-slate-500">
                 ✓ Impresión de comandas e inventario dinámico.

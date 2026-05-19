@@ -92,7 +92,11 @@ async function main() {
   // 6. Tienda demo
   const store = await prisma.store.upsert({
     where: { slug: 'tienda-demo' },
-    update: {},
+    update: {
+      name: 'Tienda Demo',
+      logo: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150&h=150&q=80',
+      banner: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&h=400&q=80',
+    },
     create: {
       name: 'Tienda Demo',
       slug: 'tienda-demo',
@@ -102,6 +106,8 @@ async function main() {
       isOpen: true,
       minOrder: 10,
       deliveryFee: 2.5,
+      logo: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150&h=150&q=80',
+      banner: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&h=400&q=80',
       ownerId: vendor.id,
       zoneId: zone.id,
     },
@@ -122,15 +128,21 @@ async function main() {
 
   // 8. Productos demo
   const productos = [
-    { id: 'prod-demo-1', name: 'Hamburguesa Clásica', description: 'Carne, lechuga, tomate, salsa especial', price: 8.50, categoryId: catHamb.id },
-    { id: 'prod-demo-2', name: 'Hamburguesa Doble', description: 'Doble carne, queso, tocino', price: 12.00, categoryId: catHamb.id },
-    { id: 'prod-demo-3', name: 'Coca-Cola 500ml', description: 'Bebida fría', price: 2.50, categoryId: catBeb.id },
-    { id: 'prod-demo-4', name: 'Papas Fritas', description: 'Porción grande crujiente', price: 4.00, categoryId: null },
+    { id: 'prod-demo-1', name: 'Hamburguesa Clásica', description: 'Carne, lechuga, tomate, salsa especial', price: 8.50, categoryId: catHamb.id, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80' },
+    { id: 'prod-demo-2', name: 'Hamburguesa Doble', description: 'Doble carne, queso, tocino', price: 12.00, categoryId: catHamb.id, image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80' },
+    { id: 'prod-demo-3', name: 'Coca-Cola 500ml', description: 'Bebida fría', price: 2.50, categoryId: catBeb.id, image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80' },
+    { id: 'prod-demo-4', name: 'Papas Fritas', description: 'Porción grande crujiente', price: 4.00, categoryId: null, image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=600&q=80' },
   ]
   for (const p of productos) {
     await prisma.product.upsert({
       where: { id: p.id },
-      update: {},
+      update: {
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        image: p.image,
+        categoryId: p.categoryId,
+      },
       create: { ...p, storeId: store.id, isAvailable: true },
     })
   }

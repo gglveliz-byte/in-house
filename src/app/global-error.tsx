@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
 
 export default function GlobalError({
   error,
@@ -90,7 +91,7 @@ export default function GlobalError({
                 Intentar de nuevo
               </button>
 
-              <a
+              <Link
                 href="/"
                 style={{
                   display: 'block',
@@ -107,7 +108,7 @@ export default function GlobalError({
                 }}
               >
                 Volver al inicio
-              </a>
+              </Link>
             </div>
 
             {/* Mensaje de ayuda */}

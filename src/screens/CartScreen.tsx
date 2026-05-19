@@ -19,7 +19,7 @@ export const CartScreen: React.FC = () => {
   if (items.length === 0) {
     return (
       <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased max-w-md mx-auto relative">
-        <header className="fixed top-0 w-full z-50 bg-surface h-16 flex items-center px-margin-mobile max-w-md mx-auto left-0 right-0">
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile">
           <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
             <span className="material-symbols-outlined text-on-surface">arrow_back</span>
           </Link>
@@ -42,7 +42,7 @@ export const CartScreen: React.FC = () => {
 
   return (
     <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased max-w-md mx-auto relative">
-      <header className="fixed top-0 w-full z-50 bg-surface h-16 flex items-center px-margin-mobile max-w-md mx-auto left-0 right-0">
+      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile">
         <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
           <span className="material-symbols-outlined text-on-surface">arrow_back</span>
         </Link>
@@ -142,7 +142,7 @@ export const CartScreen: React.FC = () => {
         </section>
       </main>
 
-      <div className="fixed bottom-0 w-full max-w-md mx-auto left-0 right-0 bg-surface-container-lowest px-margin-mobile py-4 shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] z-50 pb-safe">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-surface-container-lowest px-margin-mobile py-4 shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] z-50 pb-safe">
         <Link
           href="/azul/payment"
           className="w-full bg-primary text-on-primary font-headline-sm text-headline-sm py-3.5 rounded-lg active:scale-[0.98] transition-transform shadow-sm flex justify-center items-center gap-2"

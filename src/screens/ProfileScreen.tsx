@@ -5,7 +5,7 @@ export const ProfileScreen: React.FC = () => {
   return (
     <div className="bg-background min-h-screen pb-32">
       {/* TopAppBar */}
-      <header className="bg-surface dark:bg-surface-dim fixed top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 max-w-md mx-auto left-0 right-0">
+      <header className="bg-surface dark:bg-surface-dim fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex items-center justify-between px-margin-mobile h-16">
         <button className="active:scale-95 transition-transform text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full flex items-center justify-center">
           <span className="material-symbols-outlined text-[24px]">location_on</span>
         </button>
