@@ -136,7 +136,7 @@ export default function LoginPage() {
           <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4 shadow-[0px_8px_24px_rgba(0,63,135,0.3)]">
             <span className="material-symbols-outlined text-on-primary text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>delivery_dining</span>
           </div>
-          <h1 className="font-headline-lg text-headline-lg-mobile text-on-surface font-bold">Azul Entrega</h1>
+          <h1 className="font-headline-lg text-headline-lg-mobile text-on-surface font-bold">BlueExpress</h1>
           <p className="text-on-surface-variant font-body-md mt-1">Panel Operativo — Acceso Seguro</p>
         </div>
 
@@ -173,7 +173,7 @@ export default function LoginPage() {
         <p className="text-center text-body-sm text-on-surface-variant mt-6">
           ¿Eres cliente?{' '}
           <Link href="/azul" className="text-primary font-semibold hover:underline">
-            Ir a Azul Entrega
+            Ir a BlueExpress
           </Link>
         </p>
       </div>

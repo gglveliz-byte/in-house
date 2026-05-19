@@ -27,7 +27,7 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
           <button onClick={toggleSidebar} className="material-symbols-outlined text-primary dark:text-inverse-primary hover:bg-surface-container-high transition-colors p-2 rounded-full md:hidden">
             menu
           </button>
-          <span className="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">Azul Entrega</span>
+          <span className="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">BlueExpress</span>
         </div>
         <div className="flex items-center gap-4">
           <div className="hidden md:flex gap-6 items-center">
@@ -49,7 +49,7 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
             <div className="w-12 h-12 rounded-lg mb-2 bg-primary flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-3xl">storefront</span>
             </div>
-            <h2 className="font-headline-sm text-headline-sm font-bold text-primary">Azul Entrega Vendor</h2>
+            <h2 className="font-headline-sm text-headline-sm font-bold text-primary">BlueExpress Vendor</h2>
             <p className="text-body-sm text-secondary">Manage your store</p>
           </div>
 

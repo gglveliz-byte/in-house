@@ -13,7 +13,7 @@ export default function PublicLayout({
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <a href="/" className="flex items-center gap-2">
             <span className="text-2xl">🏠</span>
-            <span className="font-bold text-xl text-primary-600">In House</span>
+            <span className="font-bold text-xl text-[#003f87]">BlueExpress</span>
           </a>
           <CartButton />
         </div>
@@ -25,7 +25,7 @@ export default function PublicLayout({
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-auto py-6">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
-          © 2026 In House Delivery. Todos los derechos reservados.
+          © 2026 BlueExpress. Todos los derechos reservados.
         </div>
       </footer>
 

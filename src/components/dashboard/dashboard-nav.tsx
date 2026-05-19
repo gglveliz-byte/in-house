@@ -85,7 +85,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
             <span className="text-2xl">🏠</span>
-            <span className="font-bold text-xl text-[#003f87]">In House</span>
+            <span className="font-bold text-xl text-[#003f87]">BlueExpress</span>
           </Link>
 
           {/* Nav Items - Desktop */}

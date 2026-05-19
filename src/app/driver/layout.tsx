@@ -24,7 +24,7 @@ export default function DriverLayout({ children }: { children: React.ReactNode }
             <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden text-primary font-bold">
               {session?.user?.name?.charAt(0).toUpperCase() || 'R'}
             </div>
-            <h1 className="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">Azul Entrega</h1>
+            <h1 className="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">BlueExpress</h1>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>

@@ -46,7 +46,7 @@ export default function DownloadPage() {
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg">
             <span className="material-symbols-outlined">local_shipping</span>
           </div>
-          <span className="font-headline-sm font-bold text-primary">Azul Entrega</span>
+          <span className="font-headline-sm font-bold text-primary">BlueExpress</span>
         </div>
         <Link href="/azul" className="text-primary font-bold text-label-md hover:underline">
           Ir a la versión web
@@ -63,7 +63,7 @@ export default function DownloadPage() {
           </div>
           
           <h1 className="font-headline-lg md:text-[56px] font-bold text-on-surface leading-tight mb-6">
-            Lleva Azul Entrega <br/> en tu bolsillo.
+            Lleva BlueExpress <br/> en tu bolsillo.
           </h1>
           
           <p className="font-body-lg text-secondary md:text-xl max-w-lg mb-10">
@@ -74,7 +74,7 @@ export default function DownloadPage() {
             <div className="bg-surface-container-high border border-outline-variant p-6 rounded-2xl w-full max-w-md text-center">
               <span className="material-symbols-outlined text-5xl text-green-500 mb-4">check_circle</span>
               <h3 className="font-headline-sm font-bold text-on-surface mb-2">¡App ya instalada!</h3>
-              <p className="text-secondary mb-4">Abre "Azul Entrega" desde tu pantalla de inicio.</p>
+              <p className="text-secondary mb-4">Abre "BlueExpress" desde tu pantalla de inicio.</p>
             </div>
           ) : (
             <div className="w-full max-w-sm flex flex-col gap-4">
@@ -161,7 +161,7 @@ export default function DownloadPage() {
                     <span className="material-symbols-outlined">local_shipping</span>
                   </div>
                   <div>
-                    <h4 className="font-bold">Azul Entrega</h4>
+                    <h4 className="font-bold">BlueExpress</h4>
                     <p className="text-sm text-secondary">Instalar App Oficial</p>
                   </div>
                 </div>

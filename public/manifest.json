@@ -1,11 +1,11 @@
 {
-  "name": "In House Delivery",
-  "short_name": "In House",
+  "name": "BlueExpress",
+  "short_name": "BlueExpress",
   "description": "Pide comida de tus restaurantes favoritos",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#16a34a",
+  "theme_color": "#003f87",
   "orientation": "portrait",
   "scope": "/",
   "icons": [
