@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { usePwaStore } from '@/stores/pwa-store'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -9,9 +11,9 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  const pathname = usePathname()
+  const { deferredPrompt, setDeferredPrompt, isInstalled, setIsInstalled } = usePwaStore()
   const [showPrompt, setShowPrompt] = useState(false)
-  const [isInstalled, setIsInstalled] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
@@ -37,7 +39,7 @@ export function InstallPrompt() {
     // Escuchar el evento beforeinstallprompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
-      setDeferredPrompt(e as BeforeInstallPromptEvent)
+      setDeferredPrompt(e as any)
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
@@ -53,7 +55,7 @@ export function InstallPrompt() {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
       clearTimeout(showTimer)
     }
-  }, [isInstalled])
+  }, [isInstalled, setDeferredPrompt, setIsInstalled])
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -85,6 +87,11 @@ export function InstallPrompt() {
 
   // Solo ocultar si está instalado, pero SIEMPRE mostrar si no está instalado
   if (isInstalled) {
+    return null
+  }
+
+  // Ocultar si estamos en la página de descarga dedicada
+  if (pathname === '/descargar') {
     return null
   }
 
