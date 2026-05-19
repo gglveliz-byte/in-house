@@ -10,6 +10,7 @@ import { OrderChat } from '@/components/chat/order-chat'
 import { usePusherChannel } from '@/hooks/use-pusher'
 import { CHANNELS, EVENTS } from '@/lib/pusher'
 import { formatPrice, getOrderStatusLabel, getOrderStatusColor } from '@/lib/utils'
+import { User, Phone, MapPin, ShoppingCart, CheckCircle, Clock, CreditCard, Utensils, Bike, CheckSquare, XCircle, ArrowLeft, Image as ImageIcon } from 'lucide-react'
 
 interface OrderItem {
   id: string
@@ -278,8 +279,8 @@ export default function VendorChatPage({
         {/* Título y estado */}
         <div className="flex items-center justify-between p-3 border-b">
           <div className="flex items-center gap-2">
-            <Link href="/vendor" className="text-gray-500 hover:text-gray-700 text-sm">
-              ← 
+            <Link href="/vendor" className="text-gray-500 hover:text-gray-700 p-2">
+              <ArrowLeft size={20} />
             </Link>
             <div>
               <h1 className="font-bold text-base">Pedido #{order.orderNumber}</h1>
@@ -294,21 +295,23 @@ export default function VendorChatPage({
         {/* Info del cliente - compacta */}
         <div className="p-3 space-y-2">
           <div className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              <span className="text-lg">👤</span>
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="bg-primary/10 p-2 rounded-full text-primary">
+                <User size={20} />
+              </div>
               <div className="truncate">
                 <p className="text-sm font-medium truncate">{order.customerName}</p>
-                <a href={`tel:${order.customerPhone}`} className="text-xs text-green-600">
-                  📞 {order.customerPhone}
+                <a href={`tel:${order.customerPhone}`} className="text-xs text-primary font-medium hover:underline flex items-center gap-1 mt-0.5">
+                  <Phone size={12} /> {order.customerPhone}
                 </a>
               </div>
             </div>
             {(order.customerLat || order.customerLng) && (
               <button
                 onClick={openMaps}
-                className="ml-2 bg-blue-500 text-white text-xs px-3 py-1 rounded-full flex-shrink-0"
+                className="ml-2 bg-primary/10 text-primary hover:bg-primary/20 text-xs px-3 py-1.5 rounded-full flex-shrink-0 font-medium flex items-center gap-1"
               >
-                🗺️ Mapa
+                <MapPin size={14} /> Mapa
               </button>
             )}
           </div>
@@ -316,8 +319,8 @@ export default function VendorChatPage({
           {/* Resumen del pedido - expandible */}
           <details className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
             <summary className="flex items-center justify-between p-2 cursor-pointer hover:bg-green-100 rounded-lg">
-              <div className="text-xs text-gray-600 flex items-center gap-1">
-                <span>🛒</span> {order.items.length} productos
+              <div className="text-xs text-gray-600 flex items-center gap-1.5">
+                <ShoppingCart size={14} /> {order.items.length} productos
                 <span className="text-gray-400">(click para ver)</span>
               </div>
               <div className="font-bold text-green-600">{formatPrice(order.total)}</div>
@@ -340,19 +343,19 @@ export default function VendorChatPage({
               ? 'bg-yellow-50 border border-yellow-200'
               : 'bg-gray-50 border border-gray-200'
           }`}>
-            <span className="text-xs font-medium">
+            <span className="text-xs font-medium flex items-center gap-1.5">
               {paymentVerified 
-                ? '✅ Pago verificado' 
+                ? <><CheckCircle size={14} className="text-green-600"/> Pago verificado</>
                 : paymentUploaded 
-                ? '⏳ Verificar pago'
-                : '💳 Esperando pago'}
+                ? <><Clock size={14} className="text-yellow-600"/> Verificar pago</>
+                : <><CreditCard size={14} className="text-gray-500"/> Esperando pago</>}
             </span>
             {order.paymentProof && (
               <button
                 onClick={() => setViewingImage(order.paymentProof)}
-                className="text-xs text-blue-600 font-medium hover:underline"
+                className="text-xs text-primary font-medium hover:underline flex items-center gap-1"
               >
-                Ver 📎
+                Ver <ImageIcon size={14} />
               </button>
             )}
           </div>
@@ -364,9 +367,10 @@ export default function VendorChatPage({
                 onClick={handleVerifyPayment}
                 disabled={updating}
                 size="sm"
-                className="flex-1 bg-green-600 hover:bg-green-700 text-sm"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-sm flex items-center justify-center gap-1.5"
               >
-                {updating ? '⏳' : '✅ Verificar pago'}
+                {updating ? <Clock size={16} className="animate-spin" /> : <CheckSquare size={16} />} 
+                {updating ? 'Procesando...' : 'Verificar pago'}
               </Button>
             )}
 
@@ -375,9 +379,10 @@ export default function VendorChatPage({
                 onClick={handleMarkReady}
                 disabled={updating}
                 size="sm"
-                className="flex-1 bg-purple-600 hover:bg-purple-700 text-sm"
+                className="flex-1 bg-primary hover:bg-primary/90 text-white text-sm flex items-center justify-center gap-1.5"
               >
-                {updating ? '⏳' : '🍽️ Listo para enviar'}
+                {updating ? <Clock size={16} className="animate-spin" /> : <Utensils size={16} />}
+                {updating ? 'Procesando...' : 'Listo para enviar'}
               </Button>
             )}
 
@@ -387,35 +392,35 @@ export default function VendorChatPage({
                 disabled={updating}
                 variant="danger"
                 size="sm"
-                className="px-4"
+                className="px-3"
               >
-                ✕
+                <XCircle size={18} />
               </Button>
             )}
           </div>
 
           {/* Estados informativos */}
           {isReady && (
-            <div className="bg-purple-50 text-purple-800 text-xs p-2 rounded-lg text-center">
-              🍽️ Listo. Esperando repartidor.
+            <div className="bg-primary/10 text-primary border border-primary/20 text-xs p-2 rounded-lg text-center flex items-center justify-center gap-1.5">
+              <Utensils size={14} /> Listo. Esperando repartidor.
             </div>
           )}
 
           {isPickedUp && (
-            <div className="bg-blue-50 text-blue-800 text-xs p-2 rounded-lg text-center">
-              🏍️ En camino con el repartidor.
+            <div className="bg-primary/10 text-primary border border-primary/20 text-xs p-2 rounded-lg text-center flex items-center justify-center gap-1.5">
+              <Bike size={14} /> En camino con el repartidor.
             </div>
           )}
 
           {isDelivered && (
-            <div className="bg-green-50 text-green-800 text-xs p-2 rounded-lg text-center">
-              🎉 Entregado exitosamente.
+            <div className="bg-green-50 text-green-800 border border-green-200 text-xs p-2 rounded-lg text-center flex items-center justify-center gap-1.5">
+              <CheckCircle size={14} /> Entregado exitosamente.
             </div>
           )}
 
           {isCancelled && (
-            <div className="bg-red-50 text-red-800 text-xs p-2 rounded-lg text-center">
-              ❌ Pedido cancelado.
+            <div className="bg-red-50 text-red-800 border border-red-200 text-xs p-2 rounded-lg text-center flex items-center justify-center gap-1.5">
+              <XCircle size={14} /> Pedido cancelado.
             </div>
           )}
         </div>

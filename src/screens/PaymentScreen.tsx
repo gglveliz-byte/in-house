@@ -22,6 +22,7 @@ export const PaymentScreen: React.FC = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [notes, setNotes] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CARD'>('CASH');
   const [coupon, setCoupon] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +65,7 @@ export const PaymentScreen: React.FC = () => {
           customerLat: latitude,
           customerLng: longitude,
           customerNotes: notes,
+          paymentMethod: paymentMethod,
           items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
         }),
       });
@@ -75,6 +77,7 @@ export const PaymentScreen: React.FC = () => {
         return;
       }
 
+      useCartStore.getState().setActiveOrderId(data.id);
       clearCart();
       router.push(`/azul/tracking?orderId=${data.id}`);
     } catch (err) {
@@ -192,9 +195,12 @@ export const PaymentScreen: React.FC = () => {
         <section className="flex flex-col gap-stack-md">
           <h3 className="font-headline-sm text-headline-sm text-on-surface">Método de pago</h3>
           <div className="flex flex-col gap-stack-sm">
-            <div className="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-primary">
+            <div 
+              onClick={() => setPaymentMethod('CARD')}
+              className={`flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] cursor-pointer transition-colors ${paymentMethod === 'CARD' ? 'border-2 border-primary' : 'border border-transparent hover:border-outline-variant'}`}
+            >
               <div className="flex items-center gap-3">
-                <div className="bg-primary-fixed p-2 rounded-lg text-primary flex items-center justify-center">
+                <div className={`${paymentMethod === 'CARD' ? 'bg-primary-fixed text-primary' : 'bg-surface-container text-secondary'} p-2 rounded-lg flex items-center justify-center transition-colors`}>
                   <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>credit_card</span>
                 </div>
                 <div>
@@ -202,13 +208,19 @@ export const PaymentScreen: React.FC = () => {
                   <p className="font-label-sm text-label-sm text-on-surface-variant">Pago seguro</p>
                 </div>
               </div>
-              <span className="text-primary">
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>radio_button_checked</span>
+              <span className={paymentMethod === 'CARD' ? 'text-primary' : 'text-outline-variant'}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: paymentMethod === 'CARD' ? "'FILL' 1" : "'FILL' 0" }}>
+                  {paymentMethod === 'CARD' ? 'radio_button_checked' : 'radio_button_unchecked'}
+                </span>
               </span>
             </div>
-            <div className="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-transparent hover:border-outline-variant transition-colors cursor-pointer">
+            
+            <div 
+              onClick={() => setPaymentMethod('CASH')}
+              className={`flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] cursor-pointer transition-colors ${paymentMethod === 'CASH' ? 'border-2 border-primary' : 'border border-transparent hover:border-outline-variant'}`}
+            >
               <div className="flex items-center gap-3">
-                <div className="bg-surface-container p-2 rounded-lg text-secondary flex items-center justify-center">
+                <div className={`${paymentMethod === 'CASH' ? 'bg-primary-fixed text-primary' : 'bg-surface-container text-secondary'} p-2 rounded-lg flex items-center justify-center transition-colors`}>
                   <span className="material-symbols-outlined">payments</span>
                 </div>
                 <div>
@@ -216,8 +228,10 @@ export const PaymentScreen: React.FC = () => {
                   <p className="font-label-sm text-label-sm text-on-surface-variant">Paga en el momento</p>
                 </div>
               </div>
-              <span className="text-outline-variant">
-                <span className="material-symbols-outlined">radio_button_unchecked</span>
+              <span className={paymentMethod === 'CASH' ? 'text-primary' : 'text-outline-variant'}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: paymentMethod === 'CASH' ? "'FILL' 1" : "'FILL' 0" }}>
+                  {paymentMethod === 'CASH' ? 'radio_button_checked' : 'radio_button_unchecked'}
+                </span>
               </span>
             </div>
           </div>

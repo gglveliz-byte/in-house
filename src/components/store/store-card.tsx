@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { formatPrice } from '@/lib/utils'
+import { Store as StoreIcon } from 'lucide-react'
 
 interface StoreCardProps {
   store: {
@@ -23,9 +24,9 @@ interface StoreCardProps {
 export function StoreCard({ store }: StoreCardProps) {
   return (
     <Link href={`/tienda/${store.slug}`}>
-      <div className="group card overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 border-2 border-transparent hover:border-green-200">
+      <div className="group card overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 border-2 border-transparent hover:border-primary/20">
         {/* Banner */}
-        <div className="relative h-48 bg-gray-200 overflow-hidden">
+        <div className="relative h-48 bg-surface-container-low overflow-hidden">
           {store.banner ? (
             <Image
               src={store.banner}
@@ -36,8 +37,10 @@ export function StoreCard({ store }: StoreCardProps) {
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-400 via-green-500 to-orange-500">
-              <span className="text-7xl group-hover:scale-110 transition-transform duration-300">🍽️</span>
+            <div className="w-full h-full flex items-center justify-center bg-surface-container">
+              <span className="text-primary opacity-30 group-hover:scale-110 transition-transform duration-300">
+                <StoreIcon size={64} />
+              </span>
             </div>
           )}
 
@@ -70,7 +73,7 @@ export function StoreCard({ store }: StoreCardProps) {
 
         {/* Content */}
         <div className={`p-5 ${store.logo ? 'pt-12' : 'pt-5'} bg-white`}>
-          <h3 className="font-bold text-xl text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
+          <h3 className="font-bold text-xl text-gray-900 mb-2 group-hover:text-primary transition-colors">
             {store.name}
           </h3>
 
@@ -93,21 +96,21 @@ export function StoreCard({ store }: StoreCardProps) {
                store.minDeliveryFee >= 0 && 
                store.maxDeliveryFee >= 0 &&
                store.maxDeliveryFee >= store.minDeliveryFee ? (
-                <span className="flex items-center gap-1 text-gray-700 bg-green-50 px-3 py-1.5 rounded-full font-medium">
+                <span className="flex items-center gap-1 text-gray-700 bg-primary/5 border border-primary/10 px-3 py-1.5 rounded-full font-medium">
                   🚚 Envío: {formatPrice(store.minDeliveryFee)} - {formatPrice(store.maxDeliveryFee)}
                 </span>
               ) : (
-                <span className="flex items-center gap-1 text-gray-700 bg-green-50 px-3 py-1.5 rounded-full font-medium">
+                <span className="flex items-center gap-1 text-gray-700 bg-primary/5 border border-primary/10 px-3 py-1.5 rounded-full font-medium">
                   🚚 Envío: {formatPrice(store.deliveryFee)}
                 </span>
               )}
               {store.minOrder > 0 && (
-                <span className="flex items-center gap-1 text-gray-700 bg-orange-50 px-3 py-1.5 rounded-full font-medium">
+                <span className="flex items-center gap-1 text-gray-700 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full font-medium">
                   💰 Mín: {formatPrice(store.minOrder)}
                 </span>
               )}
             </div>
-            <div className="text-green-600 font-bold text-lg">
+            <div className="text-primary font-bold text-lg">
               →
             </div>
           </div>

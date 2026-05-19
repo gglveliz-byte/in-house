@@ -129,11 +129,10 @@ export function LocationPicker({
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 
-    // Si no hay API key, usar modo manual
-    if (!apiKey) {
+    // Si no hay API key, usar modo manual silenciosamente
+    if (!apiKey || apiKey === 'tu_api_key') {
       setMapError(true)
       setMapMode('manual')
-      setErrorMessage('API key de Google Maps no configurada')
       return
     }
 
@@ -149,13 +148,9 @@ export function LocationPicker({
         setMapLoaded(true)
         setMapError(false)
       })
-      .catch((error) => {
-        console.error('Error loading Google Maps:', error)
+      .catch(() => {
         setMapError(true)
         setMapMode('manual')
-        setErrorMessage(
-          error.message || 'Error al cargar Google Maps. Verifica que la API esté habilitada.'
-        )
       })
   }, [])
 
@@ -197,9 +192,6 @@ export function LocationPicker({
         if (mapRef.current && mapRef.current.children.length === 0) {
           setMapError(true)
           setMapMode('manual')
-          setErrorMessage(
-            'La API "Maps JavaScript API" no está habilitada o la API key no tiene permisos. Ve a Google Cloud Console para habilitarla.'
-          )
         }
       }, 2000)
 
@@ -267,7 +259,6 @@ export function LocationPicker({
     if (!window.google?.maps) {
       setMapError(true)
       setMapMode('manual')
-      setErrorMessage('Google Maps no está disponible')
       return
     }
 
@@ -634,40 +625,29 @@ export function LocationPicker({
 
       {/* Modo Manual o Fallback */}
       {(mapMode === 'manual' || mapError) && (
-        <div className="space-y-2">
-          {mapError && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-2">
-              <p className="text-sm text-yellow-800 font-medium mb-1">
-                ⚠️ No se pudo cargar Google Maps
-              </p>
-              {errorMessage && (
-                <p className="text-xs text-yellow-700">{errorMessage}</p>
-              )}
-              <p className="text-xs text-yellow-700 mt-1">
-                Por favor ingresa la dirección manualmente. Si el problema persiste, verifica que:
-              </p>
-              <ul className="text-xs text-yellow-700 mt-1 list-disc list-inside">
-                <li>La API "Maps JavaScript API" esté habilitada en Google Cloud Console</li>
-                <li>La API key tenga permisos para Maps JavaScript API</li>
-                <li>No haya restricciones de dominio bloqueando localhost</li>
-              </ul>
+        <div className="space-y-4">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary-fixed/50 flex items-center justify-center text-primary">
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
+              </div>
+              <div>
+                <h4 className="font-headline-sm text-headline-sm text-on-surface">Dirección de entrega</h4>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">Ingresa los detalles de tu ubicación</p>
+              </div>
             </div>
-          )}
-          
-          <input
-            type="text"
-            className="input w-full"
-            value={address}
-            onChange={(e) => onAddressChange(e.target.value)}
-            placeholder="Calle, número, colonia, ciudad..."
-            required={required}
-          />
-          
-          {latitude && longitude && (
-            <p className="text-xs text-gray-500">
-              Coordenadas: {latitude.toFixed(6)}, {longitude.toFixed(6)}
-            </p>
-          )}
+            
+            <div className="mt-2">
+              <input
+                type="text"
+                className="w-full bg-surface-container border border-outline-variant rounded-xl px-4 py-3 font-body-md text-on-surface outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-outline"
+                value={address}
+                onChange={(e) => onAddressChange(e.target.value)}
+                placeholder="Ej. Calle Principal 123, Apartamento 4B..."
+                required={required}
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>

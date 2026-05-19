@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { StoreCard } from '@/components/store/store-card'
 import { setActiveCurrency } from '@/lib/utils'
+import { MapPin, Store as StoreIcon, Utensils, HandPlatter, MousePointerClick } from 'lucide-react'
 
 interface Zone {
   id: string
@@ -112,16 +113,16 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50">
+    <div className="min-h-screen bg-surface">
       <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
         {/* Hero Section */}
         <section className="text-center mb-8 md:mb-12">
           <div className="inline-block mb-6">
-            <div className="bg-white rounded-2xl shadow-lg p-4 inline-block">
-              <span className="text-6xl">🏠</span>
+            <div className="bg-white rounded-2xl shadow-lg p-4 inline-block text-primary">
+              <StoreIcon size={64} strokeWidth={1.5} />
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
             Tu comida favorita, en tu puerta
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto font-medium">
@@ -132,12 +133,14 @@ export default function HomePage() {
         {/* Zone Selector - OBLIGATORIO */}
         {zones.length > 0 && (
           <section className="mb-8">
-            <div className={`bg-white rounded-2xl shadow-lg p-6 border-2 ${!selectedZone ? 'border-orange-300 ring-2 ring-orange-200' : 'border-green-100'}`}>
+            <div className={`bg-white rounded-2xl shadow-sm p-6 border-2 ${!selectedZone ? 'border-primary/30 ring-2 ring-primary/10' : 'border-gray-100'}`}>
               <div className="flex flex-col md:flex-row items-center gap-4">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">📍</span>
+                  <div className="p-3 bg-primary/10 rounded-full text-primary">
+                    <MapPin size={28} />
+                  </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">
+                    <h3 className="font-bold text-gray-900 text-lg">
                       {!selectedZone ? '¡Primero selecciona tu zona!' : 'Tu zona seleccionada'}
                     </h3>
                     <p className="text-sm text-gray-500">
@@ -150,10 +153,10 @@ export default function HomePage() {
                     value={selectedZone}
                     onChange={(e) => handleZoneChange(e.target.value)}
                     aria-label="Selecciona tu zona de entrega"
-                    className={`w-full px-4 py-3 text-lg border-2 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 font-medium ${
+                    className={`w-full px-4 py-3 text-lg border-2 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-medium ${
                       !selectedZone
-                        ? 'border-orange-300 bg-orange-50 animate-pulse'
-                        : 'border-green-200 bg-green-50'
+                        ? 'border-primary/30 bg-primary/5 animate-pulse'
+                        : 'border-gray-200 bg-gray-50'
                     }`}
                   >
                     <option value="">-- Selecciona tu localidad --</option>
@@ -188,7 +191,7 @@ export default function HomePage() {
               </div>
               {selectedZone && (
                 <div className="mt-3 text-center">
-                  <span className="text-sm text-green-600 font-medium">
+                  <span className="text-sm text-primary font-medium">
                     ✓ Mostrando restaurantes en: {zones.find(z => z.id === selectedZone)?.name}
                   </span>
                 </div>
@@ -200,8 +203,9 @@ export default function HomePage() {
         {/* Stores Grid */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              🍽️ Restaurantes disponibles
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <Utensils className="text-primary" size={28} />
+              Restaurantes disponibles
               {selectedZone && zones.find(z => z.id === selectedZone) && (
                 <span className="block text-lg font-normal text-gray-500 mt-1">
                   en {zones.find(z => z.id === selectedZone)?.name}
@@ -209,15 +213,17 @@ export default function HomePage() {
               )}
             </h2>
             <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
               <span>{stores.length} {stores.length === 1 ? 'restaurante' : 'restaurantes'}</span>
             </div>
           </div>
 
           {!selectedZone ? (
-            <div className="text-center py-16 bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl shadow-sm border-2 border-dashed border-orange-200">
-              <div className="text-6xl mb-4">👆</div>
-              <p className="text-orange-600 text-xl font-bold mb-2">
+            <div className="text-center py-16 bg-surface-container-low rounded-2xl shadow-sm border-2 border-dashed border-gray-200">
+              <div className="flex justify-center mb-4 text-primary opacity-50">
+                <MousePointerClick size={64} />
+              </div>
+              <p className="text-primary text-xl font-bold mb-2">
                 Selecciona tu zona arriba
               </p>
               <p className="text-gray-500 text-lg">
@@ -232,7 +238,9 @@ export default function HomePage() {
             </div>
           ) : stores.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl shadow-sm border-2 border-dashed border-gray-200">
-              <div className="text-6xl mb-4">😔</div>
+              <div className="flex justify-center mb-4 text-gray-400">
+                <HandPlatter size={64} />
+              </div>
               <p className="text-gray-500 text-lg font-medium">
                 No hay restaurantes disponibles en esta zona todavía.
               </p>

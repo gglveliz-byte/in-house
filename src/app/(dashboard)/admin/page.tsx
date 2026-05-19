@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatPrice } from '@/lib/utils'
 import Link from 'next/link'
+import { Store, Users, Package, MessageSquare, AlertTriangle, RefreshCw, Bike, XCircle, Banknote, ClipboardList, PackageX, Trophy } from 'lucide-react'
 
 interface DashboardData {
   store: {
@@ -99,7 +100,7 @@ export default function AdminDashboardPage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <span className="text-5xl">⚠️</span>
+        <AlertTriangle size={48} className="text-yellow-500" />
         <p className="text-gray-600 font-medium">{error}</p>
         <Button onClick={fetchDashboard} variant="secondary">Reintentar</Button>
       </div>
@@ -118,8 +119,8 @@ export default function AdminDashboardPage() {
             Resumen operativo de tu zona
           </p>
         </div>
-        <Button onClick={fetchDashboard} variant="secondary" size="sm">
-          🔄 Actualizar
+        <Button onClick={fetchDashboard} variant="secondary" size="sm" className="flex items-center gap-1.5">
+          <RefreshCw size={14} /> Actualizar
         </Button>
       </div>
 
@@ -163,16 +164,16 @@ export default function AdminDashboardPage() {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { href: '/admin/stores', icon: '🏪', label: 'Tiendas', desc: 'Gestionar tiendas' },
-          { href: '/admin/users', icon: '👥', label: 'Usuarios', desc: 'Repartidores y más' },
-          { href: '/admin/orders', icon: '📦', label: 'Pedidos', desc: 'Ver todos los pedidos' },
-          { href: '/admin/messages', icon: '💬', label: 'Mensajes', desc: 'Chat con Super Admin' },
+          { href: '/admin/stores', icon: <Store size={32} className="mx-auto" />, label: 'Tiendas', desc: 'Gestionar tiendas' },
+          { href: '/admin/users', icon: <Users size={32} className="mx-auto" />, label: 'Usuarios', desc: 'Repartidores y más' },
+          { href: '/admin/orders', icon: <Package size={32} className="mx-auto" />, label: 'Pedidos', desc: 'Ver todos los pedidos' },
+          { href: '/admin/messages', icon: <MessageSquare size={32} className="mx-auto" />, label: 'Mensajes', desc: 'Chat con Super Admin' },
         ].map((action) => (
           <Link key={action.href} href={action.href}>
             <Card className="hover:shadow-md hover:border-[#003f87]/30 transition-all duration-200 cursor-pointer group">
               <CardContent className="pt-4 pb-4 text-center">
-                <span className="text-3xl block mb-2">{action.icon}</span>
-                <p className="font-semibold text-gray-900 text-sm group-hover:text-[#003f87]">{action.label}</p>
+                <div className="mb-2 text-primary/70 group-hover:text-primary transition-colors">{action.icon}</div>
+                <p className="font-semibold text-gray-900 text-sm group-hover:text-primary transition-colors">{action.label}</p>
                 <p className="text-xs text-gray-500 mt-0.5">{action.desc}</p>
               </CardContent>
             </Card>
@@ -184,26 +185,26 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="text-center">
           <CardContent className="pt-5 pb-4">
-            <p className="text-3xl font-bold text-[#003f87]">{data?.drivers.total || 0}</p>
-            <p className="text-sm text-gray-500 mt-1">🚗 Repartidores</p>
+            <p className="text-3xl font-bold text-primary">{data?.drivers.total || 0}</p>
+            <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1.5"><Bike size={14} /> Repartidores</p>
           </CardContent>
         </Card>
         <Card className="text-center">
           <CardContent className="pt-5 pb-4">
-            <p className="text-3xl font-bold text-[#003f87]">{orders?.total || 0}</p>
-            <p className="text-sm text-gray-500 mt-1">📦 Total Pedidos</p>
+            <p className="text-3xl font-bold text-primary">{orders?.total || 0}</p>
+            <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1.5"><Package size={14} /> Total Pedidos</p>
           </CardContent>
         </Card>
         <Card className="text-center">
           <CardContent className="pt-5 pb-4">
             <p className="text-3xl font-bold text-red-500">{orders?.cancelled || 0}</p>
-            <p className="text-sm text-gray-500 mt-1">❌ Cancelados</p>
+            <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1.5"><XCircle size={14} /> Cancelados</p>
           </CardContent>
         </Card>
         <Card className="text-center">
           <CardContent className="pt-5 pb-4">
             <p className="text-3xl font-bold text-amber-600">{formatPrice(data?.revenue.today || 0)}</p>
-            <p className="text-sm text-gray-500 mt-1">💰 Hoy</p>
+            <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1.5"><Banknote size={14} /> Hoy</p>
           </CardContent>
         </Card>
       </div>
@@ -214,7 +215,7 @@ export default function AdminDashboardPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-gray-900">📋 Pedidos Recientes</h2>
+              <h2 className="font-bold text-gray-900 flex items-center gap-2"><ClipboardList size={18} /> Pedidos Recientes</h2>
               <Link
                 href="/admin/orders"
                 className="text-[#003f87] hover:text-[#002d6b] text-sm font-medium"
@@ -243,7 +244,7 @@ export default function AdminDashboardPage() {
               </div>
             ) : (
               <div className="text-center py-10 text-gray-400">
-                <span className="text-4xl block mb-2">📭</span>
+                <PackageX size={48} className="mx-auto mb-3 opacity-50" />
                 <p>No hay pedidos recientes</p>
               </div>
             )}
@@ -254,7 +255,7 @@ export default function AdminDashboardPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-gray-900">🏆 Tiendas Destacadas</h2>
+              <h2 className="font-bold text-gray-900 flex items-center gap-2"><Trophy size={18} className="text-yellow-500" /> Tiendas Destacadas</h2>
               <Link
                 href="/admin/stores"
                 className="text-[#003f87] hover:text-[#002d6b] text-sm font-medium"
@@ -286,7 +287,7 @@ export default function AdminDashboardPage() {
               </div>
             ) : (
               <div className="text-center py-10 text-gray-400">
-                <span className="text-4xl block mb-2">🏪</span>
+                <Store size={48} className="mx-auto mb-3 opacity-50" />
                 <p>No hay tiendas activas</p>
                 <Link href="/admin/stores" className="text-[#003f87] hover:underline mt-2 inline-block text-sm font-medium">
                   Crear tienda →

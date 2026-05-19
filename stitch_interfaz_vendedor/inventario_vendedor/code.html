@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Azul Entrega - Inventario del Vendedor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#171c1f",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#004491",
+                        "on-secondary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#acc7ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#ccd0d4",
+                        "surface-container": "#e7eeff",
+                        "surface-bright": "#f9f9ff",
+                        "on-tertiary-fixed-variant": "#43474b",
+                        "tertiary-fixed": "#dfe3e7",
+                        "tertiary": "#3d4245",
+                        "surface-container-highest": "#d8e3fb",
+                        "surface-tint": "#115cb9",
+                        "surface-container-high": "#dee8ff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-low": "#f0f3ff",
+                        "tertiary-fixed-dim": "#c3c7cb",
+                        "on-primary-fixed": "#001a40",
+                        "primary-container": "#0056b3",
+                        "surface": "#f9f9ff",
+                        "inverse-surface": "#263143",
+                        "on-error": "#ffffff",
+                        "outline": "#727784",
+                        "surface-dim": "#cfdaf2",
+                        "on-background": "#111c2d",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#424752",
+                        "surface-variant": "#d8e3fb",
+                        "inverse-primary": "#acc7ff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#d3e4fe",
+                        "primary": "#003f87",
+                        "outline-variant": "#c2c6d4",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-container": "#bbd0ff",
+                        "background": "#f9f9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d7e2ff",
+                        "secondary": "#505f76",
+                        "on-surface": "#111c2d",
+                        "tertiary-container": "#54595d",
+                        "secondary-container": "#d0e1fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f9f9ff;
+            color: #111c2d;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .switch-input:checked + .switch-slider {
+            background-color: #0056b3;
+        }
+        .switch-input:checked + .switch-slider:before {
+            transform: translateX(1.25rem);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Navigation Drawer (Desktop) -->
+<aside class="hidden md:flex flex-col py-margin-desktop gap-base h-full w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white overflow-hidden">
+<img alt="Vendor Logo" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate vendor manager in a sleek, modern office setting. The lighting is bright and even, highlighting a clean and reliable professional aesthetic. The background is a soft-focus office interior with minimalist blue and white accents that align with a corporate logistics brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfRkaPKxyJWtodgljNr4s1LwrVKDZWSkjOv1_Qb0F2QhWgXquKwBz6ow3TrFlvDHVFEEiGEUdkAiNNZv-r5aI3UwudQBMwjXMWyw_ySmLks9ahIW6Xgf8-KUbwZ2TIXPUs0dgqtrZbAllFmD0zCrBaRHBUtYEn3-lL_hdWYMspBnoISa9P4ALFeXAwgMNhGYHJ65r3sGX-cv6X5-TF7MurADp5j4I6VlVcc4fTHRHQG7ix7thK1siK1t5GB0ExP-K9sw9qQeSMNS4"/>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">Azul Entrega</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">Vendor Portal</p>
+</div>
+</div>
+<div class="mt-4 p-3 bg-surface-variant rounded-lg">
+<p class="font-label-md text-on-surface-variant text-xs uppercase tracking-wider">Gestión Logística</p>
+<p class="font-body-sm text-on-surface font-semibold">ID: 88234</p>
+</div>
+</div>
+<nav class="flex flex-col">
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-r-full mr-4 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Panel de Control</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-r-full mr-4 transition-colors" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-body-md text-body-md">Pedidos Activos</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-r-full mr-4 transition-colors" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-body-md text-body-md">Historial</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-primary-container text-on-primary-container font-bold rounded-r-full mr-4" href="#">
+<span class="material-symbols-outlined">inventory</span>
+<span class="font-body-md text-body-md">Inventario</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-r-full mr-4 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Configuración</span>
+</a>
+</nav>
+</aside>
+<!-- Top App Bar -->
+<header class="docked full-width top-0 sticky z-50 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile md:px-margin-desktop md:ml-64 h-16 transition-all">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">Inventario</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full border border-green-200">
+<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+<span class="font-label-md text-label-md">Disponible</span>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="Courier Profile Picture" class="w-full h-full object-cover" data-alt="A portrait of a cheerful, professional delivery courier against a bright, airy urban background. The courier is wearing a clean, branded blue polo shirt. The overall image has a high-contrast, modern corporate feel with clean lighting and professional composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQAU9jO6GZDKDuUdr9mJg-IYnqsq-muoD_6gNXuMjvuzqz2ujTu4yiLzjagWcvKcRHzi-3Kvb_EOQ0o_09vkRqtxesYrbARSHh7JEpeRwX0a-lTsQGuN9vKlRE5M6L3eGSiBs1OjvIJLOn-td4nmSkDbnzCTsMvbP8-RFQJrIwTcnwQpDzTpnuZv-hzHQibZxxF6Pk79dXLGPPI7hLoaIfG6bqjNvrYcZiVeayttavAH7S_mc_LRBFaKHBas-EjP2aGIAMWfIUOKo"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="md:ml-64 p-margin-mobile md:p-margin-desktop pb-32 md:pb-12">
+<!-- Category Chips -->
+<section class="mb-8 overflow-x-auto hide-scrollbar whitespace-nowrap flex gap-3 py-2">
+<button class="px-6 py-2 rounded-full bg-primary text-white font-label-md text-label-md shadow-sm">Todos</button>
+<button class="px-6 py-2 rounded-full bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md">Hamburguesas</button>
+<button class="px-6 py-2 rounded-full bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md">Pizzas</button>
+<button class="px-6 py-2 rounded-full bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md">Ensaladas</button>
+<button class="px-6 py-2 rounded-full bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md">Bebidas</button>
+<button class="px-6 py-2 rounded-full bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md">Postres</button>
+</section>
+<!-- Stats Overview (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-white p-6 rounded-xl border border-outline-variant flex justify-between items-center">
+<div>
+<p class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider mb-1">Productos Activos</p>
+<p class="text-headline-md font-headline-md">24 / 28</p>
+</div>
+<div class="w-12 h-12 bg-primary-fixed-dim rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">inventory_2</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant flex justify-between items-center">
+<div>
+<p class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider mb-1">Agotados</p>
+<p class="text-headline-md font-headline-md text-error">4</p>
+</div>
+<div class="w-12 h-12 bg-error-container rounded-full flex items-center justify-center text-on-error-container">
+<span class="material-symbols-outlined">warning</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant flex justify-between items-center">
+<div>
+<p class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider mb-1">Ventas Hoy</p>
+<p class="text-headline-md font-headline-md">$1,240.00</p>
+</div>
+<div class="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+</div>
+</div>
+<!-- Inventory List -->
+<div class="flex flex-col gap-8">
+<!-- Category Group: Hamburguesas -->
+<div>
+<div class="flex items-center gap-4 mb-4">
+<h2 class="font-headline-sm text-headline-sm text-on-background">Hamburguesas</h2>
+<div class="h-[1px] flex-grow bg-outline-variant"></div>
+</div>
+<div class="bento-grid">
+<!-- Item 1 -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden group hover:border-primary transition-all">
+<div class="relative h-40 overflow-hidden">
+<img alt="Burger" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A gourmet cheeseburger with melting cheddar, fresh lettuce, and ripe tomatoes on a toasted brioche bun. The shot is high-detail, commercial food photography style with soft side-lighting to accentuate textures. The background is a clean, minimalist kitchen setting with a bright and airy atmosphere consistent with a premium food brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf8k7JEXu-0CURo-5F3vrOQBJeKhOyo2V0Q8xFY9XIhHLZSdPAnKQPkOEEFGGHK_EnTNxSoh8mzb7GXnyDDV5teQjulKkfyJvHJlavxD5iQfR87YLU34K8CLHx7w2DHP-RJ_bBarn-0wmVU1RDhg9KWFCQz5HM5KaV_P5p1kKP4z7qqKT-lm4O-LiVbx3e9mLr6k9uRjrTwOc62qpfiiWc-UlCUclxhbXrDQZAD7iHB1sVMwBCdzQf-yzidj1XbY3A9QbGle1UXiQ"/>
+<div class="absolute top-2 right-2">
+<span class="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-bold uppercase">Popular</span>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-body-lg font-bold">Classic Royale</h3>
+<div class="relative inline-block w-10 h-5 align-middle select-none">
+<input checked="" class="switch-input absolute block w-0 h-0 opacity-0 cursor-pointer" id="switch-1" type="checkbox"/>
+<label class="switch-slider block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-colors before:content-[''] before:absolute before:block before:w-3 before:h-3 before:mt-1 before:ml-1 before:bg-white before:rounded-full before:transition-transform" for="switch-1"></label>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div>
+<p class="font-label-md text-on-surface-variant text-[10px] uppercase">Stock</p>
+<p class="font-body-md text-body-sm font-semibold">12 unidades</p>
+</div>
+<div class="text-right">
+<p class="font-label-md text-on-surface-variant text-[10px] uppercase">Precio</p>
+<input class="w-20 text-right font-headline-sm text-headline-sm text-primary bg-surface-container-low border-none rounded p-1 focus:ring-2 focus:ring-primary-container outline-none" type="text" value="$12.50"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden group hover:border-primary transition-all">
+<div class="relative h-40 overflow-hidden">
+<img alt="BBQ Burger" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A massive BBQ burger with crispy onion rings, smoky sauce, and thick-cut bacon, captured in a dynamic close-up. The lighting is warm and dramatic, highlighting the glisten of the sauce and the crunch of the onions. The visual style is modern corporate food photography with a focus on high-quality ingredients and satisfying textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTFeSnNEoRvt6cZamd2vFPsPhPHiwR0Cer6evM-4MTqtEyLMCpS1cOxZX2M8xnXC08ySEOq1o2Z6xquhaB1ZymEO_jvf5YgqNsd0OUZf4UzxY6BASOejzXeC2lpKTxmnYyYJbztb57zicN2-VwImzmpv7vozPmsNu1zkhq8ND6jU82_r0d8Jc9uknqtsh5kQW3usmwCtoOXtEs8AXU8Dkix1sr73qiUldSmZFhVnJ1RwpjurXGp2n7eiVWOIeJWrsmaDfP5OqO8sE"/>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-body-lg font-bold">Bacon BBQ Special</h3>
+<div class="relative inline-block w-10 h-5 align-middle select-none">
+<input checked="" class="switch-input absolute block w-0 h-0 opacity-0 cursor-pointer" id="switch-2" type="checkbox"/>
+<label class="switch-slider block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-colors before:content-[''] before:absolute before:block before:w-3 before:h-3 before:mt-1 before:ml-1 before:bg-white before:rounded-full before:transition-transform" for="switch-2"></label>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div>
+<p class="font-label-md text-on-surface-variant text-[10px] uppercase">Stock</p>
+<p class="font-body-md text-body-sm font-semibold">8 unidades</p>
+</div>
+<div class="text-right">
+<p class="font-label-md text-on-surface-variant text-[10px] uppercase">Precio</p>
+<input class="w-20 text-right font-headline-sm text-headline-sm text-primary bg-surface-container-low border-none rounded p-1 focus:ring-2 focus:ring-primary-container outline-none" type="text" value="$14.99"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 3 (Agotado) -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden opacity-75 grayscale group transition-all">
+<div class="relative h-40 overflow-hidden">
+<img alt="Double Burger" class="w-full h-full object-cover" data-alt="A double-patty artisan burger with melted pepper jack cheese and jalapeños. The image is styled as professional culinary photography with a high-key, bright background. Despite being out of stock, the presentation remains premium and clean, reflecting a high standard of quality in a corporate delivery app context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFSCqzFl-1H8CdO1Q-6ucmXnJ4lKc5pEdfxAai4BGkrakOI2edGmCehNDjMaparfKKGF94pIzBVueglPCCMCWO5NrH3ZdVDwSVCazjcM0hwgPwcbfh2WqnwTAFCWuO6onvYkknZMhMiLq81X87AJUoU0a8uCus7FqMctmFiw5uqTd49IlVjlSA8yoY-5mdB46kP0yKI6Cfy2nDfGsD1XEEFPDxLzducL7DMWEcCLWB7PlgVr2RRLnS_E8se-K3XkNh7VyBOyYMYTU"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+<span class="bg-white text-on-surface px-4 py-2 rounded font-bold font-label-md text-label-md">SIN STOCK</span>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-body-lg font-bold">Double Spicy</h3>
+<div class="relative inline-block w-10 h-5 align-middle select-none">
+<input class="switch-input absolute block w-0 h-0 opacity-0 cursor-pointer" id="switch-3" type="checkbox"/>
+<label class="switch-slider block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-colors before:content-[''] before:absolute before:block before:w-3 before:h-3 before:mt-1 before:ml-1 before:bg-white before:rounded-full before:transition-transform" for="switch-3"></label>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div>
+<p class="font-label-md text-on-surface-variant text-[10px] uppercase">Stock</p>
+<p class="font-body-md text-body-sm font-semibold text-error">0 unidades</p>
+</div>
+<div class="text-right">
+<p class="font-label-md text-on-surface-variant text-[10px] uppercase">Precio</p>
+<input class="w-20 text-right font-headline-sm text-headline-sm text-primary bg-surface-container-low border-none rounded p-1" type="text" value="$16.00"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Category Group: Bebidas -->
+<div>
+<div class="flex items-center gap-4 mb-4">
+<h2 class="font-headline-sm text-headline-sm text-on-background">Bebidas</h2>
+<div class="h-[1px] flex-grow bg-outline-variant"></div>
+</div>
+<div class="overflow-x-auto pb-4">
+<table class="w-full text-left border-collapse bg-white rounded-xl overflow-hidden border border-outline-variant">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 font-label-md text-label-md text-secondary uppercase tracking-wider">Producto</th>
+<th class="px-6 py-4 font-label-md text-label-md text-secondary uppercase tracking-wider">Categoría</th>
+<th class="px-6 py-4 font-label-md text-label-md text-secondary uppercase tracking-wider">Stock Actual</th>
+<th class="px-6 py-4 font-label-md text-label-md text-secondary uppercase tracking-wider">Precio Unitario</th>
+<th class="px-6 py-4 font-label-md text-label-md text-secondary uppercase tracking-wider text-right">Disponibilidad</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-variant flex-shrink-0 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">local_drink</span>
+</div>
+<span class="font-body-md font-semibold">Limonada Natural</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant">Fríos</td>
+<td class="px-6 py-4 font-body-sm">45 packs</td>
+<td class="px-6 py-4">
+<input class="w-20 font-body-md bg-transparent border-none focus:ring-1 focus:ring-primary rounded px-2" type="text" value="$3.50"/>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="relative inline-block w-10 h-5 align-middle select-none">
+<input checked="" class="switch-input absolute block w-0 h-0 opacity-0 cursor-pointer" id="drink-1" type="checkbox"/>
+<label class="switch-slider block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-colors before:content-[''] before:absolute before:block before:w-3 before:h-3 before:mt-1 before:ml-1 before:bg-white before:rounded-full before:transition-transform" for="drink-1"></label>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-variant flex-shrink-0 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">coffee</span>
+</div>
+<span class="font-body-md font-semibold">Iced Latte</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant">Cafetería</td>
+<td class="px-6 py-4 font-body-sm">18 tazas</td>
+<td class="px-6 py-4">
+<input class="w-20 font-body-md bg-transparent border-none focus:ring-1 focus:ring-primary rounded px-2" type="text" value="$4.25"/>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="relative inline-block w-10 h-5 align-middle select-none">
+<input checked="" class="switch-input absolute block w-0 h-0 opacity-0 cursor-pointer" id="drink-2" type="checkbox"/>
+<label class="switch-slider block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-colors before:content-[''] before:absolute before:block before:w-3 before:h-3 before:mt-1 before:ml-1 before:bg-white before:rounded-full before:transition-transform" for="drink-2"></label>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-variant flex-shrink-0 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">wine_bar</span>
+</div>
+<span class="font-body-md font-semibold">Vino Tinto Casa</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant">Alcohol</td>
+<td class="px-6 py-4 font-body-sm text-error">2 botellas</td>
+<td class="px-6 py-4">
+<input class="w-20 font-body-md bg-transparent border-none focus:ring-1 focus:ring-primary rounded px-2" type="text" value="$22.00"/>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="relative inline-block w-10 h-5 align-middle select-none">
+<input checked="" class="switch-input absolute block w-0 h-0 opacity-0 cursor-pointer" id="drink-3" type="checkbox"/>
+<label class="switch-slider block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-colors before:content-[''] before:absolute before:block before:w-3 before:h-3 before:mt-1 before:ml-1 before:bg-white before:rounded-full before:transition-transform" for="drink-3"></label>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Nav Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center h-20 pb-safe px-base bg-surface border-t border-outline-variant z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-label-md text-label-md">Pedidos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">Historial</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 scale-95" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Inventario</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Perfil</span>
+</a>
+</nav>
+<!-- FAB for adding items -->
+<button class="fixed bottom-24 right-6 md:bottom-8 md:right-8 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<script>
+        // Micro-interactions for switches
+        document.querySelectorAll('.switch-input').forEach(sw => {
+            sw.addEventListener('change', function() {
+                const card = this.closest('.bg-white');
+                if (this.checked) {
+                    card.style.opacity = '1';
+                    card.classList.remove('grayscale');
+                } else {
+                    card.style.opacity = '0.7';
+                    card.classList.add('grayscale');
+                }
+            });
+        });
+
+        // Price input auto-format
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+        });
+    </script>
+</body></html>

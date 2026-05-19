@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatPrice } from '@/lib/utils'
 import Link from 'next/link'
+import { AlertTriangle, RefreshCw, Banknote, Map, UserPlus, MessageSquare, Users, Check, Clock } from 'lucide-react'
 
 interface AdminStats {
   id: string
@@ -76,7 +77,7 @@ export default function SuperAdminDashboard() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <span className="text-5xl">⚠️</span>
+        <AlertTriangle size={48} className="text-yellow-500" />
         <p className="text-gray-600 font-medium">{error}</p>
         <Button onClick={fetchStats} variant="secondary">
           Reintentar
@@ -93,8 +94,8 @@ export default function SuperAdminDashboard() {
           <h1 className="text-2xl font-bold text-gray-900">Dashboard General</h1>
           <p className="text-sm text-gray-500 mt-0.5">Vista general de la plataforma</p>
         </div>
-        <Button onClick={fetchStats} variant="secondary" size="sm">
-          🔄 Actualizar
+        <Button onClick={fetchStats} variant="secondary" size="sm" className="flex items-center gap-1.5">
+          <RefreshCw size={14} /> Actualizar
         </Button>
       </div>
 
@@ -138,7 +139,7 @@ export default function SuperAdminDashboard() {
           <CardContent className="pt-5 pb-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-amber-800">💰 Facturación Pendiente</h3>
+                <h3 className="text-lg font-bold text-amber-800 flex items-center gap-2"><Banknote size={20} /> Facturación Pendiente</h3>
                 <p className="text-amber-600 text-sm">Total a cobrar este mes</p>
               </div>
               <div className="text-right">
@@ -155,16 +156,16 @@ export default function SuperAdminDashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { href: '/superadmin/zones', label: 'Nueva Zona', icon: '🗺️', desc: 'Crear zona geográfica' },
-          { href: '/superadmin/admins', label: 'Nuevo Admin', icon: '👤', desc: 'Agregar administrador' },
-          { href: '/superadmin/billing', label: 'Facturación', icon: '💰', desc: 'Gestionar cobros' },
-          { href: '/superadmin/messages', label: 'Mensajes', icon: '💬', desc: 'Comunicación interna' },
+          { href: '/superadmin/zones', label: 'Nueva Zona', icon: <Map size={32} className="mx-auto" />, desc: 'Crear zona geográfica' },
+          { href: '/superadmin/admins', label: 'Nuevo Admin', icon: <UserPlus size={32} className="mx-auto" />, desc: 'Agregar administrador' },
+          { href: '/superadmin/billing', label: 'Facturación', icon: <Banknote size={32} className="mx-auto" />, desc: 'Gestionar cobros' },
+          { href: '/superadmin/messages', label: 'Mensajes', icon: <MessageSquare size={32} className="mx-auto" />, desc: 'Comunicación interna' },
         ].map((action) => (
           <Link key={action.href} href={action.href}>
             <Card className="hover:shadow-md hover:border-[#003f87]/30 transition-all duration-200 cursor-pointer group">
               <CardContent className="pt-4 pb-4 text-center">
-                <span className="text-3xl block mb-2">{action.icon}</span>
-                <p className="font-semibold text-gray-900 text-sm group-hover:text-[#003f87]">{action.label}</p>
+                <div className="mb-2 text-primary/70 group-hover:text-primary transition-colors">{action.icon}</div>
+                <p className="font-semibold text-gray-900 text-sm group-hover:text-primary transition-colors">{action.label}</p>
                 <p className="text-xs text-gray-500 mt-0.5">{action.desc}</p>
               </CardContent>
             </Card>
@@ -176,7 +177,7 @@ export default function SuperAdminDashboard() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-900">👥 Administradores por Zona</h2>
+            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2"><Users size={20} /> Administradores por Zona</h2>
             <Link
               href="/superadmin/admins"
               className="text-[#003f87] hover:text-[#002d6b] text-sm font-medium"
@@ -243,10 +244,10 @@ export default function SuperAdminDashboard() {
                           }
                         >
                           {admin.billingStatus === 'PAID'
-                            ? '✓ Pagado'
+                            ? <span className="flex items-center gap-1"><Check size={12}/> Pagado</span>
                             : admin.billingStatus === 'OVERDUE'
-                            ? '⚠ Vencido'
-                            : '⏳ Pendiente'}
+                            ? <span className="flex items-center gap-1"><AlertTriangle size={12}/> Vencido</span>
+                            : <span className="flex items-center gap-1"><Clock size={12}/> Pendiente</span>}
                         </Badge>
                       </td>
                       <td className="py-3 px-4 text-center">
@@ -256,14 +257,14 @@ export default function SuperAdminDashboard() {
                             className="text-[#003f87] hover:text-[#002d6b] text-lg transition-colors"
                             title="Enviar mensaje"
                           >
-                            💬
+                            <MessageSquare size={18} />
                           </Link>
                           <Link
                             href="/superadmin/billing"
-                            className="text-amber-600 hover:text-amber-700 text-lg transition-colors"
+                            className="text-amber-600 hover:text-amber-700 transition-colors"
                             title="Ver facturación"
                           >
-                            💰
+                            <Banknote size={18} />
                           </Link>
                         </div>
                       </td>
@@ -274,7 +275,7 @@ export default function SuperAdminDashboard() {
             </div>
           ) : (
             <div className="text-center py-16 text-gray-400">
-              <span className="text-5xl block mb-4">👥</span>
+              <Users size={48} className="mx-auto mb-4 opacity-50" />
               <p className="font-medium">No hay administradores registrados</p>
               <Link
                 href="/superadmin/admins"

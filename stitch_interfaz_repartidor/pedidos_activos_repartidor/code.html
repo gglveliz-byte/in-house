@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Azul Entrega - Pedidos Activos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#171c1f",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#004491",
+                        "on-secondary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#acc7ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#ccd0d4",
+                        "surface-container": "#e7eeff",
+                        "surface-bright": "#f9f9ff",
+                        "on-tertiary-fixed-variant": "#43474b",
+                        "tertiary-fixed": "#dfe3e7",
+                        "tertiary": "#3d4245",
+                        "surface-container-highest": "#d8e3fb",
+                        "surface-tint": "#115cb9",
+                        "surface-container-high": "#dee8ff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-low": "#f0f3ff",
+                        "tertiary-fixed-dim": "#c3c7cb",
+                        "on-primary-fixed": "#001a40",
+                        "primary-container": "#0056b3",
+                        "surface": "#f9f9ff",
+                        "inverse-surface": "#263143",
+                        "on-error": "#ffffff",
+                        "outline": "#727784",
+                        "surface-dim": "#cfdaf2",
+                        "on-background": "#111c2d",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#424752",
+                        "surface-variant": "#d8e3fb",
+                        "inverse-primary": "#acc7ff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#d3e4fe",
+                        "primary": "#003f87",
+                        "outline-variant": "#c2c6d4",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-container": "#bbd0ff",
+                        "background": "#f9f9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d7e2ff",
+                        "secondary": "#505f76",
+                        "on-surface": "#111c2d",
+                        "tertiary-container": "#54595d",
+                        "secondary-container": "#d0e1fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f9f9ff;
+        }
+        .order-card-hover:hover {
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: #003f87;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-base">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden">
+<img alt="Courier Profile Picture" class="w-full h-full object-cover" data-alt="A professional courier profile picture for a delivery app. The individual has a friendly expression and is wearing a clean, modern uniform in primary blue and white. The background is a soft, blurred urban setting, maintaining a corporate and reliable aesthetic with high-key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoR3M_KFaXEHFHBeWSGRDP4wxLDKs8GxLeXZ9ccFX5_7X0WR_f71303kTsyD1FIxmCQK_3dIX06gOlG1H9AcDQ3ZdvXFdvjZGkjxOuVnG5ibG4e7Zn9PVDDAivFf9QKJFsjW1mu0A1ToqHbP0DHnUKbPwPTio0t6tiT1jHq_JestlzGNM0qcooehv7a2S1Grif6ZQUaa2IWZ4ZHKeq-3MAMg6C3NrM9C9udYokupzhkYIPdgYDz-traSPeWw0ZhEXXYiJ3sWaYo_Q"/>
+</div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">Azul Entrega</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="font-label-md text-label-md text-primary dark:text-primary-fixed-dim">Disponible</span>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto pb-32">
+<!-- Map Section (Bento Style Layout) -->
+<section class="p-margin-mobile md:p-margin-desktop">
+<div class="relative w-full h-64 md:h-96 rounded-xl overflow-hidden border border-outline-variant bg-surface-container-low">
+<img alt="Map View" class="w-full h-full object-cover opacity-80" data-alt="A clean, minimalist vector-style map of a bustling city center during daylight. The map shows clearly defined streets and blocks in light grays and blues, with a few prominent indigo pins indicating active delivery points. The aesthetic is modern and professional, avoiding clutter to prioritize navigation and clarity for a high-performance logistics application." data-location="Mexico City" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRdNTfXWE7K_Q1ScX31xmgR5AcnvE3FE1X2J-GmJA23eXMWqbfit6Z3Tpbq01hXyFi4nF9hx_EBvOsSXV7U8E3fUAwFgVt3Kuc1n4yqc9x5t0ZrmLFxcFprsSMFw3AyXgFNhHZmpn5il-YlMc1lAbY5Er_XUmdmQD1LdQhzrVwoPniYgHVQFNkDBQArzCmtIHmufZ2tE211u4nF0m5P5rzuBWwfjOfyOqq5lrwMEZw5uya5ycek1CtopPH3Po_rGbeGesszAQwqZs"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface/40 to-transparent pointer-events-none"></div>
+<!-- Floating Info over Map -->
+<div class="absolute bottom-4 left-4 right-4 md:left-margin-desktop md:right-auto md:w-80 p-4 bg-surface/90 backdrop-blur-md border border-outline-variant rounded-xl shadow-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="my_location">my_location</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Tu ubicación actual</p>
+<p class="font-body-sm text-body-sm font-semibold">Av. Reforma 222, CDMX</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Active Orders Feed -->
+<section class="px-margin-mobile md:px-margin-desktop">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-lg-mobile md:text-headline-md text-on-surface">Pedidos Activos</h2>
+<div class="bg-primary-container/10 px-3 py-1 rounded-full border border-primary-container/20">
+<span class="font-label-md text-label-md text-primary">3 Pedidos Cercanos</span>
+</div>
+</div>
+<!-- List Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Order Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 transition-all order-card-hover group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">PEDIDO #88234</p>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Burger Central</h3>
+</div>
+<span class="bg-amber-100 text-amber-900 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase">Preparando</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-sm" data-icon="restaurant">restaurant</span>
+<p class="font-body-sm text-body-sm">Calle Florencia 45, Juárez</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="location_on" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<p class="font-body-sm text-body-sm font-semibold">Cda. Londres 12, Roma Norte</p>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary font-bold rounded-lg hover:opacity-90 transition-opacity active:scale-95 duration-150">
+                        Aceptar Pedido
+                    </button>
+</div>
+<!-- Order Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 transition-all order-card-hover group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">PEDIDO #88241</p>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Sushi Garden</h3>
+</div>
+<span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase">Listo</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-sm" data-icon="restaurant">restaurant</span>
+<p class="font-body-sm text-body-sm">Av. Insurgentes 300</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="location_on" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<p class="font-body-sm text-body-sm font-semibold">Hamburgo 77, Juárez</p>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary font-bold rounded-lg hover:opacity-90 transition-opacity active:scale-95 duration-150">
+                        Ver Detalles
+                    </button>
+</div>
+<!-- Order Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 transition-all order-card-hover group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">PEDIDO #88245</p>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">La Pizzería</h3>
+</div>
+<span class="bg-amber-100 text-amber-900 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase">Preparando</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-sm" data-icon="restaurant">restaurant</span>
+<p class="font-body-sm text-body-sm">Puebla 120, Roma Norte</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="location_on" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<p class="font-body-sm text-body-sm font-semibold">Orizaba 55, Roma Sur</p>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary font-bold rounded-lg hover:opacity-90 transition-opacity active:scale-95 duration-150">
+                        Aceptar Pedido
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-20 pb-safe px-base bg-surface dark:bg-surface-dim border-t border-outline-variant dark:border-outline shadow-sm z-50">
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-fixed-dim text-on-secondary-container dark:text-on-secondary-fixed-variant rounded-full px-4 py-1 scale-95 duration-150 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="font-label-md text-label-md">Pedidos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-md text-label-md">Historial</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Inventario</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Perfil</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for cards
+        document.querySelectorAll('.order-card-hover button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const card = button.closest('.order-card-hover');
+                card.style.opacity = '0.5';
+                button.textContent = 'Procesando...';
+                setTimeout(() => {
+                    card.style.display = 'none';
+                    // Feedback or refresh logic could go here
+                }, 800);
+            });
+        });
+    </script>
+</body></html>

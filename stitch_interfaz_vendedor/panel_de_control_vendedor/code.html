@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Azul Entrega - Panel de Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#f9f9ff",
+                    "inverse-on-surface": "#ecf1ff",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#cfdaf2",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "inverse-surface": "#263143",
+                    "on-tertiary-fixed-variant": "#43474b",
+                    "surface-container-lowest": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#acc7ff",
+                    "on-tertiary-container": "#ccd0d4",
+                    "on-primary-container": "#bbd0ff",
+                    "surface-container": "#e7eeff",
+                    "on-tertiary-fixed": "#171c1f",
+                    "tertiary-fixed-dim": "#c3c7cb",
+                    "on-secondary-container": "#54647a",
+                    "surface-variant": "#d8e3fb",
+                    "surface-container-high": "#dee8ff",
+                    "secondary-container": "#d0e1fb",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#54595d",
+                    "on-primary-fixed-variant": "#004491",
+                    "tertiary": "#3d4245",
+                    "on-surface": "#111c2d",
+                    "on-secondary": "#ffffff",
+                    "surface": "#f9f9ff",
+                    "primary-fixed": "#d7e2ff",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#dfe3e7",
+                    "primary": "#003f87",
+                    "inverse-primary": "#acc7ff",
+                    "primary-container": "#0056b3",
+                    "outline": "#727784",
+                    "on-primary-fixed": "#001a40",
+                    "surface-container-low": "#f0f3ff",
+                    "surface-bright": "#f9f9ff",
+                    "outline-variant": "#c2c6d4",
+                    "on-background": "#111c2d",
+                    "surface-tint": "#115cb9",
+                    "secondary": "#505f76",
+                    "on-surface-variant": "#424752",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "surface-container-highest": "#d8e3fb",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#0b1c30"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "margin-desktop": "32px",
+                    "container-max": "1280px",
+                    "gutter": "16px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "headline-sm": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #f9f9ff; color: #111c2d; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); }
+        .chart-bar { transition: height 1s ease-out; }
+        .sidebar-transition { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline docked full-width top-0 sticky z-40 flex justify-between items-center w-full px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary dark:text-inverse-primary hover:bg-surface-container-high transition-colors p-2 rounded-full md:hidden" onclick="toggleSidebar()">menu</button>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">Azul Entrega</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex gap-6 items-center">
+<span class="text-primary font-bold font-label-md text-label-md cursor-pointer">Panel de Control</span>
+<span class="text-on-surface-variant font-label-md text-label-md cursor-pointer hover:text-primary">Notificaciones</span>
+</div>
+<img alt="Vendor Profile Picture" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="A professional close-up portrait of a retail business manager in a modern corporate setting. The lighting is soft and professional, reflecting a high-end business environment. The background shows a clean, blurred office space with deep blue and white accents, consistent with a premium corporate brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAX5M2I3D7nmUqW7-tdRa7Npf0eWBEIIoSrU7CuMXC79njOSlKJ0gJBZOMTTZzWQwYCkorx1MMNEMxjDCarCkn5HN3a1CocQHvU7kh1YgOfkyuMCqEcA5CqCeMdqsjI3p4cBxz96ogZI60chAQRA4s6Ll60BKSkjVoFb3vg0jc64iFliOjv_67ybU2J39nGuWVriOUXBFZnNN2us6BeVEryRqj4ujsudLWd8Bt9xMet6iB6BeQ6A-sEyFI52teIfnwLL_w0ipoZ1fI"/>
+</div>
+</header>
+<div class="flex">
+<!-- NavigationDrawer (Desktop) -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline z-50 flex flex-col p-4 gap-2 sidebar-transition -translate-x-full md:translate-x-0" id="sidebar">
+<div class="flex flex-col gap-1 mb-6 p-2">
+<img alt="Store Logo" class="w-12 h-12 rounded-lg mb-2" data-alt="A sleek and modern minimalist logo for a delivery and logistics company called Azul Entrega. The logo is displayed on a high-quality glass-like material against a clean corporate white background. The aesthetic is professional, using deep navy blue and vibrant primary blue tones to convey trust and efficiency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDipwNrVGjz-FNtcjNfane1f4juOSOC_6PqzxDyiqqn8vC1J33o04ozgOyR0cFzVJQbgcBkt3E6CreL38nG2SyvgGFwpQczAql5nwAcfwc-76fqgeRzdHjf9X36URcX6QQmBl2lL489vDWfRejbZPh7VUx1kXrn9wj-ggXoMc8k1ScK1b2sEySn2j5To2_lj-tdwo6qHWyisyQxp9eV594UTp3m3xV-lrVwgNj9fmHNy8pqt_tz9Az4HjCILX4403VevicBRfcRUc4"/>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">Azul Entrega Vendor</h2>
+<p class="text-body-sm text-secondary">Manage your store</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 p-3 bg-secondary-fixed text-on-secondary-fixed font-bold rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">package_2</span>
+<span>Orders</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span>Inventory</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span>Promotions</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span>Support</span>
+</a>
+</nav>
+<div class="mt-auto p-2 border-t border-outline-variant">
+<span class="text-label-md font-label-md text-outline">v2.1.0</span>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop mb-20 md:mb-0">
+<header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Panel de Control</h1>
+<p class="text-body-md text-on-surface-variant">Resumen de operaciones para hoy, 24 de Mayo.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-primary-container text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined">add</span>
+                        Nuevo Pedido
+                    </button>
+</div>
+</header>
+<!-- Bento Grid Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<!-- Main KPI Card -->
+<div class="md:col-span-2 bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between hover:shadow-lg transition-shadow">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-label-md font-label-md text-secondary uppercase tracking-wider">Ventas del Día</span>
+<h3 class="text-headline-lg font-headline-lg text-primary-container mt-1">$12,450.00</h3>
+</div>
+<div class="bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1 text-label-md font-bold">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                            +12%
+                        </div>
+</div>
+<div class="mt-4 flex items-center gap-4">
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Small avatar of a customer profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMLEUCCKezI_4vI1h8a7r5fJFqRr2VJiC2UkaN3rR_nuxieC16lXqFD06ynNWEwrs3z9ESF6xQ4zPNrXnjnP31YSmzO1DQIVvllB3aEM2lCkZ3UKdlTKZfYiRRrDhxEuCfaXo07gFpXT865ByG6x7rEvCsdtzZ97jW2Jx1nHIsMawKEB_x6x3YQXozCm2kvqhk-HVipFFrhuT0RxzyshhVhAmsofpa9A997XmoCppUQsCGCcxJ8oUufHofiqmrXkoY93kYG01HlGA"/>
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Small avatar of a customer profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuTYWA3yHaPzhblt5GaZq7up7T2Dx635f3SdCBCRt9wwoCWR9DDT-SeL2E1YwASWN4o06SEJsuZ-JRvslgAcwqdAivtf-nC0_Xphox4O9aK2BFLegvbd6rpt0yo-U9rZE9_b--SOhRiJsEW1IGd_qKZbDdFOgQJmy317U7XsKO8L-Yw41y6TZ1uE2pW1OEEPM2Cg-ZmsTo35wrs5pSJskHe7xhtdGjeFPluc0BWnljHYNzgtxIsyXaO6EdyQD4WUGA4-POLxzeAn8"/>
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Small avatar of a customer profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf_pRZA5xAyYlYO9xiixuF1reZFu7Iw2bAUeJfbqBfXIj4Pv8uzjH-529-jQRi83GQhkKOME9vdkl74Hmlm3wypfqBwbpT9DvyrvtqJYZHB4rQbRS8yAKH9qY8hyDhDg0EmeZtpLuWOzT6B-Vg5vzzX9bA-Y8QdBoMsx7ewtsGDS6faVpyId_veiHxW1Bw4JTR1GbgKdiJPf1VT4x1iP2hDY15TWi_hz2-ikvdWqALVHNKFSWMWn28t83aLpLrNVfNjW12I-94-zc"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">+24</div>
+</div>
+<span class="text-body-sm text-on-surface-variant">Clientes atendidos hoy</span>
+</div>
+</div>
+<!-- Metrics Column -->
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between hover:shadow-lg transition-shadow">
+<div class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="text-label-md font-label-md uppercase">Completados</span>
+</div>
+<h3 class="text-headline-md font-headline-md mt-2">148</h3>
+<p class="text-body-sm text-on-surface-variant mt-1">98% de efectividad</p>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between hover:shadow-lg transition-shadow">
+<div class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined">stars</span>
+<span class="text-label-md font-label-md uppercase">Calificación</span>
+</div>
+<div class="flex items-center gap-2 mt-2">
+<h3 class="text-headline-md font-headline-md">4.9</h3>
+<span class="material-symbols-outlined text-amber-400" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mt-1">Basado en 256 votos</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Weekly Sales Chart -->
+<div class="lg:col-span-2 bg-white border border-outline-variant rounded-xl p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Ventas Semanales</h3>
+<select class="bg-surface-container-low border-none rounded-lg text-body-sm font-label-md p-2 focus:ring-2 ring-primary">
+<option>Últimos 7 días</option>
+<option>Últimos 30 días</option>
+</select>
+</div>
+<div class="h-64 flex items-end justify-between gap-2 px-2 relative">
+<!-- Chart Gridlines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none border-b border-outline-variant">
+<div class="border-t border-surface-container-highest w-full h-0"></div>
+<div class="border-t border-surface-container-highest w-full h-0"></div>
+<div class="border-t border-surface-container-highest w-full h-0"></div>
+</div>
+<!-- Chart Bars -->
+<div class="flex flex-col items-center flex-1 z-10">
+<div class="w-full max-w-[40px] bg-secondary-container hover:bg-primary transition-colors rounded-t-lg chart-bar h-[40%]"></div>
+<span class="text-label-md font-label-md text-secondary mt-2">Lun</span>
+</div>
+<div class="flex flex-col items-center flex-1 z-10">
+<div class="w-full max-w-[40px] bg-secondary-container hover:bg-primary transition-colors rounded-t-lg chart-bar h-[65%]"></div>
+<span class="text-label-md font-label-md text-secondary mt-2">Mar</span>
+</div>
+<div class="flex flex-col items-center flex-1 z-10">
+<div class="w-full max-w-[40px] bg-secondary-container hover:bg-primary transition-colors rounded-t-lg chart-bar h-[55%]"></div>
+<span class="text-label-md font-label-md text-secondary mt-2">Mie</span>
+</div>
+<div class="flex flex-col items-center flex-1 z-10">
+<div class="w-full max-w-[40px] bg-secondary-container hover:bg-primary transition-colors rounded-t-lg chart-bar h-[85%]"></div>
+<span class="text-label-md font-label-md text-secondary mt-2">Jue</span>
+</div>
+<div class="flex flex-col items-center flex-1 z-10">
+<div class="w-full max-w-[40px] bg-primary-container rounded-t-lg chart-bar h-[100%]"></div>
+<span class="text-label-md font-label-md text-primary font-bold mt-2">Vie</span>
+</div>
+<div class="flex flex-col items-center flex-1 z-10">
+<div class="w-full max-w-[40px] bg-secondary-container hover:bg-primary transition-colors rounded-t-lg chart-bar h-[30%]"></div>
+<span class="text-label-md font-label-md text-secondary mt-2">Sab</span>
+</div>
+<div class="flex flex-col items-center flex-1 z-10">
+<div class="w-full max-w-[40px] bg-secondary-container hover:bg-primary transition-colors rounded-t-lg chart-bar h-[20%]"></div>
+<span class="text-label-md font-label-md text-secondary mt-2">Dom</span>
+</div>
+</div>
+</div>
+<!-- Quick Actions / Support -->
+<div class="flex flex-col gap-6">
+<div class="bg-primary-container text-white rounded-xl p-6 relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="font-headline-sm text-headline-sm mb-2">Ticket Promedio</h3>
+<p class="text-headline-md font-bold">$84.12</p>
+<p class="text-body-sm opacity-80 mt-4">Mantén tus promociones activas para aumentar este valor.</p>
+<button class="mt-4 bg-white text-primary-container px-4 py-2 rounded-lg font-bold text-label-md hover:bg-primary-fixed transition-colors">Ver Detalles</button>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl opacity-10 group-hover:scale-110 transition-transform">receipt_long</span>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-4">Accesos Rápidos</h3>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">inventory</span>
+<span class="text-label-md font-label-md">Stock</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">local_shipping</span>
+<span class="text-label-md font-label-md">Rutas</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">analytics</span>
+<span class="text-label-md font-label-md">Reportes</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">support_agent</span>
+<span class="text-label-md font-label-md">Soporte</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Orders Table -->
+<div class="mt-8 bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Pedidos Recientes</h3>
+<button class="text-primary font-bold text-label-md hover:underline">Ver todos</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="p-4 text-label-md font-label-md text-secondary uppercase">ID Pedido</th>
+<th class="p-4 text-label-md font-label-md text-secondary uppercase">Cliente</th>
+<th class="p-4 text-label-md font-label-md text-secondary uppercase">Estado</th>
+<th class="p-4 text-label-md font-label-md text-secondary uppercase">Total</th>
+<th class="p-4 text-label-md font-label-md text-secondary uppercase">Hora</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<td class="p-4 font-bold text-on-surface">#98342</td>
+<td class="p-4 text-body-md">Carlos Mendoza</td>
+<td class="p-4">
+<span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-label-md font-bold">Ready</span>
+</td>
+<td class="p-4 font-bold">$45.50</td>
+<td class="p-4 text-on-surface-variant">14:20</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<td class="p-4 font-bold text-on-surface">#98341</td>
+<td class="p-4 text-body-md">Elena Rodriguez</td>
+<td class="p-4">
+<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-label-md font-bold">Delivered</span>
+</td>
+<td class="p-4 font-bold">$120.00</td>
+<td class="p-4 text-on-surface-variant">13:55</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<td class="p-4 font-bold text-on-surface">#98340</td>
+<td class="p-4 text-body-md">Marcos Paz</td>
+<td class="p-4">
+<span class="bg-blue-100 text-primary-container px-3 py-1 rounded-full text-label-md font-bold">On the Way</span>
+</td>
+<td class="p-4 font-bold">$89.10</td>
+<td class="p-4 text-on-surface-variant">13:40</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<td class="p-4 font-bold text-on-surface">#98339</td>
+<td class="p-4 text-body-md">Sonia Lopez</td>
+<td class="p-4">
+<span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-label-md font-bold">Preparing</span>
+</td>
+<td class="p-4 font-bold">$22.40</td>
+<td class="p-4 text-on-surface-variant">13:15</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-[10px] mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest active:scale-90 duration-150 p-2" href="#">
+<span class="material-symbols-outlined">package_2</span>
+<span class="font-label-md text-[10px] mt-1">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest active:scale-90 duration-150 p-2" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-[10px] mt-1">Inventory</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest active:scale-90 duration-150 p-2" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-[10px] mt-1">Settings</span>
+</a>
+</nav>
+<script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+            if (isHidden) {
+                sidebar.classList.remove('-translate-x-full');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = e.target.closest('button');
+            if (!sidebar.contains(e.target) && !menuBtn && window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+
+        // Initialize micro-interactions
+        document.querySelectorAll('.chart-bar').forEach(bar => {
+            const height = bar.style.height;
+            bar.style.height = '0%';
+            setTimeout(() => {
+                bar.style.height = height;
+            }, 300);
+        });
+    </script>
+</body></html>

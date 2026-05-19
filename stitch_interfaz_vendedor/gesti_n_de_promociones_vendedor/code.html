@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+    </style>
+<title>Azul Entrega - Gestión de Promociones</title>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "background": "#f9f9ff",
+                      "inverse-on-surface": "#ecf1ff",
+                      "secondary-fixed": "#d3e4fe",
+                      "on-primary": "#ffffff",
+                      "surface-dim": "#cfdaf2",
+                      "error": "#ba1a1a",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "inverse-surface": "#263143",
+                      "on-tertiary-fixed-variant": "#43474b",
+                      "surface-container-lowest": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "primary-fixed-dim": "#acc7ff",
+                      "on-tertiary-container": "#ccd0d4",
+                      "on-primary-container": "#bbd0ff",
+                      "surface-container": "#e7eeff",
+                      "on-tertiary-fixed": "#171c1f",
+                      "tertiary-fixed-dim": "#c3c7cb",
+                      "on-secondary-container": "#54647a",
+                      "surface-variant": "#d8e3fb",
+                      "surface-container-high": "#dee8ff",
+                      "secondary-container": "#d0e1fb",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#54595d",
+                      "on-primary-fixed-variant": "#004491",
+                      "tertiary": "#3d4245",
+                      "on-surface": "#111c2d",
+                      "on-secondary": "#ffffff",
+                      "surface": "#f9f9ff",
+                      "primary-fixed": "#d7e2ff",
+                      "on-error": "#ffffff",
+                      "tertiary-fixed": "#dfe3e7",
+                      "primary": "#003f87",
+                      "inverse-primary": "#acc7ff",
+                      "primary-container": "#0056b3",
+                      "outline": "#727784",
+                      "on-primary-fixed": "#001a40",
+                      "surface-container-low": "#f0f3ff",
+                      "surface-bright": "#f9f9ff",
+                      "outline-variant": "#c2c6d4",
+                      "on-background": "#111c2d",
+                      "surface-tint": "#115cb9",
+                      "secondary": "#505f76",
+                      "on-surface-variant": "#424752",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "surface-container-highest": "#d8e3fb",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed": "#0b1c30"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "margin-desktop": "32px",
+                      "container-max": "1280px",
+                      "gutter": "16px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Hanken Grotesk"],
+                      "body-md": ["Inter"],
+                      "headline-lg-mobile": ["Hanken Grotesk"],
+                      "headline-sm": ["Hanken Grotesk"],
+                      "headline-lg": ["Hanken Grotesk"],
+                      "body-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 z-50 w-full h-16 flex justify-between items-center px-margin-desktop bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-high transition-colors rounded-full lg:hidden">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Azul Entrega</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2 mr-4">
+<span class="font-label-md text-label-md text-on-surface-variant">Vendedor Premium</span>
+<span class="material-symbols-outlined text-primary" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-primary-fixed-dim object-cover" data-alt="A professional headshot of a corporate logistics manager for Azul Entrega. He is wearing a clean white shirt and has a confident, reliable expression. The background is a soft-focus, modern corporate office environment with cool blue and slate grey tones, echoing a high-end light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1aO7qZUSLma5yine0rnRtabvxunCAyA7dnDR6p6p4vwHxrYpIb5U77l9qvSO1Fiurd_VTyLLj0EVVrpyvEB9qAK6AsiFxgudaG4LeJ3VEVhNwzCTqRLQJQQMl4eDwiheerkt3VrrawM5Q2uNYufSQeq0hueNqSmdaVGnlDcgFnWVdpT0ug8ImEHyHdA0JcNL-l5N149DjDPc5arAkysuyIO_vhKLMrYAooUrpzq_lAJLme9ZeNOxV8c7EF2IT-gmA_VWlyI927Pk"/>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- NavigationDrawer -->
+<aside class="hidden lg:flex fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface border-r border-outline-variant flex-col p-4 gap-2">
+<div class="mb-6 px-2">
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">Azul Entrega Vendor</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manage your store</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="package_2">package_2</span>
+<span class="font-body-md text-body-md">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md text-body-md">Inventory</span>
+</a>
+<!-- Active Navigation: Promotions -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-fixed text-on-secondary-fixed font-bold rounded-lg transition-all scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="campaign" style="font-variation-settings: 'FILL' 1;">campaign</span>
+<span class="font-body-md text-body-md">Promotions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</nav>
+<div class="mt-auto px-4 py-2 border-t border-outline-variant pt-4">
+<span class="font-label-md text-label-md text-on-surface-variant opacity-60">v2.1.0</span>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-64 p-margin-mobile md:p-margin-desktop pb-24 md:pb-8">
+<div class="max-w-container-max mx-auto">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Mis Promociones</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Impulsa tus ventas con descuentos y ofertas estratégicas.</p>
+</div>
+<button class="hidden md:flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>Nueva Promoción</span>
+</button>
+</div>
+<!-- Promotion Overview Cards (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-secondary-container mb-1">PROMOCIONES ACTIVAS</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">12</h3>
+</div>
+<div class="w-12 h-12 bg-primary-container text-on-primary-container flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-secondary-container mb-1">CONVERSIONES TOTALES</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">1,429</h3>
+</div>
+<div class="w-12 h-12 bg-secondary-container text-on-secondary-container flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-secondary-container mb-1">AHORRO GENERADO</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">$42,500</h3>
+</div>
+<div class="w-12 h-12 bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined" data-icon="savings">savings</span>
+</div>
+</div>
+</div>
+<!-- Promotions List Header -->
+<div class="flex items-center gap-4 mb-6">
+<button class="bg-secondary-fixed text-on-secondary-fixed px-4 py-2 rounded-full font-label-md text-label-md">Todos (24)</button>
+<button class="text-on-surface-variant px-4 py-2 rounded-full font-label-md text-label-md hover:bg-surface-container">Activos (12)</button>
+<button class="text-on-surface-variant px-4 py-2 rounded-full font-label-md text-label-md hover:bg-surface-container">Vencidos (8)</button>
+</div>
+<!-- Promotion Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Promotion Card 1: Discount -->
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col gap-4 hover:shadow-lg transition-all group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-14 h-14 bg-amber-100 flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-amber-700 text-3xl" data-icon="percent">percent</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Cyber Azul 20%</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Descuento directo en toda la categoría 'Electrónica'</p>
+</div>
+</div>
+<span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">Activo</span>
+</div>
+<div class="grid grid-cols-3 border-t border-outline-variant pt-4 mt-2">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Uso</p>
+<p class="font-body-md text-body-md font-bold">842 veces</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Rendimiento</p>
+<p class="font-body-md text-body-md font-bold text-green-600">+12%</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Expira en</p>
+<p class="font-body-md text-body-md font-bold">4 días</p>
+</div>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="flex-1 border border-outline text-on-surface py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-colors">Editar</button>
+<button class="flex-1 bg-surface-container-highest text-on-surface-variant py-2 rounded-lg font-label-md text-label-md hover:bg-error-container hover:text-on-error-container transition-colors">Pausar</button>
+</div>
+</div>
+<!-- Promotion Card 2: Free Shipping -->
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col gap-4 hover:shadow-lg transition-all group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-14 h-14 bg-indigo-100 flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-indigo-700 text-3xl" data-icon="local_shipping">local_shipping</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Envío Gratis CABA</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Compras mayores a $25,000 en radio urbano</p>
+</div>
+</div>
+<span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">Activo</span>
+</div>
+<div class="grid grid-cols-3 border-t border-outline-variant pt-4 mt-2">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Uso</p>
+<p class="font-body-md text-body-md font-bold">521 veces</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Rendimiento</p>
+<p class="font-body-md text-body-md font-bold text-green-600">+18%</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Expira en</p>
+<p class="font-body-md text-body-md font-bold">Indefinido</p>
+</div>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="flex-1 border border-outline text-on-surface py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-colors">Editar</button>
+<button class="flex-1 bg-surface-container-highest text-on-surface-variant py-2 rounded-lg font-label-md text-label-md hover:bg-error-container hover:text-on-error-container transition-colors">Pausar</button>
+</div>
+</div>
+<!-- Promotion Card 3: Combo -->
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col gap-4 hover:shadow-lg transition-all group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-14 h-14 bg-primary-fixed flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="inventory_2">inventory_2</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Combo Desayuno</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cafetera + Molinillo con 15% de descuento</p>
+</div>
+</div>
+<span class="bg-primary-container text-on-primary-container text-xs font-bold px-3 py-1 rounded-full">En Camino</span>
+</div>
+<div class="grid grid-cols-3 border-t border-outline-variant pt-4 mt-2">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Uso</p>
+<p class="font-body-md text-body-md font-bold">66 veces</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Rendimiento</p>
+<p class="font-body-md text-body-md font-bold text-amber-600">-3%</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Expira en</p>
+<p class="font-body-md text-body-md font-bold">12 días</p>
+</div>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="flex-1 border border-outline text-on-surface py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-colors">Editar</button>
+<button class="flex-1 bg-surface-container-highest text-on-surface-variant py-2 rounded-lg font-label-md text-label-md hover:bg-error-container hover:text-on-error-container transition-colors">Pausar</button>
+</div>
+</div>
+<!-- Visual Ad Card for Promotion Creation -->
+<div class="relative overflow-hidden bg-inverse-surface rounded-xl p-6 flex flex-col justify-center min-h-[220px]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-20" data-alt="A high-contrast, modern retail scene showing digital discount codes on a tablet screen. The lighting is dynamic and sleek with deep blues and crisp whites. A blurred warehouse background suggests the logistics power of Azul Entrega. The atmosphere is professional, urgent, and highly efficient." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHjO1SJwuDHDnx71IdF1dUL1e6luzcWGcoJTlo-yMOcp6b94FOhd6QfsZCFwnNuQwbVJzql5yV6f_V1AhrGAnd-G1CV_4xrWyfFaRCWB8mhu56PlM_FUZa0bWprzdAH9FQyghkqSOJE4sG_eL0nMiq4RVkRG8TzB-514rmxU88-PxkRU-YKW4mnTEkfX7VOwH2a-1IHX1nfVlRXlYXi_3buhcS_RyPADw809fw93jOW17Rw1OOh5mtWpOnSvO2EddoUdl6pjob0mM"/>
+<div class="relative z-10">
+<h4 class="font-headline-sm text-headline-sm text-on-primary mb-2">¿Necesitas más ventas?</h4>
+<p class="font-body-md text-body-md text-on-primary-container max-w-[280px] mb-4">Crea combos inteligentes basados en lo que tus clientes compran juntos.</p>
+<button class="bg-primary-fixed text-on-primary-fixed px-6 py-2 rounded-lg font-bold text-label-md uppercase tracking-wider hover:bg-white transition-colors">Explorar Sugerencias</button>
+</div>
+</div>
+</div>
+<!-- Mobile Empty State Padding -->
+<div class="h-16 md:hidden"></div>
+</div>
+</main>
+</div>
+<!-- Floating Action Button (FAB) -->
+<button class="fixed bottom-20 md:bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-[60]">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface border-t border-outline-variant shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md-mobile">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="package_2">package_2</span>
+<span class="font-label-md text-label-md-mobile">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="campaign" style="font-variation-settings: 'FILL' 1;">campaign</span>
+<span class="font-label-md text-label-md-mobile">Promos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md-mobile">Settings</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.opacity = '0.8';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.opacity = '1';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.opacity = '1';
+            });
+        });
+
+        // FAB Animation on Scroll
+        let lastScrollTop = 0;
+        const fab = document.querySelector('.fixed.bottom-20');
+        window.addEventListener("scroll", function() {
+            let st = window.pageYOffset || document.documentElement.scrollTop;
+            if (st > lastScrollTop) {
+                fab.classList.add('translate-y-24');
+            } else {
+                fab.classList.remove('translate-y-24');
+            }
+            lastScrollTop = st <= 0 ? 0 : st;
+        }, false);
+    </script>
+</body></html>

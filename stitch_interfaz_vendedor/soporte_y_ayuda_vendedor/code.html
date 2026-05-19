@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Soporte para Socios - Azul Entrega</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#f9f9ff",
+                    "inverse-on-surface": "#ecf1ff",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#cfdaf2",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "inverse-surface": "#263143",
+                    "on-tertiary-fixed-variant": "#43474b",
+                    "surface-container-lowest": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#acc7ff",
+                    "on-tertiary-container": "#ccd0d4",
+                    "on-primary-container": "#bbd0ff",
+                    "surface-container": "#e7eeff",
+                    "on-tertiary-fixed": "#171c1f",
+                    "tertiary-fixed-dim": "#c3c7cb",
+                    "on-secondary-container": "#54647a",
+                    "surface-variant": "#d8e3fb",
+                    "surface-container-high": "#dee8ff",
+                    "secondary-container": "#d0e1fb",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#54595d",
+                    "on-primary-fixed-variant": "#004491",
+                    "tertiary": "#3d4245",
+                    "on-surface": "#111c2d",
+                    "on-secondary": "#ffffff",
+                    "surface": "#f9f9ff",
+                    "primary-fixed": "#d7e2ff",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#dfe3e7",
+                    "primary": "#003f87",
+                    "inverse-primary": "#acc7ff",
+                    "primary-container": "#0056b3",
+                    "outline": "#727784",
+                    "on-primary-fixed": "#001a40",
+                    "surface-container-low": "#f0f3ff",
+                    "surface-bright": "#f9f9ff",
+                    "outline-variant": "#c2c6d4",
+                    "on-background": "#111c2d",
+                    "surface-tint": "#115cb9",
+                    "secondary": "#505f76",
+                    "on-surface-variant": "#424752",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "surface-container-highest": "#d8e3fb",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#0b1c30"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "margin-desktop": "32px",
+                    "container-max": "1280px",
+                    "gutter": "16px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "headline-sm": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline fixed top-0 w-full z-50 flex justify-between items-center px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer lg:hidden">menu</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">Azul Entrega</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex gap-6">
+<span class="font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high px-3 py-2 rounded-lg cursor-pointer transition-colors">Ayuda</span>
+<span class="font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high px-3 py-2 rounded-lg cursor-pointer transition-colors">Centro de Recursos</span>
+</div>
+<img alt="Vendor Profile Picture" class="w-10 h-10 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2rubehbUYinZG7prQtxCdl-oihCcC4DUfgYv8MPHJBkBGZ9Ryims1fBPqdMLDztTr8_uLqqpbISESKZHF2zVozcrzxMWCdDc169w3At-oUTBPqfnrneQ-5G2bfMshaXi6VdOiCFED6NmTLoHPnVzTzNXMjs80RPjJO6DWdYwLL3VIjHbBtwfaVXN7hyBjMPEdTGGCMT3efwh7_13ihQvYZVZ8ciy7tg4N7ewScGKPQ8CCV819NyX0dueisihRUUhb4lrQlEf6Ltc"/>
+</div>
+</header>
+<div class="flex pt-16">
+<!-- NavigationDrawer (Desktop) -->
+<aside class="hidden lg:flex flex-col p-4 gap-2 bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline fixed left-0 top-16 h-[calc(100vh-64px)] w-64">
+<div class="mb-6 px-2">
+<p class="font-headline-sm text-headline-sm font-bold text-primary">Soporte para Socios</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Centro de ayuda v2.1.0</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">package_2</span>
+<span class="font-body-md text-body-md">Orders</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md">Inventory</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-body-md text-body-md">Promotions</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 p-3 bg-secondary-fixed text-on-secondary-fixed font-bold rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-64 p-margin-mobile md:p-margin-desktop mb-20 lg:mb-0">
+<div class="max-w-container-max mx-auto">
+<!-- Hero Section / Search -->
+<section class="relative mb-12 rounded-xl overflow-hidden bg-primary p-8 md:p-12">
+<div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+<div class="relative z-10 text-center max-w-2xl mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-on-primary mb-4">¿En qué podemos ayudarte hoy?</h2>
+<div class="relative">
+<input class="w-full h-14 pl-12 pr-4 rounded-lg bg-surface text-on-surface border-none focus:ring-2 focus:ring-primary-fixed text-body-md" placeholder="Busca problemas, guías o soluciones..." type="text"/>
+<span class="material-symbols-outlined absolute left-4 top-4 text-on-surface-variant">search</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid FAQ -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Chat Destacado -->
+<div class="md:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+<div class="flex-1">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Asistencia en Tiempo Real</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">¿Tienes un problema urgente con un pedido activo o un pago? Nuestro equipo está disponible 24/7 para ayudarte a mantener tu negocio en marcha.</p>
+<button class="bg-primary hover:bg-primary-container text-on-primary px-8 py-4 rounded-lg font-bold flex items-center gap-3 transition-transform active:scale-95 shadow-md">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat</span>
+                                Iniciar Chat de Soporte
+                            </button>
+</div>
+<div class="w-48 h-48 bg-secondary-fixed rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[80px] text-primary">support_agent</span>
+</div>
+</div>
+<!-- Sidebar Stats / Quick Links -->
+<div class="md:col-span-4 bg-primary-container rounded-xl p-8 text-on-primary-container flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-4xl mb-4">history</span>
+<h4 class="font-headline-sm text-headline-sm mb-2">Tus Tickets</h4>
+<p class="font-body-sm text-body-sm mb-4">Tienes 2 tickets abiertos esperando respuesta.</p>
+</div>
+<a class="text-on-primary font-bold flex items-center gap-2 hover:underline" href="#">
+                            Ver historial completo
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+<!-- Category: Payments -->
+<div class="md:col-span-4 bg-white border border-outline-variant rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer group">
+<div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4 text-amber-700">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm mb-2 group-hover:text-primary transition-colors">Problemas con Pagos</h4>
+<ul class="space-y-3">
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+                                ¿Cuándo recibiré mis ganancias?
+                            </li>
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+                                Disputa de facturación
+                            </li>
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+                                Actualizar datos bancarios
+                            </li>
+</ul>
+</div>
+<!-- Category: Menu -->
+<div class="md:col-span-4 bg-white border border-outline-variant rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer group">
+<div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4 text-indigo-700">
+<span class="material-symbols-outlined">restaurant_menu</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm mb-2 group-hover:text-primary transition-colors">Ajustes de Menú</h4>
+<ul class="space-y-3">
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+                                Editar precios y descripciones
+                            </li>
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+                                Ocultar productos agotados
+                            </li>
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+                                Subir fotos de platos
+                            </li>
+</ul>
+</div>
+<!-- Category: Couriers -->
+<div class="md:col-span-4 bg-white border border-outline-variant rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer group">
+<div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 text-green-700">
+<span class="material-symbols-outlined">delivery_dining</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm mb-2 group-hover:text-primary transition-colors">Ayuda con Repartidores</h4>
+<ul class="space-y-3">
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+                                Reportar mala conducta
+                            </li>
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+                                El repartidor no llega
+                            </li>
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+                                Tiempos de espera excesivos
+                            </li>
+</ul>
+</div>
+<!-- Visual Section - Documentation -->
+<div class="md:col-span-12 relative rounded-xl overflow-hidden h-64 group cursor-pointer">
+<img alt="Centro de Conocimiento" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A professional warehouse and logistics hub in the background, out of focus. In the foreground, a clean, high-resolution digital tablet displays a modern dashboard interface with bright blue graphs and white text. The lighting is crisp and natural, emphasizing a high-tech corporate environment with a palette of deep navy blues and clean whites. The overall mood is reliable, efficient, and forward-thinking." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbm4yNg7nsm05skcVFG1VzuENFv4-S9snsL3lM9ThAVZ7Kxo57taY02z--ssAErHPAgcyHIQqp3ksDtXt5D0rU1q2oh31uzqgP3rykmHmB4kKFDJTg3weYfxwqMluAXkovgK11G1bLlTLXLqw2GhChsFtzl4qM5N0y7rt8MWqRcpaRDrcBYV9Gy9emMH6JtLr1M0tqVItAK1j6gFfJGlX-GPC7TG0UrsaCfmgTB754b-I-tB05bWId75uSvHXvaEyBI2rxXtQHKmY"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary/90 to-transparent flex items-center px-12">
+<div class="max-w-md">
+<h3 class="font-headline-md text-headline-md text-on-primary mb-2">Guías de Éxito para el Socio</h3>
+<p class="font-body-md text-body-md text-on-primary/80 mb-4">Aprende estrategias para aumentar tus ventas y mejorar tu calificación.</p>
+<button class="bg-white text-primary px-6 py-2 rounded-lg font-bold text-label-md">Explorar Biblioteca</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Featured Support Button for Mobile (FAB style but at bottom of section) -->
+<div class="fixed bottom-20 right-6 lg:hidden z-40">
+<button class="w-16 h-16 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">chat</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-lg flex justify-around items-center px-4 py-2 rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1" href="#">
+<span class="material-symbols-outlined">package_2</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Inventory</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for the chat button
+        const chatButtons = document.querySelectorAll('button');
+        chatButtons.forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                btn.classList.add('shadow-lg');
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.classList.remove('shadow-lg');
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-105');
+            searchInput.parentElement.classList.add('transition-transform');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-105');
+        });
+    </script>
+</body></html>

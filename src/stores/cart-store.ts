@@ -8,6 +8,7 @@ interface CartStore {
   storeName: string | null
   storeWhatsapp: string | null
   deliveryFee: number
+  activeOrderId: string | null
 
   // Actions
   addItem: (
@@ -24,6 +25,7 @@ interface CartStore {
   updateQuantity: (productId: string, quantity: number) => void
   clearCart: () => void
   setStore: (storeId: string, storeName: string, whatsapp: string, deliveryFee: number) => void
+  setActiveOrderId: (orderId: string | null) => void
 
   // Computed
   getSubtotal: () => number
@@ -39,6 +41,7 @@ export const useCartStore = create<CartStore>()(
       storeName: null,
       storeWhatsapp: null,
       deliveryFee: 0,
+      activeOrderId: null,
 
       addItem: (product, quantity = 1, storeMeta) => {
         const { items, storeId } = get()
@@ -115,6 +118,10 @@ export const useCartStore = create<CartStore>()(
 
       setStore: (storeId, storeName, whatsapp, deliveryFee) => {
         set({ storeId, storeName, storeWhatsapp: whatsapp, deliveryFee })
+      },
+
+      setActiveOrderId: (orderId) => {
+        set({ activeOrderId: orderId })
       },
 
       getSubtotal: () => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { TopAppBar, Zone } from '@/components/layout/TopAppBar';
 import { BottomNavBar } from '@/components/layout/BottomNavBar';
+import { useCartStore } from '@/stores/cart-store';
 
 interface Store {
   id: string;
@@ -29,6 +30,8 @@ export const HomeScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const activeOrderId = useCartStore((state) => state.activeOrderId);
+
   useEffect(() => {
     fetch('/api/zones')
       .then((res) => {
@@ -52,7 +55,13 @@ export const HomeScreen: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const url = selectedZone ? `/api/stores?zoneId=${selectedZone}` : '/api/stores?onlyOpen=true';
+    const url = selectedZone ? `/api/stores?zoneId=${selectedZone}` : null;
+
+    if (!url) {
+      setStores([]);
+      setLoading(false);
+      return () => controller.abort();
+    }
 
     fetch(url, { signal: controller.signal })
       .then((res) => {
@@ -110,6 +119,27 @@ export const HomeScreen: React.FC = () => {
           </div>
         </section>
 
+        {activeOrderId && (
+          <section className="px-margin-mobile mt-4">
+            <Link 
+              href={`/azul/tracking?orderId=${activeOrderId}`}
+              className="bg-primary text-on-primary rounded-xl p-4 flex items-center justify-between shadow-[0px_4px_12px_rgba(0,0,0,0.1)] active:scale-[0.98] transition-transform w-full border border-primary-container relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+              <div className="flex items-center gap-3 relative z-10">
+                <div className="bg-primary-container text-primary rounded-full p-2 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>two_wheeler</span>
+                </div>
+                <div>
+                  <h3 className="font-headline-sm text-headline-sm m-0 leading-tight">Pedido en curso</h3>
+                  <p className="font-body-sm text-body-sm text-on-primary/80 m-0">Toca para rastrear tu entrega</p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined relative z-10">chevron_right</span>
+            </Link>
+          </section>
+        )}
+
         <section className="mt-stack-lg px-margin-mobile">
           <div className="flex items-center justify-between mb-stack-md">
             <div>
@@ -123,11 +153,19 @@ export const HomeScreen: React.FC = () => {
             <div className="flex justify-center py-10">
               <div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
             </div>
+          ) : isAllZones ? (
+            <div className="text-center py-12 bg-surface-container-low rounded-2xl border-2 border-dashed border-outline-variant mt-4">
+              <span className="material-symbols-outlined text-5xl text-primary mb-3">location_on</span>
+              <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">Selecciona tu ubicación</h3>
+              <p className="font-body-md text-on-surface-variant max-w-[280px] mx-auto">
+                Por favor selecciona tu zona en la parte superior para ver los restaurantes y promociones disponibles cerca de ti.
+              </p>
+            </div>
           ) : stores.length === 0 ? (
             <div className="text-center py-10">
               <span className="material-symbols-outlined text-4xl text-outline mb-2">storefront</span>
               <p className="font-body-md text-on-surface-variant">
-                {error ?? (isAllZones ? 'No hay tiendas abiertas en este momento.' : 'No hay restaurantes disponibles en esta zona todavía.')}
+                {error ?? 'No hay restaurantes disponibles en esta zona todavía.'}
               </p>
             </div>
           ) : (

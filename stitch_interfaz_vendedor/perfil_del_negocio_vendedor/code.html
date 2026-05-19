@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Configuración del Local - Azul Entrega</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f9f9ff",
+                        "inverse-on-surface": "#ecf1ff",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#cfdaf2",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "inverse-surface": "#263143",
+                        "on-tertiary-fixed-variant": "#43474b",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#acc7ff",
+                        "on-tertiary-container": "#ccd0d4",
+                        "on-primary-container": "#bbd0ff",
+                        "surface-container": "#e7eeff",
+                        "on-tertiary-fixed": "#171c1f",
+                        "tertiary-fixed-dim": "#c3c7cb",
+                        "on-secondary-container": "#54647a",
+                        "surface-variant": "#d8e3fb",
+                        "surface-container-high": "#dee8ff",
+                        "secondary-container": "#d0e1fb",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#54595d",
+                        "on-primary-fixed-variant": "#004491",
+                        "tertiary": "#3d4245",
+                        "on-surface": "#111c2d",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9f9ff",
+                        "primary-fixed": "#d7e2ff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#dfe3e7",
+                        "primary": "#003f87",
+                        "inverse-primary": "#acc7ff",
+                        "primary-container": "#0056b3",
+                        "outline": "#727784",
+                        "on-primary-fixed": "#001a40",
+                        "surface-container-low": "#f0f3ff",
+                        "surface-bright": "#f9f9ff",
+                        "outline-variant": "#c2c6d4",
+                        "on-background": "#111c2d",
+                        "surface-tint": "#115cb9",
+                        "secondary": "#505f76",
+                        "on-surface-variant": "#424752",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-highest": "#d8e3fb",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0b1c30"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "margin-desktop": "32px",
+                        "container-max": "1280px",
+                        "gutter": "16px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Hanken Grotesk', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline fixed top-0 full-width z-40 flex justify-between items-center w-full px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary cursor-pointer">menu</span>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">Azul Entrega</span>
+</div>
+<div class="flex items-center gap-4">
+<h1 class="hidden md:block font-headline-sm text-headline-sm text-on-surface">Configuración del Local</h1>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container border border-outline-variant">
+<img alt="Vendor Profile Picture" data-alt="A professional headshot of a business owner in a modern retail setting. The lighting is soft and natural, emphasizing a trustworthy and professional demeanor. The background is a slightly blurred high-end boutique with clean lines and a corporate blue color palette, maintaining the professional light-mode aesthetic of the Azul Entrega brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa6285FyWFgRLMRkvwqNYjkq4wmJJABQ4nSYLB7a8H6r2tB_C-AqGdpR7G9TirU5WhYTq7ONE-krAoe8TPeWnHL_6z71miadaZT3d5ujqV0UtGwT-2beR-rN3K9ptWoMs3p2qgj2IzagZLFa6VYw7-0oS-pz1PnVfrNr5ujaaV7wSNV_W2uNwRdAUBEkjtYZFD00hc5HyQTSkBugIieSeszXA7ItPWZYQKaNTVazcTm8oG1f-hjASFJDykYIq483aE1Ul94p3B8pc"/>
+</div>
+</div>
+</header>
+<!-- NavigationDrawer (Desktop) -->
+<aside class="hidden md:flex flex-col p-4 gap-2 fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline z-30">
+<div class="mb-6 px-2 py-4 flex items-center gap-3">
+<div class="w-12 h-12 bg-secondary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">storefront</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm leading-tight text-primary">Azul Entrega Vendor</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manage your store</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">package_2</span>
+<span class="font-body-md text-body-md">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-body-md text-body-md">Promotions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-fixed text-on-secondary-fixed font-bold rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-outline-variant">
+<span class="font-label-md text-label-md text-on-surface-variant opacity-50 px-4">v2.1.0</span>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-20 md:pb-8 md:pl-72 px-4 md:px-margin-desktop">
+<div class="max-w-container-max mx-auto space-y-gutter">
+<!-- Mobile Title -->
+<div class="md:hidden mb-6">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Configuración del Local</h1>
+</div>
+<!-- Urgent Actions / Status -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div class="flex items-center gap-4">
+<div class="w-4 h-4 rounded-full bg-green-500 animate-pulse" id="statusIndicator"></div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Estado del Local: <span class="text-primary" id="statusLabel">Abierto</span></h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Los clientes pueden realizar pedidos en este momento.</p>
+</div>
+</div>
+<button class="w-full md:w-auto px-6 py-2.5 bg-error text-on-error font-bold rounded-lg hover:opacity-90 transition-opacity active:scale-95" id="closeStoreBtn" onclick="toggleStoreStatus()">
+                    Cerrar local temporalmente
+                </button>
+</div>
+<!-- Bento Grid Layout for Sections -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Information Section -->
+<section class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 space-y-6">
+<div class="flex items-center gap-2 border-b border-outline-variant pb-4">
+<span class="material-symbols-outlined text-primary">info</span>
+<h2 class="font-headline-sm text-headline-sm">Información del Local</h2>
+</div>
+<div class="flex flex-col md:flex-row gap-8">
+<div class="space-y-4">
+<label class="font-label-md text-label-md text-secondary block">Logo del Local</label>
+<div class="relative group w-32 h-32 md:w-40 md:h-40 rounded-xl overflow-hidden bg-surface-container border-2 border-dashed border-outline-variant flex items-center justify-center cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A minimalist and high-contrast business logo displayed on a clean white background. The visual style is modern corporate, featuring deep blue geometric shapes that evoke a sense of reliability and logistics. The lighting is perfectly even, reminiscent of a professional studio product shot for a high-end tech or delivery platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_ey-tK8OfO6NmbLtDoyvgNlpet0oW6sZs58WEcu5MOLvlqmDWDNcSfmzCyc-z9V5PRyPE37TGPeXgjAldO4Ze32u3dzt8dXTvemfX8IKm1XHhdB_s2eM-faz76YO3PXqpQtMOG2Xs3XRpUgDjDNPdLeML6DO1wRupsqtkjq40FRADYxEc2ELVcj79EGcoNRRBzJxMxvJuntqbc0jZBKchP4aGdsx4eGcb0yfepxG8UkS6AHCrfjMjWqogpldp9QIs8KhGsGesPIw"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-white text-xs">
+<span class="material-symbols-outlined">upload</span>
+<span>Cambiar Logo</span>
+</div>
+</div>
+</div>
+<div class="flex-1 space-y-4">
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-secondary">Nombre del Local</label>
+<input class="w-full h-12 bg-surface border border-outline-variant rounded-lg px-4 focus:ring-2 focus:ring-primary focus:outline-none font-body-md" type="text" value="Azul Gourmet"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-secondary">Descripción Corta</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg p-4 focus:ring-2 focus:ring-primary focus:outline-none font-body-md h-24" placeholder="Describe tu negocio para los clientes...">Expertos en alta cocina entregada a tu puerta con la rapidez que nos caracteriza.</textarea>
+</div>
+</div>
+</div>
+</section>
+<!-- Preparation Time Section -->
+<section class="lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 space-y-6">
+<div class="flex items-center gap-2 border-b border-outline-variant pb-4">
+<span class="material-symbols-outlined text-primary">timer</span>
+<h2 class="font-headline-sm text-headline-sm">Tiempo de Preparación</h2>
+</div>
+<div class="space-y-4">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Promedio de tiempo que tardas en preparar un pedido estándar.</p>
+<div class="flex items-end gap-3">
+<div class="flex-1 space-y-1">
+<label class="font-label-md text-label-md text-secondary">Estimado (minutos)</label>
+<input class="w-full h-12 bg-surface border border-outline-variant rounded-lg px-4 focus:ring-2 focus:ring-primary focus:outline-none font-headline-sm text-center" type="number" value="25"/>
+</div>
+<span class="mb-3 font-body-md text-on-surface-variant">min</span>
+</div>
+<div class="bg-secondary-container/30 p-4 rounded-lg flex gap-3">
+<span class="material-symbols-outlined text-on-secondary-container">lightbulb</span>
+<p class="font-body-sm text-body-sm text-on-secondary-container">Mantener este tiempo actualizado mejora la satisfacción del cliente y la puntualidad del repartidor.</p>
+</div>
+</div>
+</section>
+<!-- Opening Hours Section -->
+<section class="lg:col-span-12 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 space-y-6">
+<div class="flex items-center justify-between border-b border-outline-variant pb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<h2 class="font-headline-sm text-headline-sm">Horarios de Apertura</h2>
+</div>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Ajuste Semanal</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+<!-- Monday -->
+<div class="p-4 bg-surface border border-outline-variant rounded-lg flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="font-body-md font-bold text-on-surface">Lunes</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-dim peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex gap-2">
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 text-sm font-label-md" type="time" value="09:00"/>
+<span class="self-center">-</span>
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 text-sm font-label-md" type="time" value="22:00"/>
+</div>
+</div>
+<!-- Tuesday -->
+<div class="p-4 bg-surface border border-outline-variant rounded-lg flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="font-body-md font-bold text-on-surface">Martes</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-dim rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex gap-2">
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 text-sm font-label-md" type="time" value="09:00"/>
+<span class="self-center">-</span>
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 text-sm font-label-md" type="time" value="22:00"/>
+</div>
+</div>
+<!-- Wednesday -->
+<div class="p-4 bg-surface border border-outline-variant rounded-lg flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="font-body-md font-bold text-on-surface">Miércoles</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-dim rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex gap-2">
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 text-sm font-label-md" type="time" value="09:00"/>
+<span class="self-center">-</span>
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 text-sm font-label-md" type="time" value="22:00"/>
+</div>
+</div>
+<!-- Thursday -->
+<div class="p-4 bg-surface border border-outline-variant rounded-lg flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="font-body-md font-bold text-on-surface">Jueves</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-dim rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex gap-2">
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 text-sm font-label-md" type="time" value="09:00"/>
+<span class="self-center">-</span>
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 text-sm font-label-md" type="time" value="22:00"/>
+</div>
+</div>
+</div>
+<button class="flex items-center gap-2 text-primary font-bold py-2 px-4 rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">add</span>
+<span>Agregar horario especial</span>
+</button>
+</section>
+<!-- Billing Information -->
+<section class="lg:col-span-12 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 space-y-6">
+<div class="flex items-center gap-2 border-b border-outline-variant pb-4">
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+<h2 class="font-headline-sm text-headline-sm">Datos de Facturación</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-secondary">Razón Social</label>
+<input class="w-full h-12 bg-surface border border-outline-variant rounded-lg px-4 focus:ring-2 focus:ring-primary focus:outline-none font-body-md" type="text" value="Azul Gourmet S.A. de C.V."/>
+</div>
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-secondary">RFC / Tax ID</label>
+<input class="w-full h-12 bg-surface border border-outline-variant rounded-lg px-4 focus:ring-2 focus:ring-primary focus:outline-none font-body-md" type="text" value="AZG901010H10"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-secondary">Email de Facturación</label>
+<input class="w-full h-12 bg-surface border border-outline-variant rounded-lg px-4 focus:ring-2 focus:ring-primary focus:outline-none font-body-md" type="email" value="admin@azulgourmet.com"/>
+</div>
+<div class="md:col-span-2 lg:col-span-3 space-y-1">
+<label class="font-label-md text-label-md text-secondary">Dirección Fiscal</label>
+<input class="w-full h-12 bg-surface border border-outline-variant rounded-lg px-4 focus:ring-2 focus:ring-primary focus:outline-none font-body-md" type="text" value="Av. Reforma 123, Col. Centro, Ciudad de México, CP 06000"/>
+</div>
+</div>
+</section>
+</div>
+<!-- Global Footer Actions -->
+<div class="flex justify-end items-center gap-4 py-8">
+<button class="px-6 py-3 font-bold text-secondary hover:text-on-surface transition-colors">
+                    Cancelar cambios
+                </button>
+<button class="px-8 py-3 bg-primary text-on-primary font-bold rounded-lg shadow-lg hover:shadow-xl hover:opacity-90 active:scale-95 transition-all">
+                    Guardar Configuración
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest p-2 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest p-2 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">package_2</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest p-2 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Inventory</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<script>
+        let isClosed = false;
+        
+        function toggleStoreStatus() {
+            const btn = document.getElementById('closeStoreBtn');
+            const indicator = document.getElementById('statusIndicator');
+            const label = document.getElementById('statusLabel');
+            
+            isClosed = !isClosed;
+            
+            if (isClosed) {
+                btn.textContent = 'Abrir local ahora';
+                btn.classList.remove('bg-error');
+                btn.classList.add('bg-primary');
+                indicator.classList.remove('bg-green-500', 'animate-pulse');
+                indicator.classList.add('bg-error');
+                label.textContent = 'Cerrado Temporalmente';
+                label.classList.remove('text-primary');
+                label.classList.add('text-error');
+            } else {
+                btn.textContent = 'Cerrar local temporalmente';
+                btn.classList.remove('bg-primary');
+                btn.classList.add('bg-error');
+                indicator.classList.add('bg-green-500', 'animate-pulse');
+                indicator.classList.remove('bg-error');
+                label.textContent = 'Abierto';
+                label.classList.remove('text-error');
+                label.classList.add('text-primary');
+            }
+        }
+    </script>
+</body></html>

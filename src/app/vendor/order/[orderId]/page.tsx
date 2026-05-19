@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { usePusherChannel } from '@/hooks/use-pusher'
 import { CHANNELS, EVENTS } from '@/lib/pusher'
 import { formatPrice, getOrderStatusLabel, getOrderStatusColor } from '@/lib/utils'
+import { Package, CheckCircle, Clock, User, Phone, MapPin, ShoppingCart, Utensils, Bike } from 'lucide-react'
 
 interface OrderItem {
   id: string
@@ -177,29 +178,29 @@ export default function VendorOrderPage({
         {/* Tarjeta principal */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           {/* Encabezado del pedido */}
-          <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-4">
+          <div className="bg-primary text-white p-4">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-xl font-bold">Pedido #{order.orderNumber}</h1>
-                <p className="text-sm text-green-100">
+                <p className="text-sm text-primary-foreground/80">
                   {new Date(order.createdAt).toLocaleString('es-EC')}
                 </p>
               </div>
-              <span className="text-3xl">📦</span>
+              <Package size={32} />
             </div>
           </div>
 
           {/* Estado del pago */}
-          <div className={`p-3 text-center ${paymentVerified ? 'bg-green-50' : 'bg-yellow-50'}`}>
-            <span className="text-sm font-medium">
-              {paymentVerified ? '✅ Pago verificado' : '⏳ Pago pendiente'}
+          <div className={`p-3 text-center ${paymentVerified ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}>
+            <span className="text-sm font-medium flex items-center justify-center gap-1.5">
+              {paymentVerified ? <><CheckCircle size={16} /> Pago verificado</> : <><Clock size={16} /> Pago pendiente</>}
             </span>
           </div>
 
           {/* Info del cliente */}
           <div className="p-4 border-b">
             <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <span>👤</span> Cliente
+              <User size={18} className="text-primary" /> Cliente
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -208,8 +209,8 @@ export default function VendorOrderPage({
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Teléfono:</span>
-                <a href={`tel:${order.customerPhone}`} className="font-medium text-green-600">
-                  {order.customerPhone}
+                <a href={`tel:${order.customerPhone}`} className="font-medium text-primary hover:underline flex items-center gap-1">
+                  <Phone size={12} /> {order.customerPhone}
                 </a>
               </div>
               <div className="flex justify-between items-start">
@@ -219,9 +220,9 @@ export default function VendorOrderPage({
                   {(order.customerLat || order.customerLng) && (
                     <button
                       onClick={openMaps}
-                      className="block mt-1 text-blue-600 text-xs"
+                      className="mt-1 text-primary hover:underline text-xs flex items-center justify-end gap-1 w-full"
                     >
-                      🗺️ Ver en mapa
+                      <MapPin size={12} /> Ver en mapa
                     </button>
                   )}
                 </div>
@@ -238,7 +239,7 @@ export default function VendorOrderPage({
           {/* Productos */}
           <div className="p-4 border-b">
             <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <span>🛒</span> Productos
+              <ShoppingCart size={18} className="text-primary" /> Productos
             </h3>
             <div className="space-y-2">
               {order.items.map((item) => (
@@ -284,7 +285,7 @@ export default function VendorOrderPage({
               )}
               <div className="flex justify-between text-lg font-bold pt-2 border-t mt-2">
                 <span>Total</span>
-                <span className="text-green-600">{formatPrice(order.total)}</span>
+                <span className="text-primary">{formatPrice(order.total)}</span>
               </div>
             </div>
           </div>
@@ -295,12 +296,12 @@ export default function VendorOrderPage({
               <Button
                 onClick={handleMarkReady}
                 disabled={updating}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-lg py-6"
+                className="w-full bg-primary hover:bg-primary/90 text-lg py-6 flex items-center justify-center gap-2"
               >
                 {updating ? (
-                  <>⏳ Procesando...</>
+                  <><Clock size={20} className="animate-spin" /> Procesando...</>
                 ) : (
-                  <>🍽️ Listo para enviar</>
+                  <><Utensils size={20} /> Listo para enviar</>
                 )}
               </Button>
               <p className="text-xs text-center text-gray-500 mt-2">
@@ -311,19 +312,19 @@ export default function VendorOrderPage({
 
           {/* Si ya está listo */}
           {order.status === 'READY' && (
-            <div className="p-4 bg-purple-50 text-center">
-              <span className="text-2xl block mb-2">🍽️</span>
-              <p className="font-bold text-purple-800">Pedido listo</p>
-              <p className="text-sm text-purple-600">Esperando que el repartidor lo recoja</p>
+            <div className="p-4 bg-primary/10 text-center">
+              <Utensils size={32} className="mx-auto mb-2 text-primary" />
+              <p className="font-bold text-primary">Pedido listo</p>
+              <p className="text-sm text-primary/80">Esperando que el repartidor lo recoja</p>
             </div>
           )}
 
           {/* Si está en camino */}
           {order.status === 'PICKED_UP' && (
-            <div className="p-4 bg-blue-50 text-center">
-              <span className="text-2xl block mb-2">🏍️</span>
-              <p className="font-bold text-blue-800">En camino</p>
-              <p className="text-sm text-blue-600">El repartidor está llevando el pedido</p>
+            <div className="p-4 bg-primary/10 text-center">
+              <Bike size={32} className="mx-auto mb-2 text-primary" />
+              <p className="font-bold text-primary">En camino</p>
+              <p className="text-sm text-primary/80">El repartidor está llevando el pedido</p>
             </div>
           )}
 

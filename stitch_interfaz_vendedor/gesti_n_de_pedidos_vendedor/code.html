@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Azul Entrega - Gestión de Pedidos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#171c1f",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed-variant": "#004491",
+                      "on-secondary-fixed": "#0b1c30",
+                      "primary-fixed-dim": "#acc7ff",
+                      "error": "#ba1a1a",
+                      "on-tertiary-container": "#ccd0d4",
+                      "surface-container": "#e7eeff",
+                      "surface-bright": "#f9f9ff",
+                      "on-tertiary-fixed-variant": "#43474b",
+                      "tertiary-fixed": "#dfe3e7",
+                      "tertiary": "#3d4245",
+                      "surface-container-highest": "#d8e3fb",
+                      "surface-tint": "#115cb9",
+                      "surface-container-high": "#dee8ff",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "surface-container-low": "#f0f3ff",
+                      "tertiary-fixed-dim": "#c3c7cb",
+                      "on-primary-fixed": "#001a40",
+                      "primary-container": "#0056b3",
+                      "surface": "#f9f9ff",
+                      "inverse-surface": "#263143",
+                      "on-error": "#ffffff",
+                      "outline": "#727784",
+                      "surface-dim": "#cfdaf2",
+                      "on-background": "#111c2d",
+                      "on-primary": "#ffffff",
+                      "on-surface-variant": "#424752",
+                      "surface-variant": "#d8e3fb",
+                      "inverse-primary": "#acc7ff",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed": "#d3e4fe",
+                      "primary": "#003f87",
+                      "outline-variant": "#c2c6d4",
+                      "inverse-on-surface": "#ecf1ff",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "on-secondary-container": "#54647a",
+                      "on-primary-container": "#bbd0ff",
+                      "background": "#f9f9ff",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed": "#d7e2ff",
+                      "secondary": "#505f76",
+                      "on-surface": "#111c2d",
+                      "tertiary-container": "#54595d",
+                      "secondary-container": "#d0e1fb"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "base": "8px",
+                      "margin-mobile": "16px",
+                      "container-max": "1280px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Hanken Grotesk"],
+                      "body-md": ["Inter"],
+                      "headline-sm": ["Hanken Grotesk"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Hanken Grotesk"],
+                      "label-md": ["Inter"],
+                      "headline-lg-mobile": ["Hanken Grotesk"],
+                      "body-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c2c6d4;
+            border-radius: 10px;
+        }
+        .order-card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .order-card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Navigation Drawer (Desktop Only) -->
+<aside class="hidden md:flex h-full w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex-col py-margin-desktop gap-base z-40">
+<div class="px-6 mb-8 flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">Azul Entrega</h1>
+<p class="font-label-md text-label-md text-on-secondary-container">Vendor Portal</p>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">ID: 88234</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 py-3 px-6 text-on-surface-variant hover:bg-surface-container-high rounded-r-full mr-4 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Panel de Control</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-6 bg-primary-container text-on-primary-container font-bold rounded-r-full mr-4 duration-200" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-body-md">Pedidos Activos</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-6 text-on-surface-variant hover:bg-surface-container-high rounded-r-full mr-4 transition-colors" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-body-md">Historial</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-6 text-on-surface-variant hover:bg-surface-container-high rounded-r-full mr-4 transition-colors" href="#">
+<span class="material-symbols-outlined">inventory</span>
+<span class="font-body-md">Inventario</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-6 text-on-surface-variant hover:bg-surface-container-high rounded-r-full mr-4 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Configuración</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface border-b border-outline-variant sticky top-0 z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<span class="md:hidden material-symbols-outlined text-primary">menu</span>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">Gestión de Pedidos</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-2 bg-surface-container-high px-4 py-1.5 rounded-full border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="font-label-md text-label-md text-primary">Disponible</span>
+</div>
+<img alt="Courier Profile Picture" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="A professional headshot of a restaurant manager in a modern kitchen setting. The manager is wearing a clean, dark apron and smiling warmly at the camera. The background shows a soft-focus commercial kitchen with stainless steel surfaces and warm, ambient lighting. The overall aesthetic is professional, reliable, and clean, perfectly matching a corporate logistics brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLWTduACXtSuwG6wsl7UeMaow4dCpiBjsfdC9D7MTg_8o-Rhb9DBHKrLK6TXlw0f0EZwD8N6yIGThEx4U_uFb_7fhO8k4qfs7-7DeF3bXVyMixi_IDGyEf1aLk_OMz4xOnHpTNmAyZ0R6aA7twsIkmDYCy8nkIrXsGZHg79aI3UvtC2aU6RHzZrxk3_RHzfA6oEAb3hlWpnxMGxqISs-wPdUYA-ppQuvMXV_LI-50Sx33xnP3o_fDqWSXcWyYcMyD1JzaE_HY_a3Y"/>
+</div>
+</header>
+<!-- Kan Ban Columns Container -->
+<div class="flex-1 overflow-x-auto overflow-y-hidden bg-background p-margin-mobile md:p-margin-desktop">
+<div class="flex h-full gap-gutter min-w-[900px]">
+<!-- Column: Pendientes -->
+<section class="flex-1 flex flex-col gap-4 min-w-[300px]">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant">timer</span>
+<h3 class="font-headline-sm text-headline-sm">Pendientes</h3>
+</div>
+<span class="bg-surface-container-highest px-3 py-1 rounded-full text-on-surface font-bold text-sm">3</span>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-4">
+<!-- Card 1 -->
+<div class="order-card-hover bg-surface-container-lowest border border-outline-variant p-4 rounded-xl">
+<div class="flex justify-between items-start mb-3">
+<div>
+<span class="font-label-md text-label-md text-on-secondary-container">ORD-5542</span>
+<h4 class="font-headline-sm text-headline-sm mt-1">Gourmet Burger Box</h4>
+</div>
+<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-1 rounded uppercase">Nuevo</span>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-base">schedule</span>
+<span class="text-sm">Hace 4 min</span>
+</div>
+<p class="text-sm text-on-surface-variant">2x Bacon Deluxe, 1x Papas, 1x Soda</p>
+</div>
+<button class="w-full py-2 bg-primary text-on-primary font-bold rounded-lg hover:opacity-90 transition-opacity">
+                                Preparar ahora
+                            </button>
+</div>
+<!-- Card 2 -->
+<div class="order-card-hover bg-surface-container-lowest border border-outline-variant p-4 rounded-xl">
+<div class="flex justify-between items-start mb-3">
+<div>
+<span class="font-label-md text-label-md text-on-secondary-container">ORD-5545</span>
+<h4 class="font-headline-sm text-headline-sm mt-1">Pizza Familiar</h4>
+</div>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-base">schedule</span>
+<span class="text-sm">Hace 8 min</span>
+</div>
+<p class="text-sm text-on-surface-variant">1x Pepperoni Max, 1x Palitroques</p>
+</div>
+<button class="w-full py-2 bg-primary text-on-primary font-bold rounded-lg hover:opacity-90 transition-opacity">
+                                Preparar ahora
+                            </button>
+</div>
+</div>
+</section>
+<!-- Column: En Preparación -->
+<section class="flex-1 flex flex-col gap-4 min-w-[300px]">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">outdoor_grill</span>
+<h3 class="font-headline-sm text-headline-sm">En Preparación</h3>
+</div>
+<span class="bg-secondary-container px-3 py-1 rounded-full text-on-secondary-container font-bold text-sm">2</span>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-4">
+<!-- Card Active 1 -->
+<div class="order-card-hover bg-surface-container-lowest border border-primary p-4 rounded-xl relative overflow-hidden">
+<div class="absolute top-0 left-0 h-1 bg-primary w-2/3"></div>
+<div class="flex justify-between items-start mb-3">
+<div>
+<span class="font-label-md text-label-md text-on-secondary-container">ORD-5538</span>
+<h4 class="font-headline-sm text-headline-sm mt-1">Sushi Combo XL</h4>
+</div>
+<span class="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2 py-1 rounded uppercase">Proceso</span>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-base">update</span>
+<span class="text-sm font-bold">12:45 restantes</span>
+</div>
+<p class="text-sm text-on-surface-variant">40 pcs Rolls Mixtos, Wasabi Extra</p>
+</div>
+<button class="w-full py-2 bg-secondary text-on-secondary font-bold rounded-lg hover:opacity-90 transition-opacity">
+                                Marcar como Listo
+                            </button>
+</div>
+<!-- Card Active 2 -->
+<div class="order-card-hover bg-surface-container-lowest border border-outline-variant p-4 rounded-xl">
+<div class="flex justify-between items-start mb-3">
+<div>
+<span class="font-label-md text-label-md text-on-secondary-container">ORD-5540</span>
+<h4 class="font-headline-sm text-headline-sm mt-1">Tacos Al Pastor</h4>
+</div>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-base">update</span>
+<span class="text-sm font-bold">5:12 restantes</span>
+</div>
+<p class="text-sm text-on-surface-variant">5x Tacos con Piña, 1x Consomé</p>
+</div>
+<button class="w-full py-2 bg-secondary text-on-secondary font-bold rounded-lg hover:opacity-90 transition-opacity">
+                                Marcar como Listo
+                            </button>
+</div>
+</div>
+</section>
+<!-- Column: Listos para Envío -->
+<section class="flex-1 flex flex-col gap-4 min-w-[300px]">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-tertiary-container">package_2</span>
+<h3 class="font-headline-sm text-headline-sm">Listos para Envío</h3>
+</div>
+<span class="bg-green-100 px-3 py-1 rounded-full text-green-800 font-bold text-sm">4</span>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-4">
+<!-- Card Ready 1 -->
+<div class="order-card-hover bg-surface-container-lowest border-l-4 border-l-green-500 border border-outline-variant p-4 rounded-xl">
+<div class="flex justify-between items-start mb-3">
+<div>
+<span class="font-label-md text-label-md text-on-secondary-container">ORD-5530</span>
+<h4 class="font-headline-sm text-headline-sm mt-1">Ensalada César</h4>
+</div>
+<span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded uppercase">Listo</span>
+</div>
+<div class="flex items-center gap-2 mb-4 bg-surface-container-low p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary">person</span>
+<div class="text-sm">
+<p class="font-bold">Juan R. (Repartidor)</p>
+<p class="text-[10px] text-on-surface-variant">Llegando en 2 min</p>
+</div>
+</div>
+<button class="w-full py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2">
+                                Entregar a Courier
+                                <span class="material-symbols-outlined text-base">check_circle</span>
+</button>
+</div>
+<!-- Card Ready 2 -->
+<div class="order-card-hover bg-surface-container-lowest border-l-4 border-l-green-500 border border-outline-variant p-4 rounded-xl">
+<div class="flex justify-between items-start mb-3">
+<div>
+<span class="font-label-md text-label-md text-on-secondary-container">ORD-5528</span>
+<h4 class="font-headline-sm text-headline-sm mt-1">Pasta Alfredo</h4>
+</div>
+<span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded uppercase">Listo</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-4 italic">Esperando asignación de repartidor...</p>
+<button class="w-full py-2 bg-outline-variant text-on-surface-variant font-bold rounded-lg cursor-not-allowed" disabled="">
+                                Esperando Courier
+                            </button>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Bottom Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface border-t border-outline-variant flex justify-around items-center h-20 pb-safe px-base z-50">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 scale-95 transition-all" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-label-md text-label-md">Pedidos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">Historial</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Inventario</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Perfil</span>
+</a>
+</nav>
+</main>
+<!-- Floating Action Button - Only for contextual actions -->
+<button class="fixed bottom-24 right-6 md:bottom-8 md:right-8 w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-xl flex items-center justify-center hover:scale-110 transition-transform active:scale-95 z-40">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<script>
+        // Simple interaction for the "Preparar ahora" buttons
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.trim() === 'Preparar ahora') {
+                button.addEventListener('click', function() {
+                    const card = this.closest('.order-card-hover');
+                    card.style.opacity = '0.5';
+                    card.style.pointerEvents = 'none';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                        // Logic for moving to 'In Preparation' would go here
+                    }, 300);
+                });
+            }
+        });
+
+        // Atmospheric touch: periodic "new order" pulse simulation
+        setInterval(() => {
+            const topBadge = document.querySelector('header span.bg-green-500');
+            if (topBadge) {
+                topBadge.classList.toggle('animate-pulse');
+            }
+        }, 5000);
+    </script>
+</body></html>

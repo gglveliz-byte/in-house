@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Hanken+Grotesk:wght@600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#38485d",
+                    "on-tertiary-fixed": "#171c1f",
+                    "on-error": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#d8e3fb",
+                    "on-surface-variant": "#424752",
+                    "inverse-surface": "#263143",
+                    "background": "#f9f9ff",
+                    "surface-variant": "#d8e3fb",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#dfe3e7",
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#acc7ff",
+                    "on-primary-fixed": "#001a40",
+                    "tertiary": "#3d4245",
+                    "primary": "#003f87",
+                    "on-surface": "#111c2d",
+                    "on-primary-container": "#bbd0ff",
+                    "on-secondary-container": "#54647a",
+                    "surface-tint": "#115cb9",
+                    "primary-fixed": "#d7e2ff",
+                    "on-secondary-fixed": "#0b1c30",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e7eeff",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#43474b",
+                    "secondary-fixed": "#d3e4fe",
+                    "secondary-container": "#d0e1fb",
+                    "outline-variant": "#c2c6d4",
+                    "secondary": "#505f76",
+                    "inverse-on-surface": "#ecf1ff",
+                    "surface-container-low": "#f0f3ff",
+                    "inverse-primary": "#acc7ff",
+                    "tertiary-container": "#54595d",
+                    "surface-bright": "#f9f9ff",
+                    "surface": "#f9f9ff",
+                    "on-background": "#111c2d",
+                    "surface-dim": "#cfdaf2",
+                    "on-tertiary-container": "#ccd0d4",
+                    "tertiary-fixed-dim": "#c3c7cb",
+                    "surface-container-high": "#dee8ff",
+                    "primary-container": "#0056b3",
+                    "outline": "#727784",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-primary-fixed-variant": "#004491"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "base": "8px",
+                    "margin-desktop": "32px",
+                    "container-max": "1280px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-sm": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f9f9ff;
+            color: #111c2d;
+            font-family: 'Inter', sans-serif;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .chart-bar {
+            transition: height 1s ease-out;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-8">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="Courier Profile Picture" class="w-full h-full object-cover" data-alt="A professional close-up portrait of a friendly male delivery courier wearing a blue corporate uniform. The lighting is bright and natural, suggesting an outdoor morning setting. The background is a soft-focus urban street, maintaining a clean and modern corporate aesthetic consistent with a logistics brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgCGCt69QpGIBIjpTZry7MEySIvKH0IL5gcCgUMFFZDsxiDLWdYQ4yzzqq_jVMczs59QksFTiOjCYHStfINf8Vv7Nr_FdcilHVdikkVEbbf2LMC3pfXhkrLZswLI1Zybyl_uu6HylSf0OnZSId81e5krfsobTQmR6c17ecENT9uOctUwualGnTiKUXRQLaUWwiCJz8uOFOqqfTtDKu170bGY1TyzVTRNqDDC6ViHGtpwE0Plu4Ik7-ax3TP9ldnGZByRTfK9sy2Fs"/>
+</div>
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">Azul Entrega</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="font-label-md text-label-md text-primary">Disponible</span>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8">
+<!-- Header Section -->
+<section class="mb-8">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Mis Ganancias</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Consulta tu rendimiento y gestiona tus pagos.</p>
+</section>
+<!-- Bento Grid Layout -->
+<div class="bento-grid">
+<!-- Main Balance Card -->
+<div class="col-span-1 md:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Saldo Disponible</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-headline-lg text-headline-lg text-primary">$1,240.50</span>
+<span class="font-body-sm text-body-sm text-green-600 font-bold">+12% vs ayer</span>
+</div>
+</div>
+<div class="mt-8 flex gap-4">
+<button class="flex-1 bg-primary text-on-primary font-label-md text-label-md py-4 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                        Retirar Fondos
+                    </button>
+<button class="p-4 border border-outline text-primary rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">history</span>
+</button>
+</div>
+</div>
+<!-- Today's Stats -->
+<div class="col-span-1 bg-surface-container-low border border-outline-variant rounded-xl p-6">
+<span class="font-label-md text-label-md text-secondary">Hoy</span>
+<div class="mt-4">
+<span class="font-headline-md text-headline-md text-on-surface">$85.20</span>
+</div>
+<div class="mt-4 space-y-2">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Pedidos</span>
+<span class="font-label-md text-label-md">12</span>
+</div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[75%] rounded-full"></div>
+</div>
+<span class="font-label-md text-[10px] text-secondary">75% de la meta diaria</span>
+</div>
+</div>
+<!-- Performance Card -->
+<div class="col-span-1 bg-primary-container text-on-primary-container rounded-xl p-6 relative overflow-hidden">
+<div class="relative z-10">
+<span class="font-label-md text-label-md opacity-80">Calificación</span>
+<div class="mt-4 flex items-center gap-2">
+<span class="font-headline-md text-headline-md">4.9</span>
+<span class="material-symbols-outlined text-yellow-400" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="mt-2 font-body-sm text-body-sm opacity-90">¡Excelente servicio este mes!</p>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[120px] opacity-10">trending_up</span>
+</div>
+<!-- Detailed Breakdown -->
+<div class="col-span-1 md:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6">Desglose Semanal</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-background rounded-lg border border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Tarifa Base</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Pago por km y tiempo</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface">$450.00</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-background rounded-lg border border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+<span class="material-symbols-outlined">volunteer_activism</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Propinas</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">100% para ti</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface">$120.50</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-background rounded-lg border border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700">
+<span class="material-symbols-outlined">redeem</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Bonos</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Retos completados</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface">$65.00</span>
+</div>
+</div>
+</div>
+<!-- Simple Visual Chart -->
+<div class="col-span-1 md:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Histórico de 7 días</h3>
+<select class="bg-transparent border-none font-label-md text-label-md text-primary focus:ring-0 cursor-pointer">
+<option>Esta semana</option>
+<option>Semana pasada</option>
+</select>
+</div>
+<div class="flex-1 flex items-end justify-between gap-2 px-2">
+<!-- Monday -->
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary-container opacity-40 rounded-t-sm chart-bar hover:opacity-100" style="height: 60%;"></div>
+<span class="font-label-md text-[10px] text-secondary">L</span>
+</div>
+<!-- Tuesday -->
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary-container opacity-40 rounded-t-sm chart-bar hover:opacity-100" style="height: 45%;"></div>
+<span class="font-label-md text-[10px] text-secondary">M</span>
+</div>
+<!-- Wednesday -->
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary-container opacity-40 rounded-t-sm chart-bar hover:opacity-100" style="height: 80%;"></div>
+<span class="font-label-md text-[10px] text-secondary">M</span>
+</div>
+<!-- Thursday -->
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary-container opacity-40 rounded-t-sm chart-bar hover:opacity-100" style="height: 55%;"></div>
+<span class="font-label-md text-[10px] text-secondary">J</span>
+</div>
+<!-- Friday -->
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary-container opacity-40 rounded-t-sm chart-bar hover:opacity-100" style="height: 95%;"></div>
+<span class="font-label-md text-[10px] text-secondary">V</span>
+</div>
+<!-- Saturday -->
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary-container opacity-40 rounded-t-sm chart-bar hover:opacity-100" style="height: 40%;"></div>
+<span class="font-label-md text-[10px] text-secondary">S</span>
+</div>
+<!-- Sunday -->
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary-container opacity-100 rounded-t-sm chart-bar" style="height: 70%;"></div>
+<span class="font-label-md text-[10px] text-primary font-bold">D</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Transactions -->
+<section class="mt-12">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Pagos Recientes</h2>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">Ver todo</a>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-label-md text-label-md text-secondary">ID Transacción</th>
+<th class="px-6 py-4 font-label-md text-label-md text-secondary">Fecha</th>
+<th class="px-6 py-4 font-label-md text-label-md text-secondary">Monto</th>
+<th class="px-6 py-4 font-label-md text-label-md text-secondary">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 font-body-sm text-body-sm">#TX-998234</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">12 Oct, 2023</td>
+<td class="px-6 py-4 font-label-md text-label-md font-bold text-on-surface">$340.00</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-[10px]">Completado</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 font-body-sm text-body-sm">#TX-998211</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">05 Oct, 2023</td>
+<td class="px-6 py-4 font-label-md text-label-md font-bold text-on-surface">$215.50</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-[10px]">Completado</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-20 pb-safe px-base bg-surface dark:bg-surface-dim border-t border-outline-variant dark:border-outline shadow-sm z-50 md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-label-md text-label-md">Pedidos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">Historial</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-fixed-dim text-on-secondary-container dark:text-on-secondary-fixed-variant rounded-full px-4 py-1 scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-label-md text-label-md">Ganancias</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Perfil</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions: Animate bars on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const bars = document.querySelectorAll('.chart-bar');
+            bars.forEach(bar => {
+                const targetHeight = bar.style.height;
+                bar.style.height = '0%';
+                setTimeout(() => {
+                    bar.style.height = targetHeight;
+                }, 300);
+            });
+        });
+
+        // Request withdrawal button animation
+        const withdrawBtn = document.querySelector('button.bg-primary');
+        if(withdrawBtn) {
+            withdrawBtn.addEventListener('mousedown', () => {
+                withdrawBtn.classList.add('scale-95');
+            });
+            withdrawBtn.addEventListener('mouseup', () => {
+                withdrawBtn.classList.remove('scale-95');
+                alert('Procesando solicitud de retiro...');
+            });
+        }
+    </script>
+</body></html>

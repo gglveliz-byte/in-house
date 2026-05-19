@@ -237,27 +237,27 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50 py-4 md:py-8">
+    <div className="min-h-screen bg-surface py-4 md:py-8">
       <div className="max-w-5xl mx-auto px-3 md:px-4">
         {/* Header */}
         <div className="text-center mb-4 md:mb-8">
           <div className="inline-block mb-2">
-            <div className="bg-white rounded-xl shadow-md p-2 md:p-4 inline-block">
+            <div className="bg-white rounded-xl shadow-md p-2 md:p-4 inline-block text-primary">
               <span className="text-3xl md:text-5xl">🛒</span>
             </div>
           </div>
-          <h1 className="text-xl md:text-4xl font-extrabold text-gray-900 mb-1 bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent">
+          <h1 className="text-xl md:text-4xl font-extrabold text-gray-900 mb-1 tracking-tight">
             Finalizar pedido
           </h1>
           <p className="text-sm md:text-lg text-gray-600">
-            Pedido de <span className="font-bold text-green-600">{storeName}</span>
+            Pedido de <span className="font-bold text-primary">{storeName}</span>
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 md:gap-8">
           {/* Cart Items */}
-          <Card className="border-2 border-green-100 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-orange-50 border-b-2 border-green-100 py-2 md:py-4">
+          <Card className="border-2 border-primary/10 shadow-lg">
+          <CardHeader className="bg-surface-container-low border-b-2 border-primary/10 py-2 md:py-4">
             <h2 className="font-bold text-sm md:text-xl text-gray-900 flex items-center gap-2">
               🛒 Tu pedido
             </h2>
@@ -285,7 +285,7 @@ export default function CheckoutPage() {
                     type="button"
                     onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                     aria-label={`Aumentar cantidad de ${item.product.name}`}
-                    className="w-7 h-7 rounded-full bg-green-100 hover:bg-green-200 flex items-center justify-center font-bold text-xs text-green-700"
+                    className="w-7 h-7 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center font-bold text-xs text-primary"
                   >
                     +
                   </button>
@@ -330,9 +330,9 @@ export default function CheckoutPage() {
                   <span className="font-semibold">{formatPrice(deliveryFee || 0)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-base md:text-2xl font-extrabold pt-2 border-t-2 border-green-200 bg-gradient-to-r from-green-50 to-orange-50 -mx-3 md:-mx-6 px-3 md:px-6 py-2 md:py-3 rounded-lg">
+              <div className="flex justify-between text-base md:text-2xl font-extrabold pt-2 border-t-2 border-primary/20 bg-primary/5 -mx-3 md:-mx-6 px-3 md:px-6 py-2 md:py-3 rounded-lg">
                 <span className="text-gray-900">Total</span>
-                <span className="text-green-600">{formatPrice(getSubtotal())}</span>
+                <span className="text-primary">{formatPrice(getSubtotal())}</span>
               </div>
               {storeInfo && storeInfo.minDeliveryFee !== undefined && storeInfo.maxDeliveryFee !== undefined && storeInfo.maxDeliveryFee >= storeInfo.minDeliveryFee && (
                 <div className="text-[10px] md:text-xs text-yellow-700 bg-yellow-50 p-2 rounded-lg -mx-3 md:-mx-6 px-3 md:px-6">
@@ -344,8 +344,8 @@ export default function CheckoutPage() {
           </Card>
 
           {/* Customer Form */}
-          <Card className="border-2 border-orange-100 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-orange-50 to-green-50 border-b-2 border-orange-100 py-2 md:py-4">
+          <Card className="border-2 border-gray-100 shadow-lg">
+          <CardHeader className="bg-surface-container-low border-b-2 border-gray-100 py-2 md:py-4">
             <h2 className="font-bold text-sm md:text-xl text-gray-900 flex items-center gap-2">
               👤 Tus datos
             </h2>
@@ -452,7 +452,7 @@ export default function CheckoutPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-green-600 to-orange-500 hover:from-green-700 hover:to-orange-600 text-white font-bold py-3 text-sm md:text-lg rounded-xl shadow-lg"
+                className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 text-sm md:text-lg rounded-xl shadow-lg"
                 size="lg"
                 loading={loading}
                 disabled={loading}

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { Badge } from '@/components/ui/badge'
 import { ProductCard } from '@/components/store/product-card'
 import { formatPrice } from '@/lib/utils'
+import { Store as StoreIcon } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -48,7 +49,7 @@ export default async function StorePage({
   const uncategorizedProducts = store.products
 
   return (
-    <div className="pb-24 bg-gradient-to-br from-green-50 via-white to-orange-50 min-h-screen">
+    <div className="pb-24 bg-surface min-h-screen">
       {/* Store Header */}
       <div className="relative h-64 md:h-80 bg-gray-200 overflow-hidden">
         {store.banner ? (
@@ -61,8 +62,8 @@ export default async function StorePage({
             sizes="100vw"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-400 via-green-500 to-orange-500">
-            <span className="text-9xl">🍽️</span>
+          <div className="w-full h-full flex items-center justify-center bg-surface-container">
+            <StoreIcon className="text-primary opacity-30 w-24 h-24" />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
@@ -102,16 +103,16 @@ export default async function StorePage({
                  store.minDeliveryFee >= 0 && 
                  store.maxDeliveryFee >= 0 &&
                  store.maxDeliveryFee >= store.minDeliveryFee ? (
-                  <span className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full text-sm font-semibold text-green-700">
+                  <span className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full text-sm font-semibold text-primary">
                     🚚 Envío aproximado: {formatPrice(store.minDeliveryFee)} - {formatPrice(store.maxDeliveryFee)}
                   </span>
                 ) : (
-                  <span className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full text-sm font-semibold text-green-700">
+                  <span className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full text-sm font-semibold text-primary">
                     🚚 Envío: {formatPrice(store.deliveryFee)}
                   </span>
                 )}
                 {store.minOrder > 0 && (
-                  <span className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-full text-sm font-semibold text-orange-700">
+                  <span className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full text-sm font-semibold text-gray-700">
                     💰 Mín: {formatPrice(store.minOrder)}
                   </span>
                 )}
@@ -128,11 +129,11 @@ export default async function StorePage({
           category.products.length > 0 && (
             <section key={category.id} className="mb-12">
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-1 w-12 bg-gradient-to-r from-green-500 to-orange-500 rounded-full"></div>
+                <div className="h-1 w-12 bg-primary rounded-full"></div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
                   {category.name}
                 </h2>
-                <div className="h-1 flex-1 bg-gradient-to-r from-orange-500 to-transparent rounded-full"></div>
+                <div className="h-1 flex-1 bg-gradient-to-r from-primary/30 to-transparent rounded-full"></div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {category.products.map((product) => (
@@ -156,11 +157,11 @@ export default async function StorePage({
         {uncategorizedProducts.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center gap-3 mb-6">
-              <div className="h-1 w-12 bg-gradient-to-r from-green-500 to-orange-500 rounded-full"></div>
+              <div className="h-1 w-12 bg-primary rounded-full"></div>
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
                 {store.categories.length > 0 ? 'Otros productos' : 'Menú'}
               </h2>
-              <div className="h-1 flex-1 bg-gradient-to-r from-orange-500 to-transparent rounded-full"></div>
+              <div className="h-1 flex-1 bg-gradient-to-r from-primary/30 to-transparent rounded-full"></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {uncategorizedProducts.map((product) => (

@@ -43,13 +43,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="bg-surface-container-low text-on-surface antialiased min-h-screen">
-        <div className="max-w-md mx-auto bg-background min-h-screen relative shadow-2xl overflow-x-hidden">
+      <body className="bg-surface-container-low text-on-surface antialiased min-h-screen flex flex-col">
         <Providers>{children}</Providers>
         <CurrencyProvider />
         <ServiceWorkerRegister />
-          <InstallPrompt />
-        </div>
+        <InstallPrompt />
       </body>
     </html>
   )

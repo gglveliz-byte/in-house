@@ -1,0 +1,249 @@
+'use client'
+
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useSession } from 'next-auth/react'
+import Link from 'next/link'
+import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusColor } from '@/lib/utils'
+import { useStoreOrders } from '@/hooks/use-pusher'
+import type { Order } from '@/types'
+
+interface StoreInfo { id: string; name: string; isOpen: boolean }
+
+export default function VendorDashboardPage() {
+  const { data: session, status } = useSession()
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
+  const [storeInfo, setStoreInfo] = useState<StoreInfo | null>(null)
+  
+  const storeId = session?.user?.storeId || storeInfo?.id || null
+
+  const fetchOrders = useCallback(async (sid: string) => {
+    try {
+      const res = await fetch(`/api/orders?storeId=${sid}`)
+      const json = await res.json()
+      setOrders(json.data || json)
+    } catch { /* silent */ } finally { setLoading(false) }
+  }, [])
+
+  useStoreOrders(storeId, () => { if (storeId) fetchOrders(storeId) }, () => { if (storeId) fetchOrders(storeId) })
+
+  useEffect(() => {
+    const init = async () => {
+      if (status === 'loading') return
+      let sid = session?.user?.storeId
+      if (!sid && session?.user?.id) {
+        try {
+          const stores = await (await fetch('/api/stores')).json()
+          const found = stores.find((s: { ownerId: string }) => s.ownerId === session.user.id)
+          if (found) { sid = found.id; setStoreInfo(found) }
+        } catch {}
+      }
+      if (sid) {
+        if (!storeInfo) {
+          try {
+            const stores = await (await fetch('/api/stores')).json()
+            const s = stores.find((s: { id: string }) => s.id === sid)
+            if (s) setStoreInfo(s)
+          } catch {}
+        }
+        await fetchOrders(sid)
+      } else {
+        setLoading(false)
+      }
+    }
+    init()
+  }, [session, status, fetchOrders, storeInfo])
+
+  const { todaySales, todayCompleted, todayCustomers } = useMemo(() => {
+    const today = new Date().toDateString()
+    let sales = 0
+    let completed = 0
+    const customers = new Set()
+    orders.forEach(o => {
+      const isToday = new Date(o.createdAt).toDateString() === today
+      if (isToday) {
+        if (o.status === 'DELIVERED') {
+          sales += o.total
+          completed++
+        }
+        customers.add(o.customerPhone) // Unique customers by phone
+      }
+    })
+    return { todaySales: sales, todayCompleted: completed, todayCustomers: customers.size }
+  }, [orders])
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Panel de Control</h1>
+          <p className="text-body-md text-on-surface-variant">Resumen de operaciones para hoy, {new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}.</p>
+        </div>
+        <div className="flex gap-3">
+          <Link href="/vendor/orders" className="bg-primary-container text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+            <span className="material-symbols-outlined">assignment</span>
+            Ver Todos los Pedidos
+          </Link>
+        </div>
+      </header>
+
+      {/* Bento Grid Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        {/* Main KPI Card */}
+        <div className="md:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between hover:shadow-lg transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <span className="text-label-md font-label-md text-secondary uppercase tracking-wider">Ventas del Día (Entregadas)</span>
+              <h3 className="text-headline-lg font-headline-lg text-primary-container mt-1">{formatPrice(todaySales)}</h3>
+            </div>
+            <div className="bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1 text-label-md font-bold">
+              <span className="material-symbols-outlined text-[16px]">trending_up</span>
+              +12%
+            </div>
+          </div>
+          <div className="mt-4 flex items-center gap-4">
+            <div className="flex -space-x-2">
+              <div className="w-8 h-8 rounded-full border-2 border-white bg-primary-fixed flex items-center justify-center text-[10px] font-bold text-primary">C</div>
+              <div className="w-8 h-8 rounded-full border-2 border-white bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">+{todayCustomers}</div>
+            </div>
+            <span className="text-body-sm text-on-surface-variant">Clientes atendidos hoy</span>
+          </div>
+        </div>
+
+        {/* Metrics Column */}
+        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between hover:shadow-lg transition-shadow">
+          <div className="flex items-center gap-3 text-secondary">
+            <span className="material-symbols-outlined">check_circle</span>
+            <span className="text-label-md font-label-md uppercase">Completados</span>
+          </div>
+          <h3 className="text-headline-md font-headline-md mt-2">{todayCompleted}</h3>
+          <p className="text-body-sm text-on-surface-variant mt-1">Órdenes finalizadas hoy</p>
+        </div>
+        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between hover:shadow-lg transition-shadow">
+          <div className="flex items-center gap-3 text-secondary">
+            <span className="material-symbols-outlined">stars</span>
+            <span className="text-label-md font-label-md uppercase">Calificación</span>
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <h3 className="text-headline-md font-headline-md">4.9</h3>
+            <span className="material-symbols-outlined text-amber-400" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+          </div>
+          <p className="text-body-sm text-on-surface-variant mt-1">Basado en 256 votos</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Weekly Sales Chart (Static representation) */}
+        <div className="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">Ventas Semanales</h3>
+            <select className="bg-surface-container-low border-none rounded-lg text-body-sm font-label-md p-2 focus:ring-2 ring-primary outline-none">
+              <option>Últimos 7 días</option>
+              <option>Últimos 30 días</option>
+            </select>
+          </div>
+          <div className="h-64 flex items-end justify-between gap-2 px-2 relative">
+            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none border-b border-outline-variant">
+              <div className="border-t border-surface-container-highest w-full h-0"></div>
+              <div className="border-t border-surface-container-highest w-full h-0"></div>
+              <div className="border-t border-surface-container-highest w-full h-0"></div>
+            </div>
+            {/* Chart Bars */}
+            {[40, 65, 55, 85, 100, 30, 20].map((h, i) => (
+              <div key={i} className="flex flex-col items-center flex-1 z-10">
+                <div className={`w-full max-w-[40px] rounded-t-lg transition-all duration-1000 ${h === 100 ? 'bg-primary-container' : 'bg-secondary-container hover:bg-primary'}`} style={{ height: `${h}%` }}></div>
+                <span className={`text-label-md font-label-md mt-2 ${h === 100 ? 'text-primary font-bold' : 'text-secondary'}`}>{['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'][i]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Actions / Support */}
+        <div className="flex flex-col gap-6">
+          <div className="bg-primary-container text-white rounded-xl p-6 relative overflow-hidden group">
+            <div className="relative z-10">
+              <h3 className="font-headline-sm text-headline-sm mb-2">Ticket Promedio</h3>
+              <p className="text-headline-md font-bold">{formatPrice(todayCompleted > 0 ? todaySales / todayCompleted : 0)}</p>
+              <p className="text-body-sm opacity-80 mt-4">Mantén tus promociones activas para aumentar este valor.</p>
+              <Link href="/vendor/orders" className="mt-4 inline-block bg-white text-primary-container px-4 py-2 rounded-lg font-bold text-label-md hover:bg-primary-fixed transition-colors">Ver Detalles</Link>
+            </div>
+            <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl opacity-10 group-hover:scale-110 transition-transform">receipt_long</span>
+          </div>
+
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-4">Accesos Rápidos</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <Link href="/vendor/products" className="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
+                <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">inventory</span>
+                <span className="text-label-md font-label-md">Stock</span>
+              </Link>
+              <button className="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
+                <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">local_shipping</span>
+                <span className="text-label-md font-label-md">Rutas</span>
+              </button>
+              <button className="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
+                <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">analytics</span>
+                <span className="text-label-md font-label-md">Reportes</span>
+              </button>
+              <button className="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
+                <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">support_agent</span>
+                <span className="text-label-md font-label-md">Soporte</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Orders Table */}
+      <div className="mt-8 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-outline-variant flex justify-between items-center">
+          <h3 className="font-headline-sm text-headline-sm text-on-surface">Pedidos Recientes</h3>
+          <Link href="/vendor/orders" className="text-primary font-bold text-label-md hover:underline">Ver todos</Link>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-surface-container-low border-b border-outline-variant">
+              <tr>
+                <th className="p-4 text-label-md font-label-md text-secondary uppercase">ID Pedido</th>
+                <th className="p-4 text-label-md font-label-md text-secondary uppercase">Cliente</th>
+                <th className="p-4 text-label-md font-label-md text-secondary uppercase">Estado</th>
+                <th className="p-4 text-label-md font-label-md text-secondary uppercase">Total</th>
+                <th className="p-4 text-label-md font-label-md text-secondary uppercase">Hora</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant">
+              {orders.slice(0, 5).map(order => (
+                <tr key={order.id} className="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+                  <td className="p-4 font-bold text-on-surface">#{order.orderNumber}</td>
+                  <td className="p-4 text-body-md">{order.customerName}</td>
+                  <td className="p-4">
+                    <span className={`px-3 py-1 rounded-full text-label-md font-bold ${getOrderStatusColor(order.status)}`}>
+                      {getOrderStatusLabel(order.status)}
+                    </span>
+                  </td>
+                  <td className="p-4 font-bold">{formatPrice(order.total)}</td>
+                  <td className="p-4 text-on-surface-variant">{formatDate(order.createdAt).split(',')[1]}</td>
+                </tr>
+              ))}
+              {orders.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center text-secondary">
+                    No hay pedidos recientes.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  )
+}

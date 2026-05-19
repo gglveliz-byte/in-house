@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Hanken+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#38485d",
+                    "on-tertiary-fixed": "#171c1f",
+                    "on-error": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#d8e3fb",
+                    "on-surface-variant": "#424752",
+                    "inverse-surface": "#263143",
+                    "background": "#f9f9ff",
+                    "surface-variant": "#d8e3fb",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#dfe3e7",
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#acc7ff",
+                    "on-primary-fixed": "#001a40",
+                    "tertiary": "#3d4245",
+                    "primary": "#003f87",
+                    "on-surface": "#111c2d",
+                    "on-primary-container": "#bbd0ff",
+                    "on-secondary-container": "#54647a",
+                    "surface-tint": "#115cb9",
+                    "primary-fixed": "#d7e2ff",
+                    "on-secondary-fixed": "#0b1c30",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e7eeff",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#43474b",
+                    "secondary-fixed": "#d3e4fe",
+                    "secondary-container": "#d0e1fb",
+                    "outline-variant": "#c2c6d4",
+                    "secondary": "#505f76",
+                    "inverse-on-surface": "#ecf1ff",
+                    "surface-container-low": "#f0f3ff",
+                    "inverse-primary": "#acc7ff",
+                    "tertiary-container": "#54595d",
+                    "surface-bright": "#f9f9ff",
+                    "surface": "#f9f9ff",
+                    "on-background": "#111c2d",
+                    "surface-dim": "#cfdaf2",
+                    "on-tertiary-container": "#ccd0d4",
+                    "tertiary-fixed-dim": "#c3c7cb",
+                    "surface-container-high": "#dee8ff",
+                    "primary-container": "#0056b3",
+                    "outline": "#727784",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-primary-fixed-variant": "#004491"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "base": "8px",
+                    "margin-desktop": "32px",
+                    "container-max": "1280px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-sm": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab-indicator {
+            font-variation-settings: 'FILL' 1;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d8e3fb;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md custom-scrollbar">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-3">
+<img alt="Courier Profile Picture" class="w-10 h-10 rounded-full object-cover border-2 border-primary" data-alt="A professional headshot of a Latina woman in her early 30s with a confident and friendly expression, wearing a navy blue corporate polo. The lighting is soft and natural, emphasizing a bright, professional light-mode aesthetic. Behind her is a clean, blurred office background with a color palette of deep blues and whites, consistent with a high-end logistics company brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCF8zi3wu21HMwcQiIWyKnRs45cO3AkaahCUlxRbI4lgGxuarDu6aQXVI_B9auw_ixVu89vpBY3lK-GTWEb2mDMNIvxzfWAS8z7QnyjFNtlXSjrEGmbnj1L_4tXDhFLoZgYUJ-CRriG9RA_zNCXptX1dkzkqY7rO-WlEbuGeD5FT527-n1WX2mDGYDv0zz-2nV1DlbuPR2SS9QUXB8gWfEiIGF4TFGodT4v_k7avfBO2sy7o4JlfqvyDwIUPda5qhyM8YcIP60YaKI"/>
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">Azul Entrega</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-primary dark:text-primary-fixed-dim bg-secondary-container px-3 py-1 rounded-full">Disponible</span>
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container rounded-full transition-colors">notifications</button>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-32">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Profile Bento Card (Large) -->
+<section class="md:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col md:flex-row gap-8 items-center md:items-start">
+<div class="relative group">
+<img alt="Lucía Fernández" class="w-32 h-32 rounded-full object-cover border-4 border-primary-fixed" data-alt="Close up professional portrait of a delivery courier woman named Lucía Fernández. She is smiling warmly at the camera, conveying reliability and expertise. The scene is bright and airy with high-key lighting. The overall visual style is corporate and modern, using a color palette dominated by whites, light blues, and deep navy tones from her uniform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiRAY006_z_E4UE52yJIGDcI2l-TjimAYjNj1LoM8ViOgJrSQsGQgEOQ5Mib51Dt-QVWMRlJL9UTQJ3bBRiFvA4ss0a33oeKU_1wF2xgrxoJC9AbJHoFsY3u3G5qijcdS-u-GZyNwgINQ_FaqQPR3vlrxil4301l-V_heuzzmFqYESnoL7_jk7AW-BGMwF7tiPD-5zGfmZNkO8FOrqMviX26MFDu0jAvjWvPg72TD9H9_PHWQ3EOT70fAUEM4632k6pQtfUXP1rVw"/>
+<button class="absolute bottom-0 right-0 bg-primary text-on-primary p-2 rounded-full shadow-lg border-2 border-white hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<div class="flex-1 text-center md:text-left">
+<div class="flex flex-col md:flex-row md:items-center gap-3 mb-2">
+<h1 class="font-headline-md text-headline-md text-on-surface">Lucía Fernández</h1>
+<div class="flex items-center justify-center md:justify-start gap-1 bg-surface-container-highest px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md text-on-surface">4.9 (124)</span>
+</div>
+</div>
+<p class="text-on-surface-variant font-body-md mb-4">Repartidora Prime • ID: 88234</p>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 border-t border-outline-variant pt-4">
+<div class="flex flex-col">
+<span class="text-on-surface-variant text-label-md uppercase tracking-wider">Vehículo</span>
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="material-symbols-outlined">motorcycle</span>
+<span class="font-label-md">Moto (GZ-230)</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface-variant text-label-md uppercase tracking-wider">Documentos</span>
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="material-symbols-outlined text-primary">verified</span>
+<span class="font-label-md">Verificado</span>
+</div>
+</div>
+<div class="flex flex-col col-span-2 sm:col-span-1">
+<span class="text-on-surface-variant text-label-md uppercase tracking-wider">Miembro desde</span>
+<span class="font-label-md text-on-surface font-bold">Marzo 2022</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Status & Quick Actions Bento Card -->
+<section class="md:col-span-4 bg-primary text-on-primary rounded-xl p-6 flex flex-col justify-between shadow-sm">
+<div>
+<h2 class="font-headline-sm text-headline-sm mb-4">Estado Actual</h2>
+<div class="flex items-center justify-between bg-primary-container p-4 rounded-xl border border-primary-fixed-dim">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-primary-fixed">Disponible</span>
+<span class="font-body-sm text-body-sm text-on-primary-fixed/80">Recibiendo pedidos</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="status-switch" type="checkbox"/>
+<div class="w-14 h-8 bg-on-primary-fixed/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-on-primary"></div>
+</label>
+</div>
+</div>
+<div class="mt-6">
+<button class="w-full bg-surface text-primary font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-surface-container-low transition-all active:scale-95">
+<span class="material-symbols-outlined">payments</span>
+                        Cobrar Ganancias ($420.50)
+                    </button>
+</div>
+</section>
+<!-- Configuration List Bento -->
+<section class="md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-container-low">
+<h3 class="font-headline-sm text-headline-sm text-primary">Configuración de Cuenta</h3>
+</div>
+<div class="divide-y divide-outline-variant">
+<a class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">person_outline</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">Información Personal</p>
+<p class="text-body-sm text-on-surface-variant">Correo, teléfono, dirección</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">shield_person</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">Seguridad y Contraseña</p>
+<p class="text-body-sm text-on-surface-variant">Cambiar clave, autenticación</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">directions_bike</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">Gestión de Vehículo</p>
+<p class="text-body-sm text-on-surface-variant">Cambiar de moto a bicicleta</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- Support & Preferences Bento -->
+<section class="md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-container-low">
+<h3 class="font-headline-sm text-headline-sm text-primary">Preferencias y Ayuda</h3>
+</div>
+<div class="divide-y divide-outline-variant">
+<a class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">help_center</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">Centro de Ayuda</p>
+<p class="text-body-sm text-on-surface-variant">Preguntas frecuentes, soporte</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">chat</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">Contactar con Soporte</p>
+<p class="text-body-sm text-on-surface-variant">Chat en vivo 24/7</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">dark_mode</span>
+</div>
+<p class="font-body-md font-bold text-on-surface">Modo Oscuro</p>
+</div>
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container rounded-full" id="theme-toggle">light_mode</button>
+</div>
+</div>
+</section>
+<!-- Dangerous Area -->
+<section class="md:col-span-12">
+<button class="w-full flex items-center justify-center gap-2 py-4 text-error font-bold border border-error/20 rounded-xl hover:bg-error-container/10 transition-colors">
+<span class="material-symbols-outlined">logout</span>
+                    Cerrar Sesión
+                </button>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only Logic via md:hidden handled in layout classes usually, here explicit for simplicity) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-20 pb-safe px-base bg-surface dark:bg-surface-dim border-t border-outline-variant dark:border-outline shadow-sm z-50 md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-label-md text-label-md">Pedidos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-md text-label-md">Historial</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Inventario</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-fixed-dim text-on-secondary-container dark:text-on-secondary-fixed-variant rounded-full px-4 py-1 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined active-tab-indicator" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Perfil</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for the status switch
+        const statusSwitch = document.getElementById('status-switch');
+        statusSwitch.addEventListener('change', (e) => {
+            const label = e.target.closest('section').querySelector('span.font-headline-sm');
+            const subLabel = e.target.closest('section').querySelector('span.font-body-sm');
+            const topBarLabel = document.querySelector('header .font-label-md');
+            
+            if (e.target.checked) {
+                label.textContent = 'Disponible';
+                subLabel.textContent = 'Recibiendo pedidos';
+                topBarLabel.textContent = 'Disponible';
+                topBarLabel.classList.replace('bg-tertiary-container', 'bg-secondary-container');
+                topBarLabel.classList.replace('text-on-tertiary-container', 'text-primary');
+            } else {
+                label.textContent = 'Fuera de Línea';
+                subLabel.textContent = 'No recibirás pedidos';
+                topBarLabel.textContent = 'Inactivo';
+                topBarLabel.classList.replace('bg-secondary-container', 'bg-tertiary-container');
+                topBarLabel.classList.replace('text-primary', 'text-on-tertiary-container');
+            }
+        });
+
+        // Theme toggle logic (simulation)
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            themeToggle.textContent = document.documentElement.classList.contains('dark') ? 'dark_mode' : 'light_mode';
+        });
+
+        // Subtle parallax or hover effects on cards
+        document.querySelectorAll('section').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+</body></html>
