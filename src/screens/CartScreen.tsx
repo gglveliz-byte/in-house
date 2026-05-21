@@ -18,7 +18,7 @@ export const CartScreen: React.FC = () => {
 
   if (items.length === 0) {
     return (
-      <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased max-w-md mx-auto relative">
+      <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
         <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile">
           <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
             <span className="material-symbols-outlined text-on-surface">arrow_back</span>
@@ -26,7 +26,7 @@ export const CartScreen: React.FC = () => {
           <h1 className="ml-4 font-headline-md text-headline-md text-on-surface">Tu Carrito</h1>
         </header>
 
-        <main className="pt-20 px-margin-mobile max-w-md mx-auto text-center">
+        <main className="pt-20 px-margin-mobile w-full max-w-md mx-auto text-center">
           <div className="bg-surface-container-lowest rounded-3xl p-stack-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] mt-stack-xl">
             <span className="material-symbols-outlined text-5xl text-outline">shopping_cart</span>
             <h2 className="font-headline-sm text-headline-sm text-on-surface mt-stack-md">Tu carrito está vacío</h2>
@@ -41,7 +41,7 @@ export const CartScreen: React.FC = () => {
   }
 
   return (
-    <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased max-w-md mx-auto relative">
+    <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
       <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile">
         <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
           <span className="material-symbols-outlined text-on-surface">arrow_back</span>
@@ -49,7 +49,7 @@ export const CartScreen: React.FC = () => {
         <h1 className="ml-4 font-headline-md text-headline-md text-on-surface">Tu Carrito</h1>
       </header>
 
-      <main className="pt-20 px-margin-mobile max-w-md mx-auto">
+      <main className="pt-20 px-margin-mobile w-full max-w-md mx-auto">
         <section aria-label="Productos en el carrito" className="flex flex-col gap-stack-md">
           <div className="bg-surface-container-lowest rounded-xl p-stack-md shadow-[0px_4px_12px_rgba(0,0,0,0.06)]">
             <div className="flex items-center justify-between mb-stack-md">

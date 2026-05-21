@@ -103,7 +103,7 @@ export const RestaurantScreen: React.FC<RestaurantScreenProps> = ({ slug }) => {
   const heroImage = store?.banner || store?.logo || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=80';
 
   return (
-    <div className="bg-background text-on-surface font-body-md antialiased pb-24 max-w-md mx-auto relative min-h-screen">
+    <div className="bg-background text-on-surface font-body-md antialiased pb-24 w-full max-w-md mx-auto relative min-h-screen">
       <header className="relative w-full h-64 bg-surface-variant">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${heroImage}')` }}></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-transparent"></div>

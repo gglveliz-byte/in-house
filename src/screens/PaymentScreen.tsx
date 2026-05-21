@@ -90,7 +90,7 @@ export const PaymentScreen: React.FC = () => {
 
   if (!hasItems) {
     return (
-      <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased max-w-md mx-auto relative">
+      <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
         <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile">
           <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
             <span className="material-symbols-outlined text-on-surface">arrow_back</span>
@@ -98,7 +98,7 @@ export const PaymentScreen: React.FC = () => {
           <h1 className="ml-4 font-headline-md text-headline-md text-on-surface">Pago</h1>
         </header>
 
-        <main className="pt-20 px-margin-mobile max-w-md mx-auto text-center">
+        <main className="pt-20 px-margin-mobile w-full max-w-md mx-auto text-center">
           <div className="bg-surface-container-lowest rounded-3xl p-stack-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] mt-stack-xl">
             <span className="material-symbols-outlined text-5xl text-outline">shopping_cart</span>
             <h2 className="font-headline-sm text-headline-sm text-on-surface mt-stack-md">No hay productos en tu carrito</h2>
@@ -113,7 +113,7 @@ export const PaymentScreen: React.FC = () => {
   }
 
   return (
-    <div className="bg-background text-on-background antialiased max-w-md mx-auto relative min-h-screen pb-32">
+    <div className="bg-background text-on-background antialiased w-full max-w-md mx-auto relative min-h-screen pb-32">
       <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface flex items-center justify-between px-margin-mobile h-16">
         <div className="flex items-center gap-3">
           <button type="button" className="text-primary hover:bg-surface-container-high transition-colors active:scale-95 p-2 -ml-2 rounded-full flex items-center justify-center">
@@ -126,7 +126,7 @@ export const PaymentScreen: React.FC = () => {
         </button>
       </header>
 
-      <main className="pt-20 pb-28 px-margin-mobile flex flex-col gap-stack-lg max-w-md mx-auto">
+      <main className="pt-20 pb-28 px-margin-mobile flex flex-col gap-stack-lg w-full max-w-md mx-auto">
         <section className="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden">
           <div className="p-5">
             <div className="flex items-center justify-between mb-4 gap-3">

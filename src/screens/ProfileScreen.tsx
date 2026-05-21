@@ -1,9 +1,12 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 import { BottomNavBar } from '@/components/layout/BottomNavBar';
 
 
 export const ProfileScreen: React.FC = () => {
+  const { data: session } = useSession();
+
   // Navigation State
   const [activeSection, setActiveSection] = useState<'menu' | 'datos' | 'direcciones' | 'cupones' | 'ayuda' | 'config'>('menu');
 
@@ -27,7 +30,7 @@ export const ProfileScreen: React.FC = () => {
   // Success message toast state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount & synchronize session details
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedName = localStorage.getItem('profile_name');
@@ -53,6 +56,15 @@ export const ProfileScreen: React.FC = () => {
       if (savedLocation) setLocationSharing(savedLocation === 'true');
     }
   }, []);
+
+  // Sync session details when session becomes available
+  useEffect(() => {
+    if (session?.user) {
+      if (session.user.name) setName(session.user.name);
+      if (session.user.email) setEmail(session.user.email);
+      if (session.user.phone) setPhone(session.user.phone);
+    }
+  }, [session]);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -113,16 +125,36 @@ export const ProfileScreen: React.FC = () => {
     localStorage.setItem('profile_locationsharing', String(next));
   };
 
-  const handleLogout = () => {
-    // Simple mock logout action
-    triggerToast('Cerrando sesión de demostración...');
-    setTimeout(() => {
-      window.location.href = '/login';
-    }, 1500);
+  const handleLogout = async () => {
+    triggerToast('Cerrando sesión...');
+    await signOut({ callbackUrl: '/login' });
+  };
+
+  // Dynamic Dashboard variables
+  const showDashboardButton = session?.user?.role && ['SUPER_ADMIN', 'ADMIN', 'VENDOR', 'DRIVER'].includes(session.user.role);
+
+  const getDashboardLink = () => {
+    switch (session?.user?.role) {
+      case 'SUPER_ADMIN': return '/superadmin';
+      case 'ADMIN': return '/admin';
+      case 'VENDOR': return '/vendor';
+      case 'DRIVER': return '/driver/active';
+      default: return '#';
+    }
+  };
+
+  const getDashboardLabel = () => {
+    switch (session?.user?.role) {
+      case 'SUPER_ADMIN': return 'Panel SuperAdmin';
+      case 'ADMIN': return 'Panel Administrador';
+      case 'VENDOR': return 'Panel de Vendedor';
+      case 'DRIVER': return 'Panel de Repartidor';
+      default: return 'Mi Panel de Control';
+    }
   };
 
   return (
-    <div className="bg-background min-h-screen pb-32 transition-colors duration-300">
+    <div className="bg-background min-h-screen pb-32 w-full max-w-md mx-auto relative transition-colors duration-300">
       {/* TopAppBar */}
       <header className="bg-surface dark:bg-surface-dim fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex items-center justify-between px-margin-mobile h-16 shadow-sm border-b border-surface-container-high">
         {activeSection !== 'menu' ? (
@@ -159,14 +191,14 @@ export const ProfileScreen: React.FC = () => {
       )}
 
       {/* Main Content */}
-      <main className="pt-20 px-margin-mobile max-w-md mx-auto">
+      <main className="pt-20 px-margin-mobile w-full max-w-md mx-auto">
         {activeSection === 'menu' && (
           <div className="space-y-stack-lg animate-[fadeIn_0.2s_ease-out]">
             {/* Profile Header */}
             <section className="flex flex-col items-center justify-center py-stack-md">
               <div className="w-24 h-24 rounded-full overflow-hidden mb-stack-md shadow-[0px_4px_12px_rgba(0,0,0,0.06)] bg-surface-container-high border-2 border-primary relative group">
                 <img
-                  alt="Profile Picture"
+                  alt="Foto de perfil"
                   className="w-full h-full object-cover"
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256"
                 />
@@ -175,6 +207,27 @@ export const ProfileScreen: React.FC = () => {
               <p className="font-body-md text-body-md text-on-surface-variant mb-1">{email}</p>
               <p className="font-label-md text-label-md text-primary font-semibold">{phone}</p>
             </section>
+
+            {/* Dynamic Dashboard Access for Operative Roles */}
+            {showDashboardButton && (
+              <section className="animate-[fadeIn_0.3s_ease-out]">
+                <a
+                  href={getDashboardLink()}
+                  className="w-full bg-gradient-to-r from-primary to-[#005cbb] text-on-primary font-headline-sm text-headline-sm py-4 px-6 rounded-2xl flex items-center justify-between shadow-[0px_4px_16px_rgba(0,63,135,0.2)] active:scale-95 transition-all hover:brightness-110 border border-primary/20"
+                >
+                  <div className="flex items-center space-x-4">
+                    <span className="material-symbols-outlined text-[26px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      {session?.user?.role === 'DRIVER' ? 'two_wheeler' : 'admin_panel_settings'}
+                    </span>
+                    <div className="text-left">
+                      <span className="font-bold block text-body-lg">{getDashboardLabel()}</span>
+                      <span className="text-body-sm text-white/80 block">Acceder a mis herramientas de gestión</span>
+                    </div>
+                  </div>
+                  <span className="material-symbols-outlined text-[24px]">arrow_forward</span>
+                </a>
+              </section>
+            )}
 
             {/* Options List */}
             <section className="space-y-stack-md">

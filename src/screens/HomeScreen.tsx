@@ -118,7 +118,7 @@ export const HomeScreen: React.FC = () => {
     <div className="bg-background text-on-surface antialiased min-h-screen selection:bg-primary-container selection:text-on-primary-container">
       <TopAppBar zones={zones} selectedZone={selectedZone} onZoneChange={handleZoneChange} />
 
-      <main className="pt-16 max-w-md mx-auto">
+      <main className="pt-16 w-full max-w-md mx-auto">
         <section className="bg-surface-container-lowest sticky top-16 z-40 bg-opacity-95 backdrop-blur-md border-b border-surface-container-high px-margin-mobile py-stack-sm">
           <div className="rounded-full bg-surface-container-lowest shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-surface-variant flex items-center px-4 h-14 cursor-pointer transition-colors hover:border-primary">
             <span className="material-symbols-outlined text-primary mr-3">search</span>
