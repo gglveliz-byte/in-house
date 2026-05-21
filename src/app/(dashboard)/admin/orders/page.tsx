@@ -52,11 +52,18 @@ export default function AdminOrdersPage() {
   }, [])
 
   const notification = useAdminOrders(fetchOrders, fetchOrders)
-
+  const [dismissed, setDismissed] = useState(false)
+ 
+  useEffect(() => {
+    if (notification?.show) {
+      setDismissed(false)
+    }
+  }, [notification])
+ 
   useEffect(() => {
     fetchOrders()
   }, [fetchOrders])
-
+ 
   const filteredOrders = orders.filter((order) => {
     const matchesFilter = filter === 'all' || order.status === filter
     const matchesSearch =
@@ -67,13 +74,13 @@ export default function AdminOrdersPage() {
       (order.driver?.name || '').toLowerCase().includes(searchQuery.toLowerCase())
     return matchesFilter && matchesSearch
   })
-
+ 
   // Count per status
   const statusCounts = orders.reduce<Record<string, number>>((acc, order) => {
     acc[order.status] = (acc[order.status] || 0) + 1
     return acc
   }, {})
-
+ 
   if (loading) {
     return (
       <div className="space-y-4">
@@ -83,13 +90,13 @@ export default function AdminOrdersPage() {
       </div>
     )
   }
-
+ 
   return (
     <div className="space-y-5">
       {/* Floating notification */}
-      {notification?.show && (
-        <div className="fixed top-4 right-4 z-50 animate-bounce">
-          <div className={`px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 ${
+      {notification?.show && !dismissed && (
+        <div className="fixed top-4 right-4 z-[9999] animate-bounce">
+          <div className={`px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 relative pr-10 ${
             notification.type === 'new'
               ? 'bg-gradient-to-r from-[#003f87] to-[#0056b3] text-white'
               : 'bg-blue-600 text-white'
@@ -99,6 +106,13 @@ export default function AdminOrdersPage() {
               <p className="font-bold">{notification.type === 'new' ? '¡Nuevo pedido!' : 'Pedido actualizado'}</p>
               <p className="text-sm opacity-90">{notification.message}</p>
             </div>
+            <button
+              onClick={() => setDismissed(true)}
+              className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors p-1 text-sm font-bold"
+              aria-label="Cerrar notificación"
+            >
+              ✕
+            </button>
           </div>
         </div>
       )}

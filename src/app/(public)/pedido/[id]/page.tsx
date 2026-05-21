@@ -80,6 +80,13 @@ export default function OrderPage({
   
   // Hook para escuchar actualizaciones en tiempo real
   const { orderStatus, notification } = useOrderUpdates(orderId)
+  const [notificationDismissed, setNotificationDismissed] = useState(false)
+
+  useEffect(() => {
+    if (notification?.show) {
+      setNotificationDismissed(false)
+    }
+  }, [notification])
   
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [toastType, setToastType] = useState<'success' | 'error'>('success')
@@ -292,14 +299,21 @@ export default function OrderPage({
         )}
 
         {/* Notificación en tiempo real */}
-        {notification?.show && (
-          <div className="fixed top-2 left-2 right-2 md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 z-50 animate-bounce">
-            <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2">
+        {notification?.show && !notificationDismissed && (
+          <div className="fixed top-2 left-2 right-2 md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 z-[9999] animate-bounce">
+            <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 relative pr-10">
               <span className="text-2xl">{notification.icon}</span>
               <div>
                 <p className="font-bold text-sm">{notification.title}</p>
                 <p className="text-xs opacity-90">{notification.message}</p>
               </div>
+              <button
+                onClick={() => setNotificationDismissed(true)}
+                className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors p-1 text-sm font-bold"
+                aria-label="Cerrar notificación"
+              >
+                ✕
+              </button>
             </div>
           </div>
         )}

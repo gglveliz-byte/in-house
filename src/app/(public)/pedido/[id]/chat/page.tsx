@@ -58,6 +58,13 @@ export default function CustomerChatPage({
     message: string
     icon: string
   } | null>(null)
+  const [notificationDismissed, setNotificationDismissed] = useState(false)
+
+  useEffect(() => {
+    if (notification?.show) {
+      setNotificationDismissed(false)
+    }
+  }, [notification])
 
   // Obtener orderId de params
   useEffect(() => {
@@ -302,14 +309,21 @@ export default function CustomerChatPage({
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Notificación */}
-      {notification?.show && (
-        <div className="fixed top-2 left-2 right-2 z-50 animate-bounce">
-          <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-3 py-2 rounded-xl shadow-2xl flex items-center gap-2">
+      {notification?.show && !notificationDismissed && (
+        <div className="fixed top-2 left-2 right-2 z-[9999] animate-bounce">
+          <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-3 py-2 rounded-xl shadow-2xl flex items-center gap-2 relative pr-8">
             <span className="text-xl">{notification.icon}</span>
             <div>
               <p className="font-bold text-xs">{notification.title}</p>
               <p className="text-[10px] opacity-90">{notification.message}</p>
             </div>
+            <button
+              onClick={() => setNotificationDismissed(true)}
+              className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors p-1 text-[10px] font-bold"
+              aria-label="Cerrar notificación"
+            >
+              ✕
+            </button>
           </div>
         </div>
       )}

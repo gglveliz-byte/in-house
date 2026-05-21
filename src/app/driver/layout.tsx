@@ -1,20 +1,21 @@
 'use client'
-
+ 
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-
+import { DriverNotification } from '@/components/dashboard/driver-notification'
+ 
 export default function DriverLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { data: session } = useSession()
-
+ 
   const navItems = [
     { href: '/driver/active', icon: 'shopping_bag', label: 'Pedidos' },
     { href: '/driver/history', icon: 'history', label: 'Historial' },
     { href: '/driver', icon: 'person', label: 'Perfil' },
   ]
-
+ 
   return (
     <div className="font-body-md text-body-md bg-background min-h-screen text-on-surface">
       {/* TopAppBar */}
@@ -46,12 +47,12 @@ export default function DriverLayout({ children }: { children: React.ReactNode }
           </div>
         </div>
       </header>
-
+ 
       {/* Main content */}
       <main className="max-w-container-max mx-auto pb-24">
         {children}
       </main>
-
+ 
       {/* BottomNavBar */}
       <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center h-20 px-base bg-surface dark:bg-surface-dim border-t border-outline-variant dark:border-outline shadow-sm z-50">
         {navItems.map((item) => {
@@ -74,6 +75,8 @@ export default function DriverLayout({ children }: { children: React.ReactNode }
           )
         })}
       </nav>
+
+      <DriverNotification onOrderReady={() => {}} />
     </div>
   )
 }

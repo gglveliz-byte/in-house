@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import LinkComponent from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { 
   Bike, 
   Shield, 
@@ -26,6 +28,19 @@ import {
 } from 'lucide-react';
 
 export default function BlueExpressArtisanalLanding() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user?.role) {
+      if (['SUPER_ADMIN', 'ADMIN', 'VENDOR', 'DRIVER'].includes(session.user.role)) {
+        router.replace('/dashboard');
+      } else {
+        router.replace('/azul');
+      }
+    }
+  }, [session, status, router]);
+
   // Phone Screen Tab Controller (User controlled + Auto fallback)
   const [activeScreen, setActiveScreen] = useState<0 | 1 | 2>(0);
   const [isHoveredPhone, setIsHoveredPhone] = useState(false);

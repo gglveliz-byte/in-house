@@ -2,7 +2,7 @@
   "name": "BlueExpress",
   "short_name": "BlueExpress",
   "description": "Pide comida de tus restaurantes favoritos",
-  "start_url": "/",
+  "start_url": "/azul",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#003f87",
@@ -39,7 +39,7 @@
   "shortcuts": [
     {
       "name": "Ver restaurantes",
-      "url": "/",
+      "url": "/azul",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ],

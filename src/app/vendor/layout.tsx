@@ -1,24 +1,25 @@
 'use client'
-
+ 
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-
+import { OrderNotification } from '@/components/dashboard/order-notification'
+ 
 export default function VendorLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const pathname = usePathname()
   const { data: session } = useSession()
-
+ 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
-
+ 
   const navItems = [
     { href: '/vendor', icon: 'dashboard', label: 'Panel' },
     { href: '/vendor/orders', icon: 'package_2', label: 'Pedidos' },
     { href: '/vendor/products', icon: 'inventory_2', label: 'Inventario' },
     { href: '/vendor/settings', icon: 'settings', label: 'Configuración' },
   ]
-
+ 
   return (
     <div className="font-body-md text-body-md bg-background min-h-screen text-on-surface">
       {/* TopAppBar */}
@@ -39,7 +40,7 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
           </div>
         </div>
       </header>
-
+ 
       <div className="pt-16">
         {/* NavigationDrawer (Desktop & Mobile) */}
         <aside
@@ -52,7 +53,7 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
             <h2 className="font-headline-sm text-headline-sm font-bold text-primary">BlueExpress Vendedor</h2>
             <p className="text-body-sm text-secondary">Gestiona tu tienda</p>
           </div>
-
+ 
           <nav className="flex-1 space-y-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href
@@ -91,20 +92,20 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
             </div>
           </div>
         </aside>
-
+ 
         {/* Overlay for mobile sidebar */}
         {isSidebarOpen && (
           <div className="fixed inset-0 bg-black/50 z-40 md:hidden mt-16" onClick={toggleSidebar}></div>
         )}
-
+ 
         {/* Main Content */}
         <main className="md:ml-64 p-margin-mobile md:p-margin-desktop mb-20 md:mb-0 bg-background min-h-[calc(100vh-4rem)] overflow-x-hidden">
           {children}
         </main>
       </div>
-
+ 
       {/* BottomNavBar (Mobile) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-lg rounded-t-xl">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-lg rounded-t-xl">
         {navItems.map((item) => {
           const isActive = pathname === item.href
           return (
@@ -119,6 +120,10 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
           )
         })}
       </nav>
+
+      {session?.user?.storeId && (
+        <OrderNotification storeId={session.user.storeId} />
+      )}
     </div>
   )
 }

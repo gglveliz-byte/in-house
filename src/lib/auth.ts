@@ -7,6 +7,20 @@ import { prisma } from './prisma'
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 días de duración de sesión
+    updateAge: 24 * 60 * 60, // Actualizar token cada 24 horas
+  },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 30 * 24 * 60 * 60, // Forzar cookie persistente de 30 días en el dispositivo
+      },
+    },
   },
   pages: {
     signIn: '/login',
