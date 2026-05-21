@@ -113,14 +113,14 @@ export default function BlueExpressArtisanalLanding() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex justify-between items-center">
           
           {/* Logo with Tech Vibe */}
-          <div className="flex items-center gap-2 sm:gap-3 group cursor-pointer">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#003f87] to-blue-600 flex items-center justify-center text-white shadow-[0px_8px_24px_rgba(0,63,135,0.4)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0px_8px_32px_rgba(0,63,135,0.6)] border border-blue-400/20">
-              <Bike className="w-5 h-5 sm:w-6 sm:h-6 animate-pulse" />
+          <div className="flex items-center gap-1.5 sm:gap-3 group cursor-pointer">
+            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#003f87] to-blue-600 flex items-center justify-center text-white shadow-[0px_8px_24px_rgba(0,63,135,0.4)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0px_8px_32px_rgba(0,63,135,0.6)] border border-blue-400/20">
+              <Bike className="w-4 h-4 sm:w-6 sm:h-6 animate-pulse" />
             </div>
             <div className="flex flex-col">
-              <span className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-1.5">
+              <span className="text-sm min-[380px]:text-base sm:text-xl font-black text-white tracking-tight flex items-center gap-1 sm:gap-1.5">
                 BlueExpress
-                <span className="bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 text-[9px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">
+                <span className="bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 text-[8px] sm:text-[9px] font-black uppercase px-1.5 py-0.5 rounded sm:rounded-md tracking-wider hidden min-[380px]:inline-block">
                   LIVE
                 </span>
               </span>
@@ -236,13 +236,13 @@ export default function BlueExpressArtisanalLanding() {
           </div>
 
           {/* Hero Right Visual: The Dynamic Hands-on Phone */}
-          <div className="flex-1 w-full max-w-md lg:max-w-none flex justify-center relative">
+          <div className="flex-1 w-full max-w-md lg:max-w-none flex justify-center relative overflow-hidden sm:overflow-visible">
             
             {/* Phone Case Frame */}
             <div 
               onMouseEnter={() => setIsHoveredPhone(true)}
               onMouseLeave={() => setIsHoveredPhone(false)}
-              className="relative w-80 h-[620px] bg-[#0c1220] rounded-[3.2rem] border-[10px] border-slate-900 shadow-[0px_32px_96px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-500 hover:scale-[1.03] hover:shadow-[0px_32px_96px_rgba(0,63,135,0.2)] group"
+              className="relative w-72 sm:w-80 h-[560px] sm:h-[620px] bg-[#0c1220] rounded-[2.8rem] sm:rounded-[3.2rem] border-[8px] sm:border-[10px] border-slate-900 shadow-[0px_32px_96px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-500 hover:scale-[1.03] hover:shadow-[0px_32px_96px_rgba(0,63,135,0.2)] group"
             >
               
               {/* Notch */}

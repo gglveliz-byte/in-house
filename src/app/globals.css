@@ -31,8 +31,15 @@
     --font-family-main: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
-html {
-  scrollbar-gutter: stable;
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    scrollbar-gutter: stable;
+  }
 }
 
   body {
