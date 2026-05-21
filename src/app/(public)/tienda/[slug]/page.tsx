@@ -116,6 +116,11 @@ export default async function StorePage({
                     💰 Mín: {formatPrice(store.minOrder)}
                   </span>
                 )}
+                {store.businessHours && (
+                  <span className="flex items-center gap-2 bg-amber-50 px-4 py-2 rounded-full text-sm font-semibold text-amber-700 border border-amber-200">
+                    🕒 Horario: {store.businessHours}
+                  </span>
+                )}
               </div>
             </div>
           </div>

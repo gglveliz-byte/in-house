@@ -66,10 +66,78 @@ export default function VendorDashboardPage() {
           sales += o.total
           completed++
         }
-        customers.add(o.customerPhone) // Unique customers by phone
+        customers.add(o.customerPhone)
       }
     })
     return { todaySales: sales, todayCompleted: completed, todayCustomers: customers.size }
+  }, [orders])
+
+  // Cálculo de Gráfica Semanal Dinámica (Últimos 7 días móviles)
+  const weeklyData = useMemo(() => {
+    const days: { date: Date; name: string; sales: number }[] = []
+    const dayNames = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab']
+    
+    // Generar últimas 7 fechas
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      days.push({
+        date: d,
+        name: dayNames[d.getDay()],
+        sales: 0
+      })
+    }
+
+    // Sumar ventas de órdenes entregadas
+    orders.forEach(o => {
+      if (o.status === 'DELIVERED') {
+        const orderDate = new Date(o.createdAt)
+        days.forEach(day => {
+          if (orderDate.toDateString() === day.date.toDateString()) {
+            day.sales += o.total
+          }
+        })
+      }
+    })
+
+    const maxSales = Math.max(...days.map(d => d.sales), 1)
+    
+    return days.map(d => {
+      const isMax = d.sales === Math.max(...days.map(x => x.sales)) && d.sales > 0
+      return {
+        ...d,
+        isMax,
+        heightPercentage: (d.sales / maxSales) * 100
+      }
+    })
+  }, [orders])
+
+  // Cálculo de los 3 Productos Estrella más vendidos de la tienda
+  const topProducts = useMemo(() => {
+    const productSales: Record<string, { name: string; quantity: number; image: string | null; price: number }> = {}
+    
+    orders.forEach(o => {
+      if (o.status === 'DELIVERED' && o.items) {
+        o.items.forEach(item => {
+          if (item.product) {
+            const p = item.product
+            if (!productSales[p.id]) {
+              productSales[p.id] = {
+                name: p.name,
+                quantity: 0,
+                image: p.image || null,
+                price: p.price
+              }
+            }
+            productSales[p.id].quantity += item.quantity
+          }
+        })
+      }
+    })
+
+    return Object.values(productSales)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 3)
   }, [orders])
 
   if (status === 'loading' || loading) {
@@ -106,7 +174,7 @@ export default function VendorDashboardPage() {
             </div>
             <div className="bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1 text-label-md font-bold">
               <span className="material-symbols-outlined text-[16px]">trending_up</span>
-              +12%
+              Estadísticas
             </div>
           </div>
           <div className="mt-4 flex items-center gap-4">
@@ -136,37 +204,49 @@ export default function VendorDashboardPage() {
             <h3 className="text-headline-md font-headline-md">4.9</h3>
             <span className="material-symbols-outlined text-amber-400" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
           </div>
-          <p className="text-body-sm text-on-surface-variant mt-1">Basado en 256 votos</p>
+          <p className="text-body-sm text-on-surface-variant mt-1">Basado en opiniones reales</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Weekly Sales Chart (Static representation) */}
-        <div className="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+        {/* Weekly Sales Chart (Dynamic representation) */}
+        <div className="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-headline-sm text-headline-sm text-on-surface">Ventas Semanales</h3>
-            <select className="bg-surface-container-low border-none rounded-lg text-body-sm font-label-md p-2 focus:ring-2 ring-primary outline-none">
-              <option>Últimos 7 días</option>
-              <option>Últimos 30 días</option>
-            </select>
+            <span className="text-label-md text-on-surface-variant bg-surface-container-low px-3 py-1 rounded-lg">
+              Últimos 7 días
+            </span>
           </div>
-          <div className="h-64 flex items-end justify-between gap-2 px-2 relative">
+
+          <div className="h-64 flex items-end justify-between gap-2 px-2 relative mt-4">
             <div className="absolute inset-0 flex flex-col justify-between pointer-events-none border-b border-outline-variant">
               <div className="border-t border-surface-container-highest w-full h-0"></div>
               <div className="border-t border-surface-container-highest w-full h-0"></div>
               <div className="border-t border-surface-container-highest w-full h-0"></div>
             </div>
             {/* Chart Bars */}
-            {[40, 65, 55, 85, 100, 30, 20].map((h, i) => (
-              <div key={i} className="flex flex-col items-center flex-1 z-10">
-                <div className={`w-full max-w-[40px] rounded-t-lg transition-all duration-1000 ${h === 100 ? 'bg-primary-container' : 'bg-secondary-container hover:bg-primary'}`} style={{ height: `${h}%` }}></div>
-                <span className={`text-label-md font-label-md mt-2 ${h === 100 ? 'text-primary font-bold' : 'text-secondary'}`}>{['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'][i]}</span>
+            {weeklyData.map((day, i) => (
+              <div key={i} className="flex flex-col items-center flex-1 z-10 group relative">
+                {/* Premium Interactive Tooltip */}
+                <div className="absolute bottom-[105%] bg-surface-container-highest border border-outline-variant text-on-surface text-[11px] px-2.5 py-1 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-30 font-bold whitespace-nowrap">
+                  {formatPrice(day.sales)}
+                </div>
+                
+                <div 
+                  className={`w-full max-w-[34px] rounded-t-lg transition-all duration-1000 origin-bottom cursor-pointer ${
+                    day.isMax ? 'bg-primary-container' : 'bg-secondary-container hover:bg-primary'
+                  }`} 
+                  style={{ height: `${Math.max(day.heightPercentage, 5)}%` }}
+                ></div>
+                <span className={`text-[11px] md:text-label-md font-label-md mt-2 ${day.isMax ? 'text-primary font-bold' : 'text-secondary'}`}>
+                  {day.name}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Quick Actions / Support */}
+        {/* Quick Actions / Best Products */}
         <div className="flex flex-col gap-6">
           <div className="bg-primary-container text-white rounded-xl p-6 relative overflow-hidden group">
             <div className="relative z-10">
@@ -178,25 +258,35 @@ export default function VendorDashboardPage() {
             <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl opacity-10 group-hover:scale-110 transition-transform">receipt_long</span>
           </div>
 
+          {/* Top 3 Productos Estrella */}
           <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-4">Accesos Rápidos</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <Link href="/vendor/products" className="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
-                <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">inventory</span>
-                <span className="text-label-md font-label-md">Stock</span>
-              </Link>
-              <button className="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
-                <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">local_shipping</span>
-                <span className="text-label-md font-label-md">Rutas</span>
-              </button>
-              <button className="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
-                <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">analytics</span>
-                <span className="text-label-md font-label-md">Reportes</span>
-              </button>
-              <button className="flex flex-col items-center justify-center p-4 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group">
-                <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform mb-2">support_agent</span>
-                <span className="text-label-md font-label-md">Soporte</span>
-              </button>
+            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-4">Productos Estrella</h3>
+            <div className="flex flex-col gap-3">
+              {topProducts.length > 0 ? (
+                topProducts.map((p, idx) => (
+                  <div key={p.name} className="flex items-center gap-3 p-2 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-surface-container-low flex-shrink-0 flex items-center justify-center border border-outline-variant relative">
+                      {p.image ? (
+                        <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined text-secondary text-2xl">fastfood</span>
+                      )}
+                      <div className="absolute top-0 left-0 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-br-lg shadow-sm">
+                        #{idx + 1}
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-label-md font-bold text-on-surface truncate">{p.name}</p>
+                      <p className="text-body-sm text-on-surface-variant">{p.quantity} vendidos</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-label-md font-bold text-primary">{formatPrice(p.price)}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-body-sm text-secondary text-center py-4">No hay datos de ventas aún.</p>
+              )}
             </div>
           </div>
         </div>

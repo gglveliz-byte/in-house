@@ -113,6 +113,7 @@ export async function POST(request: NextRequest) {
         minDeliveryFee: true,
         maxDeliveryFee: true,
         deliveryFee: true,
+        ownerId: true,
       },
     })
 
@@ -149,9 +150,19 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Corregido: verificar si hay rango de delivery configurado (> 0)
-    const hasDeliveryRange = store.minDeliveryFee > 0 || store.maxDeliveryFee > 0
-    const deliveryFee = hasDeliveryRange ? 0 : (store.deliveryFee || 0)
+    // Cálculo inteligente de la tarifa de envío:
+    // 1. Si la tienda tiene configurado un costo fijo de envío (deliveryFee > 0), usamos ese costo fijo.
+    // 2. Si no tiene costo fijo pero tiene un rango (minDeliveryFee o maxDeliveryFee), calculamos la media/promedio.
+    // 3. Fallback/ejemplo por defecto de cobro medio: 1.00 (un dólar).
+    let deliveryFee = 1.00
+    if (store.deliveryFee && store.deliveryFee > 0) {
+      deliveryFee = store.deliveryFee
+    } else if (store.minDeliveryFee > 0 || store.maxDeliveryFee > 0) {
+      deliveryFee = (store.minDeliveryFee + store.maxDeliveryFee) / 2
+      if (deliveryFee === 0) {
+        deliveryFee = 1.00
+      }
+    }
     const total = subtotal + deliveryFee
 
     // Transacción atómica para evitar race condition en counter
@@ -189,6 +200,15 @@ export async function POST(request: NextRequest) {
       })
     })
 
+    // Si hay un cliente autenticado, guardar/actualizar su teléfono en base de datos
+    const session = await getServerSession(authOptions)
+    if (session?.user?.id && session.user.role === 'CUSTOMER') {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { phone: customerPhone.trim() },
+      }).catch((err) => console.error('Error updating customer phone:', err))
+    }
+
     try {
       await pusherServer.trigger(CHANNELS.STORE(storeId), EVENTS.NEW_ORDER, {
         orderId: order.id,
@@ -212,6 +232,20 @@ export async function POST(request: NextRequest) {
       })
     } catch (pusherError) {
       console.warn('Pusher event error:', pusherError)
+    }
+
+    // Enviar notificación Push de fondo al dueño del local (vendedor)
+    if (store.ownerId) {
+      try {
+        const { sendPushToUser } = await import('@/lib/push')
+        await sendPushToUser(store.ownerId, {
+          title: '¡Nuevo Pedido Recibido! 🛍️',
+          body: `Pedido #${order.orderNumber} por ${order.customerName} - Total: $${order.total.toFixed(2)}`,
+          link: `/vendor/order/${order.id}`
+        })
+      } catch (pushError) {
+        console.error('Error sending new order push notification to store owner:', pushError)
+      }
     }
 
     return NextResponse.json(order, { status: 201 })

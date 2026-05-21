@@ -3,10 +3,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { formatPrice } from '@/lib/utils'
-import type { Order } from '@/types'
+import type { Order, Message } from '@/types'
+import { pusherClient, CHANNELS, EVENTS } from '@/lib/pusher'
 
 export default function DriverOrderDetailPage() {
+  const { data: session } = useSession()
   const { orderId } = useParams() as { orderId: string }
   const router = useRouter()
   const [order, setOrder] = useState<Order | null>(null)
@@ -19,6 +22,12 @@ export default function DriverOrderDetailPage() {
   ])
   const chatRef = useRef<HTMLDivElement>(null)
 
+  const mapDbMessage = (msg: Message) => ({
+    text: msg.content,
+    from: msg.senderType === 'DRIVER' ? ('driver' as const) : ('client' as const),
+    time: new Date(msg.createdAt).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' }),
+  })
+
   useEffect(() => {
     fetch(`/api/orders/${orderId}`)
       .then(r => r.json())
@@ -28,14 +37,68 @@ export default function DriverOrderDetailPage() {
   }, [orderId])
 
   useEffect(() => {
+    // 1. Cargar historial real de mensajes del pedido
+    fetch(`/api/orders/${orderId}/messages`)
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          if (data.length === 0) {
+            setMessages([
+              { text: '¡Tu pedido está en camino!', from: 'driver', time: new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' }) }
+            ])
+          } else {
+            setMessages(data.map(mapDbMessage))
+          }
+        }
+      })
+      .catch(err => console.error('Error fetching messages:', err))
+
+    // 2. Suscribirse a Pusher para sincronizar nuevos mensajes en tiempo real
+    if (pusherClient) {
+      const channel = pusherClient.subscribe(CHANNELS.ORDER(orderId))
+      channel.bind(EVENTS.NEW_MESSAGE, (data: { message: Message }) => {
+        if (data?.message) {
+          const mapped = mapDbMessage(data.message)
+          setMessages(prev => {
+            const exists = prev.some(m => m.text === mapped.text && m.from === mapped.from)
+            if (exists) return prev
+            return [...prev, mapped]
+          })
+        }
+      })
+
+      return () => {
+        channel.unbind_all()
+        pusherClient?.unsubscribe(CHANNELS.ORDER(orderId))
+      }
+    }
+  }, [orderId])
+
+  useEffect(() => {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight
   }, [messages])
 
-  const sendMessage = (text: string) => {
+  const sendMessage = async (text: string) => {
     if (!text.trim()) return
     const time = new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })
+    
+    // Feedback inmediato local
     setMessages(prev => [...prev, { text, from: 'driver', time }])
     setMessage('')
+
+    try {
+      await fetch(`/api/orders/${orderId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: text.trim(),
+          senderType: 'DRIVER',
+          senderName: session?.user?.name || 'Repartidor',
+        }),
+      })
+    } catch (err) {
+      console.error('Error sending message:', err)
+    }
   }
 
   const confirmDelivery = async () => {

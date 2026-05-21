@@ -23,6 +23,7 @@ export function ImageUpload({
   const [mode, setMode] = useState<'upload' | 'url'>('upload')
   const [uploading, setUploading] = useState(false)
   const [urlInput, setUrlInput] = useState(value || '')
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   // Generar ID único para cada instancia del componente
   const uniqueId = useId()
@@ -33,6 +34,7 @@ export function ImageUpload({
     if (!file) return
 
     setUploading(true)
+    setErrorMsg(null)
 
     try {
       const formData = new FormData()
@@ -53,7 +55,7 @@ export function ImageUpload({
       onChange(data.url)
     } catch (error) {
       console.error('Error uploading:', error)
-      alert(error instanceof Error ? error.message : 'Error al subir imagen')
+      setErrorMsg(error instanceof Error ? error.message : 'Error al subir imagen')
     } finally {
       setUploading(false)
     }
@@ -168,6 +170,12 @@ export function ImageUpload({
             Aplicar
           </Button>
         </div>
+      )}
+      {errorMsg && (
+        <p className="text-xs text-red-600 font-medium mt-1 flex items-center gap-1">
+          <span className="material-symbols-outlined text-[14px]">error</span>
+          {errorMsg}
+        </p>
       )}
     </div>
   )

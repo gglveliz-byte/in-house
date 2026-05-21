@@ -23,6 +23,25 @@ const filterOptions = [
   { label: 'Filtros', icon: 'tune' },
 ];
 
+const RestaurantCardSkeleton: React.FC = () => {
+  return (
+    <div className="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-surface-variant overflow-hidden flex flex-col">
+      <div className="h-36 w-full animate-shimmer"></div>
+      <div className="p-stack-md bg-surface-container-lowest space-y-3">
+        <div className="flex justify-between items-start gap-4">
+          <div className="h-5 w-2/3 rounded animate-shimmer"></div>
+          <div className="h-5 w-16 rounded animate-shimmer"></div>
+        </div>
+        <div className="h-4 w-5/6 rounded animate-shimmer"></div>
+        <div className="flex items-center gap-4">
+          <div className="h-4 w-20 rounded animate-shimmer"></div>
+          <div className="h-4 w-24 rounded animate-shimmer"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const HomeScreen: React.FC = () => {
   const [zones, setZones] = useState<Zone[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
@@ -150,8 +169,10 @@ export const HomeScreen: React.FC = () => {
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-10">
-              <div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+            <div className="space-y-stack-md">
+              <RestaurantCardSkeleton />
+              <RestaurantCardSkeleton />
+              <RestaurantCardSkeleton />
             </div>
           ) : isAllZones ? (
             <div className="text-center py-12 bg-surface-container-low rounded-2xl border-2 border-dashed border-outline-variant mt-4">

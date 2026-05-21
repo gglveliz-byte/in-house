@@ -6,6 +6,7 @@ declare module 'next-auth' {
     email: string
     name: string
     role: string
+    phone?: string | null
     storeId: string | null
     storeIds: string[]
     zoneId: string | null
@@ -16,6 +17,7 @@ declare module 'next-auth' {
     user: User & {
       id: string
       role: string
+      phone?: string | null
       storeId: string | null
       storeIds: string[]
       zoneId: string | null
@@ -28,6 +30,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id: string
     role: string
+    phone?: string | null
     storeId: string | null
     storeIds: string[]
     zoneId: string | null

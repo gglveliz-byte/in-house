@@ -44,16 +44,20 @@ export async function POST(
     const { content, imageUrl, senderType, senderName } = body
 
     // Validar senderType
-    const validSenderTypes = ['CUSTOMER', 'VENDOR', 'SYSTEM']
+    const validSenderTypes = ['CUSTOMER', 'VENDOR', 'DRIVER', 'SYSTEM']
     if (!senderType || !validSenderTypes.includes(senderType)) {
       return NextResponse.json({ error: 'Tipo de remitente inválido' }, { status: 400 })
     }
 
-    // VENDOR y SYSTEM requieren autenticación
-    if (senderType === 'VENDOR' || senderType === 'SYSTEM') {
+    // VENDOR, DRIVER y SYSTEM requieren autenticación
+    if (senderType === 'VENDOR' || senderType === 'DRIVER' || senderType === 'SYSTEM') {
       const session = await getServerSession(authOptions)
       if (!session) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+      }
+      
+      if (senderType === 'DRIVER' && session.user.role !== 'DRIVER') {
+        return NextResponse.json({ error: 'No autorizado - Debe ser repartidor' }, { status: 403 })
       }
     }
 
@@ -76,7 +80,7 @@ export async function POST(
         content: content || '',
         imageUrl,
         senderType,
-        senderName: senderName || (senderType === 'CUSTOMER' ? 'Cliente' : 'Vendedor'),
+        senderName: senderName || (senderType === 'CUSTOMER' ? 'Cliente' : senderType === 'DRIVER' ? 'Repartidor' : 'Vendedor'),
       },
     })
 

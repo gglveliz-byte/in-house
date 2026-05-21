@@ -10,6 +10,7 @@ import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusColor } fro
 import { useOrderUpdates, useNotificationPermission, usePusherChannel, usePusherAvailable } from '@/hooks/use-pusher'
 import { CHANNELS, EVENTS, ORDER_STATUS_NOTIFICATIONS } from '@/lib/pusher'
 import { useActiveOrderStore, ActiveOrderStatus } from '@/stores/active-order-store'
+import { AnimatedTrackingMap } from '@/components/store/animated-tracking-map'
 
 interface OrderItem {
   id: string
@@ -37,6 +38,7 @@ interface Order {
   deliveryPaymentStatus: string | null
   deliveryPaymentProof: string | null
   createdAt: string
+  pickedUpAt: string | null
   items: OrderItem[]
   store: {
     name: string
@@ -78,6 +80,17 @@ export default function OrderPage({
   
   // Hook para escuchar actualizaciones en tiempo real
   const { orderStatus, notification } = useOrderUpdates(orderId)
+  
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [toastType, setToastType] = useState<'success' | 'error'>('success')
+
+  const triggerToast = useCallback((msg: string, type: 'success' | 'error' = 'success') => {
+    setToastMessage(msg)
+    setToastType(type)
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 4000)
+  }, [])
   
   // Hook para permisos de notificación
   const { permission, requestPermission } = useNotificationPermission()
@@ -266,6 +279,18 @@ export default function OrderPage({
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50 py-4 md:py-8">
       <div className="max-w-2xl mx-auto px-3 md:px-4">
+        {/* Floating Toast Notification */}
+        {toastMessage && (
+          <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 text-white text-body-md px-6 py-3 rounded-full shadow-[0px_4px_12px_rgba(0,0,0,0.15)] flex items-center gap-2 animate-[fadeIn_0.2s_ease-out] ${
+            toastType === 'success' ? 'bg-green-600' : 'bg-red-600'
+          }`}>
+            <span className="material-symbols-outlined text-[20px]">
+              {toastType === 'success' ? 'check_circle' : 'error'}
+            </span>
+            <span className="font-medium text-sm">{toastMessage}</span>
+          </div>
+        )}
+
         {/* Notificación en tiempo real */}
         {notification?.show && (
           <div className="fixed top-2 left-2 right-2 md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 z-50 animate-bounce">
@@ -335,6 +360,18 @@ export default function OrderPage({
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Mapa de Seguimiento Animado */}
+        {!isCancelled && (
+          <div className="mb-4 md:mb-6">
+            <AnimatedTrackingMap 
+              status={order.status}
+              pickedUpAt={order.pickedUpAt}
+              storeName={order.store.name}
+              customerAddress={order.customerAddress}
+            />
+          </div>
         )}
 
         {/* Timeline de estado */}
@@ -537,10 +574,10 @@ export default function OrderPage({
                           }),
                         })
                         fetchOrder()
-                        alert('✅ Pago en efectivo confirmado. El repartidor validará al entregar.')
+                        triggerToast('Pago en efectivo registrado. El repartidor lo validará al entregar.', 'success')
                       } catch (error) {
                         console.error('Error:', error)
-                        alert('Error al confirmar el pago')
+                        triggerToast('Error al registrar el pago.', 'error')
                       }
                     }}
                     className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors"
@@ -579,10 +616,10 @@ export default function OrderPage({
                             }),
                           })
                           fetchOrder()
-                          alert('✅ Comprobante subido. El repartidor validará al entregar.')
+                          triggerToast('Comprobante de transferencia subido correctamente.', 'success')
                         } catch (error) {
                           console.error('Error:', error)
-                          alert('Error al subir el comprobante')
+                          triggerToast('Error al subir el comprobante de transferencia.', 'error')
                         }
                       }
                       input.click()

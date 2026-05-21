@@ -292,6 +292,44 @@ export function useOrderUpdates(orderId: string | null) {
 // Helpers
 function playNotificationSound() {
   try {
+    if (typeof window !== 'undefined') {
+      const AudioCtxClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      if (AudioCtxClass) {
+        const ctx = new AudioCtxClass()
+        
+        // Primer tono (ding - D5)
+        const osc1 = ctx.createOscillator()
+        const gain1 = ctx.createGain()
+        osc1.type = 'sine'
+        osc1.frequency.setValueAtTime(587.33, ctx.currentTime)
+        gain1.gain.setValueAtTime(0, ctx.currentTime)
+        gain1.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.05)
+        gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35)
+        osc1.connect(gain1)
+        gain1.connect(ctx.destination)
+        osc1.start()
+        osc1.stop(ctx.currentTime + 0.35)
+
+        // Segundo tono (dong - A5)
+        const osc2 = ctx.createOscillator()
+        const gain2 = ctx.createGain()
+        osc2.type = 'sine'
+        osc2.frequency.setValueAtTime(880.00, ctx.currentTime + 0.12)
+        gain2.gain.setValueAtTime(0, ctx.currentTime + 0.12)
+        gain2.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.17)
+        gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.55)
+        osc2.connect(gain2)
+        gain2.connect(ctx.destination)
+        osc2.start(ctx.currentTime + 0.12)
+        osc2.stop(ctx.currentTime + 0.55)
+        return
+      }
+    }
+  } catch (e) {
+    console.warn('Web Audio synthesis failed, falling back:', e)
+  }
+
+  try {
     const audio = new Audio('/notification.mp3')
     audio.volume = 0.5
     audio.play().catch(() => {

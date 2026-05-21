@@ -9,14 +9,19 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { LocationPicker } from '@/components/ui/location-picker'
 import { useCartStore } from '@/stores/cart-store'
 import { useActiveOrderStore } from '@/stores/active-order-store'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, generateWhatsAppLink } from '@/lib/utils'
+import { useSession } from 'next-auth/react'
+import { ConfettiCanvas } from '@/components/ui/confetti-canvas'
 
 export default function CheckoutPage() {
   const router = useRouter()
+  const { data: session } = useSession()
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+  const [showSuccessScreen, setShowSuccessScreen] = useState(false)
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null)
   const [storeInfo, setStoreInfo] = useState<{
     minDeliveryFee: number
     maxDeliveryFee: number
@@ -58,6 +63,16 @@ export default function CheckoutPage() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    if (session?.user && session.user.role === 'CUSTOMER') {
+      setFormData((prev) => ({
+        ...prev,
+        customerName: prev.customerName || session.user.name || '',
+        customerPhone: prev.customerPhone || (session.user as { phone?: string | null }).phone || '',
+      }))
+    }
+  }, [session])
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {}
@@ -158,8 +173,28 @@ export default function CheckoutPage() {
           createdAt: order.createdAt,
         })
 
+        // Generar enlace de WhatsApp para confirmación e inicio del chat con la tienda
+        const storeWhatsapp = order.store?.whatsapp || ''
+        const trackingLink = `${window.location.origin}/pedido/${order.id}`
+        const whatsappMessage = `${totalMessage}\n\n📍 *Sigue tu pedido en vivo aquí:* ${trackingLink}`
+        
+        const waLink = generateWhatsAppLink(storeWhatsapp, whatsappMessage)
+        if (waLink) {
+          window.open(waLink, '_blank')
+        }
+
+        // Guardar ID y mostrar pantalla de éxito con confetti
+        setCreatedOrderId(order.id)
+        setShowSuccessScreen(true)
+        setLoading(false)
+
         clearCart()
-        router.push(`/pedido/${order.id}/chat`)
+
+        // Temporizador de 2.2 segundos para mostrar el confetti premium antes de redireccionar
+        setTimeout(() => {
+          router.push(`/pedido/${order.id}/chat`)
+        }, 2200)
+
         return
       } catch (error) {
         lastError = error as Error
@@ -174,10 +209,56 @@ export default function CheckoutPage() {
 
   if (!mounted) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3" />
-          <div className="h-64 bg-gray-200 rounded" />
+      <div className="min-h-screen bg-surface py-4 md:py-8 max-w-5xl mx-auto px-3 md:px-4">
+        {/* Mock Header */}
+        <div className="text-center mb-4 md:mb-8 space-y-3">
+          <div className="w-16 h-16 rounded-xl bg-gray-200 mx-auto animate-shimmer" />
+          <div className="h-8 bg-gray-200 rounded-lg w-1/4 mx-auto animate-shimmer" />
+          <div className="h-4 bg-gray-200 rounded-lg w-1/6 mx-auto animate-shimmer" />
+        </div>
+        
+        {/* Mock Columns */}
+        <div className="grid md:grid-cols-2 gap-4 md:gap-8">
+          {/* Mock Cart Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 space-y-6">
+            <div className="h-6 bg-gray-200 rounded w-1/3 animate-shimmer" />
+            <div className="space-y-4">
+              {[1, 2].map((i) => (
+                <div key={i} className="flex gap-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-2/3 animate-shimmer" />
+                    <div className="h-3 bg-gray-200 rounded w-1/3 animate-shimmer" />
+                  </div>
+                  <div className="w-16 h-6 bg-gray-200 rounded animate-shimmer" />
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-gray-200 pt-4 space-y-3">
+              <div className="flex justify-between">
+                <div className="h-4 bg-gray-200 rounded w-1/5 animate-shimmer" />
+                <div className="h-4 bg-gray-200 rounded w-1/6 animate-shimmer" />
+              </div>
+              <div className="flex justify-between">
+                <div className="h-4 bg-gray-200 rounded w-1/4 animate-shimmer" />
+                <div className="h-4 bg-gray-200 rounded w-1/6 animate-shimmer" />
+              </div>
+              <div className="h-10 bg-gray-200/50 rounded-lg w-full animate-shimmer mt-2" />
+            </div>
+          </div>
+
+          {/* Mock Form Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 space-y-5">
+            <div className="h-6 bg-gray-200 rounded w-1/3 animate-shimmer" />
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-3 bg-gray-200 rounded w-1/4 animate-shimmer" />
+                  <div className="h-10 bg-gray-100 border border-gray-200 rounded-lg w-full animate-shimmer" />
+                </div>
+              ))}
+              <div className="h-12 bg-gray-200 rounded-xl w-full animate-shimmer mt-6" />
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -237,7 +318,42 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface py-4 md:py-8">
+    <div className="min-h-screen bg-surface py-4 md:py-8 relative">
+      {showSuccessScreen && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-[9998] p-4 animate-page-entrance">
+          <ConfettiCanvas />
+          <div className="bg-white rounded-3xl p-8 md:p-12 max-w-md w-full shadow-2xl text-center space-y-6 border border-gray-100 relative z-[9999]">
+            {/* SVG Checked Circle Drawer Badge */}
+            <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto text-green-500 shadow-inner">
+              <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path className="animate-checkmark-draw" strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            
+            <div className="space-y-2">
+              <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
+                ¡Pedido Realizado!
+              </h2>
+              <p className="text-gray-600 text-sm md:text-base">
+                Tu orden se ha generado correctamente.
+              </p>
+            </div>
+
+            <div className="bg-green-50 border border-green-100 rounded-xl p-4 space-y-1 text-left">
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">ESTADO DE OPERACIÓN</p>
+              <p className="text-xs md:text-sm font-semibold text-green-800 flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                Abriendo WhatsApp para confirmar pedido...
+              </p>
+            </div>
+
+            <div className="text-xs text-gray-400">
+              Cargando panel de seguimiento...
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-5xl mx-auto px-3 md:px-4">
         {/* Header */}
         <div className="text-center mb-4 md:mb-8">

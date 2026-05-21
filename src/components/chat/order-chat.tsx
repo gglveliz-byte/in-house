@@ -9,7 +9,7 @@ interface Message {
   id: string
   content: string
   imageUrl: string | null
-  senderType: 'CUSTOMER' | 'VENDOR' | 'SYSTEM'
+  senderType: 'CUSTOMER' | 'VENDOR' | 'DRIVER' | 'SYSTEM'
   senderName: string
   createdAt: string
 }
@@ -328,7 +328,7 @@ export function OrderChat({
                 >
                   {!isOwn && (
                     <p className={`text-xs font-medium mb-1 ${isOwn ? 'text-green-100' : 'text-green-600'}`}>
-                      {message.senderName}
+                      {message.senderType === 'DRIVER' ? `🏍️ ${message.senderName}` : message.senderName}
                     </p>
                   )}
 {message.imageUrl && (

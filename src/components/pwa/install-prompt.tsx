@@ -118,6 +118,14 @@ export function InstallPrompt() {
                   <li>Confirma la instalación</li>
                 </ol>
               </div>
+            ) : !deferredPrompt ? (
+              <div className="text-sm text-gray-600 space-y-2">
+                <p>Para instalar en Android:</p>
+                <ol className="list-decimal list-inside space-y-1 text-xs">
+                  <li>Toca el menú <span className="font-bold">⋮</span> (tres puntos) en Chrome.</li>
+                  <li>Selecciona <span className="font-semibold">&quot;Instalar aplicación&quot;</span> o <span className="font-semibold">&quot;Agregar a pantalla principal&quot;</span>.</li>
+                </ol>
+              </div>
             ) : (
               <p className="text-sm text-gray-600">
                 Instala la app para una experiencia más rápida y acceso directo desde tu pantalla principal.

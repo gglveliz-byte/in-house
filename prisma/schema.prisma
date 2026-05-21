@@ -83,6 +83,7 @@ model Store {
   minDeliveryFee Float    @default(0)
   maxDeliveryFee Float    @default(0)
   paymentMethods String?
+  businessHours String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

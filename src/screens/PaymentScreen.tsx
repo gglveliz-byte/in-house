@@ -136,10 +136,19 @@ export const PaymentScreen: React.FC = () => {
                   Selecciona tu dirección o marca una ubicación con el mapa.
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary px-3 py-1 text-label-sm font-semibold">
-                <span className="material-symbols-outlined">location_on</span>
-                Google Maps
-              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  alert(
+                    "🗺️ Sistema de Geolocalización Inteligente\n\nEl mapa está completamente activo y funcional. Si no se dispone de una clave de Google Maps, el sistema utiliza automáticamente un motor alternativo premium basado en Leaflet y OpenStreetMap (OSM) sin coste alguno.\n\nPuedes arrastrar el pin esmeralda, hacer clic en cualquier lugar del mapa, o pulsar 'Usar mi ubicación actual' para que el sistema geolocalice y escriba tu dirección de forma automática."
+                  );
+                }}
+                className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 text-emerald-600 px-3 py-1 text-label-sm font-semibold hover:bg-emerald-500/20 active:scale-95 transition-all cursor-pointer border border-emerald-500/20"
+                title="Estado de Geolocalización"
+              >
+                <span className="material-symbols-outlined text-[16px] animate-pulse">location_on</span>
+                Mapa Activo
+              </button>
             </div>
 
             <LocationPicker

@@ -24,6 +24,7 @@ interface Store {
   minOrder: number
   deliveryFee: number
   paymentMethods: string | null
+  businessHours: string | null
   ownerId: string
 }
 
@@ -32,6 +33,118 @@ export default function VendorSettingsPage() {
   const [store, setStore] = useState<Store | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  
+  // Estados para notificaciones Push PWA
+  const [pushSupported, setPushSupported] = useState(false)
+  const [notificationPermission, setNotificationPermission] = useState('default')
+  const [subscribing, setSubscribing] = useState(false)
+  const [testingPush, setTestingPush] = useState(false)
+  const [isSubscribed, setIsSubscribed] = useState(false)
+
+  // Verificar compatibilidad y suscripción al montar
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window) {
+      setPushSupported(true)
+      setNotificationPermission(Notification.permission)
+      
+      navigator.serviceWorker.ready.then((reg) => {
+        reg.pushManager.getSubscription().then((sub) => {
+          setIsSubscribed(!!sub)
+        })
+      })
+    }
+  }, [])
+
+  // Registrar suscripción Push en el navegador y el servidor
+  const handleSubscribe = async () => {
+    if (!pushSupported) return
+    setSubscribing(true)
+    try {
+      const permission = await Notification.requestPermission()
+      setNotificationPermission(permission)
+      if (permission !== 'granted') {
+        alert('Permiso de notificaciones denegado.')
+        setSubscribing(false)
+        return
+      }
+
+      const reg = await navigator.serviceWorker.ready
+      
+      // Obtener la clave pública VAPID del servidor
+      const keyRes = await fetch('/api/push/register')
+      const { publicKey } = await keyRes.json()
+
+      if (!publicKey) {
+        throw new Error('No se pudo recuperar la clave pública VAPID.')
+      }
+
+      // Convertir clave base64 a Uint8Array
+      const padding = '='.repeat((4 - (publicKey.length % 4)) % 4)
+      const base64 = (publicKey + padding).replace(/\-/g, '+').replace(/_/g, '/')
+      const rawData = window.atob(base64)
+      const outputArray = new Uint8Array(rawData.length)
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i)
+      }
+
+      // Suscribir dispositivo
+      const subscription = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: outputArray
+      })
+
+      // Guardar en base de datos local
+      const registerRes = await fetch('/api/push/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscription,
+          userId: session?.user?.id || null
+        })
+      })
+
+      if (registerRes.ok) {
+        setIsSubscribed(true)
+        alert('¡Suscrito con éxito! Recibirás notificaciones push en segundo plano.')
+      } else {
+        alert('Error al registrar dispositivo en el servidor.')
+      }
+    } catch (err: unknown) {
+      console.error('Error in push registration:', err)
+      const msg = err instanceof Error ? err.message : String(err)
+      alert(`Fallo en la suscripción: ${msg}`)
+    } finally {
+      setSubscribing(false)
+    }
+  }
+
+  // Detonar una notificación de prueba en segundo plano
+  const handleTestPush = async () => {
+    setTestingPush(true)
+    try {
+      const res = await fetch('/api/push/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `In-House: ${formData.name || 'Mi Tienda'} 🔔`,
+          body: '¡Excelente! Esta es una notificación push de alta fidelidad enviada en segundo plano.',
+          link: '/vendor'
+        })
+      })
+      const data = await res.json()
+      if (data.success) {
+        alert(data.summary)
+      } else {
+        alert(data.message || 'Error al enviar alerta.')
+      }
+    } catch (err) {
+      console.error('Error testing push notification:', err)
+      alert('Error de conexión al enviar prueba push.')
+    } finally {
+      setTestingPush(false)
+    }
+  }
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -44,6 +157,7 @@ export default function VendorSettingsPage() {
     minOrder: '',
     deliveryFee: '',
     paymentMethods: '',
+    businessHours: '',
   })
 
   // Buscar la tienda del usuario por su ID
@@ -75,6 +189,7 @@ export default function VendorSettingsPage() {
       minOrder: data.minOrder.toString(),
       deliveryFee: data.deliveryFee.toString(),
       paymentMethods: data.paymentMethods || '',
+      businessHours: data.businessHours || '',
     })
   }
 
@@ -133,6 +248,7 @@ export default function VendorSettingsPage() {
           minOrder: parseFloat(formData.minOrder) || 0,
           deliveryFee: parseFloat(formData.deliveryFee) || 0,
           paymentMethods: formData.paymentMethods || null,
+          businessHours: formData.businessHours || null,
         }),
       })
       alert('Cambios guardados')
@@ -234,6 +350,16 @@ export default function VendorSettingsPage() {
                 placeholder="Describe tu negocio..."
               />
             </div>
+
+            <Input
+              label="Horario de atención"
+              id="businessHours"
+              value={formData.businessHours}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, businessHours: e.target.value }))
+              }
+              placeholder="Ej: Lunes a Viernes 08:00 a 22:00"
+            />
 
             <Input
               label="WhatsApp (con código de país)"
@@ -340,6 +466,75 @@ export default function VendorSettingsPage() {
               Guardar cambios
             </Button>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* PWA Web Push Notification Settings */}
+      <Card className="mt-6 border border-outline-variant hover:shadow-lg transition-shadow">
+        <CardHeader>
+          <div className="flex items-center gap-2 text-primary font-headline-sm">
+            <span className="material-symbols-outlined text-2xl">notifications_active</span>
+            <h2 className="text-lg font-bold text-on-surface">Notificaciones en Segundo Plano (PWA)</h2>
+          </div>
+          <p className="text-body-sm text-on-surface-variant mt-1">
+            Recibe alertas instantáneas en tu dispositivo sobre nuevos pedidos en tiempo real, incluso si la pestaña de la aplicación está cerrada.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl border border-outline-variant bg-surface-container-lowest">
+            <div>
+              <p className="text-label-md font-bold text-on-surface">Soporte del Navegador</p>
+              <p className="text-body-sm text-on-surface-variant">
+                {pushSupported 
+                  ? '✅ Tu navegador es compatible con notificaciones push.' 
+                  : '❌ Tu navegador o el protocolo de conexión no soporta Web Push.'}
+              </p>
+            </div>
+            {pushSupported && (
+              <Badge variant={isSubscribed ? 'success' : 'default'}>
+                {isSubscribed ? 'Suscrito' : 'No Suscrito'}
+              </Badge>
+            )}
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl border border-outline-variant bg-surface-container-lowest">
+            <div>
+              <p className="text-label-md font-bold text-on-surface">Estado de Permisos</p>
+              <p className="text-body-sm text-on-surface-variant">
+                {notificationPermission === 'granted' && '✅ Permiso de notificaciones autorizado.'}
+                {notificationPermission === 'denied' && '❌ Permiso denegado. Habilita los permisos desde la barra de direcciones de tu navegador.'}
+                {notificationPermission === 'default' && 'ℹ️ Aún no has concedido permisos de notificaciones.'}
+              </p>
+            </div>
+            {pushSupported && notificationPermission !== 'granted' && (
+              <Button onClick={handleSubscribe} loading={subscribing} variant="secondary" size="sm">
+                Otorgar Permiso
+              </Button>
+            )}
+          </div>
+
+          {pushSupported && (
+            <div className="flex flex-col md:flex-row gap-3 pt-2">
+              <Button 
+                onClick={handleSubscribe} 
+                loading={subscribing} 
+                className="flex-1 font-bold active:scale-95 transition-transform" 
+                variant={isSubscribed ? 'secondary' : 'primary'}
+              >
+                {isSubscribed ? '🔄 Sincronizar Dispositivo' : '🔔 Activar Notificaciones'}
+              </Button>
+              {isSubscribed && (
+                <Button 
+                  onClick={handleTestPush} 
+                  loading={testingPush} 
+                  className="flex-1 font-bold active:scale-95 transition-transform bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <span className="material-symbols-outlined text-[18px] mr-1.5">notifications_active</span>
+                  Enviar Prueba Push
+                </Button>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

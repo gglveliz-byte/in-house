@@ -163,6 +163,26 @@ export async function PATCH(
           customerAddress: order.customerAddress,
           total: order.total,
         })
+
+        // Notificar en segundo plano (push) a todos los repartidores activos de la zona
+        if (order.zoneId) {
+          try {
+            const driversInZone = await prisma.user.findMany({
+              where: { role: 'DRIVER', zoneId: order.zoneId },
+              select: { id: true },
+            })
+            const { sendPushToUser } = await import('@/lib/push')
+            for (const driverUser of driversInZone) {
+              await sendPushToUser(driverUser.id, {
+                title: '🛵 ¡Pedido Listo para Recoger!',
+                body: `Pedido #${order.orderNumber} en ${order.store.name} listo para reparto.`,
+                link: `/driver/active/${order.id}`,
+              })
+            }
+          } catch (pushError) {
+            console.error('Error sending ready push notifications to drivers in zone:', pushError)
+          }
+        }
       }
 
       if (status === 'PICKED_UP') {
@@ -170,6 +190,20 @@ export async function PATCH(
           ...orderData,
           driverId: order.driverId,
         })
+
+        // Notificar en segundo plano (push) al dueño del local
+        if (order.store.ownerId) {
+          try {
+            const { sendPushToUser } = await import('@/lib/push')
+            await sendPushToUser(order.store.ownerId, {
+              title: '📦 Pedido Recogido',
+              body: `El pedido #${order.orderNumber} ya va en camino al cliente.`,
+              link: `/vendor/order/${order.id}`,
+            })
+          } catch (pushError) {
+            console.error('Error sending picked up push notification to store owner:', pushError)
+          }
+        }
       }
 
       if (status === 'DELIVERED') {
@@ -178,6 +212,20 @@ export async function PATCH(
 
       if (status === 'CANCELLED') {
         await pusherServer.trigger(CHANNELS.ORDER(order.id), EVENTS.ORDER_CANCELLED, orderData)
+      }
+
+      // Notificar al dueño del local si un repartidor ha aceptado el pedido
+      if (driverId && order.store.ownerId) {
+        try {
+          const { sendPushToUser } = await import('@/lib/push')
+          await sendPushToUser(order.store.ownerId, {
+            title: '🛵 Repartidor Asignado',
+            body: `El repartidor ha tomado el pedido #${order.orderNumber}.`,
+            link: `/vendor/order/${order.id}`,
+          })
+        } catch (pushError) {
+          console.error('Error sending driver assigned push notification to store owner:', pushError)
+        }
       }
     } catch (pusherError) {
       console.warn('Pusher event error:', pusherError)

@@ -135,7 +135,7 @@ export async function PATCH(
       'name', 'slug', 'description', 'whatsapp', 'address', 
       'latitude', 'longitude', 'isOpen', 'minOrder', 
       'deliveryFee', 'minDeliveryFee', 'maxDeliveryFee', 
-      'paymentMethods', 'logo', 'banner'
+      'paymentMethods', 'logo', 'banner', 'businessHours'
     ]
     
     for (const field of allowedFields) {

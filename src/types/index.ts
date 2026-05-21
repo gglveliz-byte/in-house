@@ -1,4 +1,4 @@
-export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'VENDOR' | 'DRIVER'
+export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'VENDOR' | 'DRIVER' | 'CUSTOMER'
 
 export type OrderStatus =
   | 'PENDING'
@@ -37,6 +37,7 @@ export interface Store {
   minDeliveryFee: number
   maxDeliveryFee: number
   paymentMethods: string | null
+  businessHours: string | null
   zoneId: string | null
 }
 
@@ -100,7 +101,7 @@ export interface Message {
   id: string
   content: string
   imageUrl: string | null
-  senderType: 'CUSTOMER' | 'VENDOR' | 'SYSTEM'
+  senderType: 'CUSTOMER' | 'VENDOR' | 'DRIVER' | 'SYSTEM'
   senderName: string
   isRead: boolean
   createdAt: string

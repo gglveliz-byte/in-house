@@ -100,6 +100,52 @@ function loadGoogleMaps(): Promise<void> {
   return googleMapsLoadPromise
 }
 
+// Variable global para rastrear si Leaflet se está cargando
+let leafletLoading = false
+let leafletLoadPromise: Promise<void> | null = null
+
+// Función para cargar Leaflet de forma global (solo una vez)
+function loadLeaflet(): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof window !== 'undefined' && (window as any).L) {
+    return Promise.resolve()
+  }
+
+  if (leafletLoading && leafletLoadPromise) {
+    return leafletLoadPromise
+  }
+
+  leafletLoading = true
+  leafletLoadPromise = new Promise((resolve, reject) => {
+    try {
+      // Cargar CSS
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      document.head.appendChild(link)
+
+      // Cargar JS
+      const script = document.createElement('script')
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+      script.async = true
+      script.onload = () => {
+        leafletLoading = false
+        resolve()
+      }
+      script.onerror = () => {
+        leafletLoading = false
+        leafletLoadPromise = null
+        reject(new Error('Error cargando Leaflet'))
+      }
+      document.head.appendChild(script)
+    } catch (e) {
+      reject(e)
+    }
+  })
+
+  return leafletLoadPromise
+}
+
 export function LocationPicker({
   address,
   latitude,
@@ -115,7 +161,6 @@ export function LocationPicker({
   const [mapError, setMapError] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [gettingCurrentLocation, setGettingCurrentLocation] = useState(false)
-  const [showLocationPermissionRequest, setShowLocationPermissionRequest] = useState(false)
   const [locationPermissionDenied, setLocationPermissionDenied] = useState(false)
   const [mapMode, setMapMode] = useState<'map' | 'manual'>('map')
   const mapRef = useRef<HTMLDivElement>(null)
@@ -123,34 +168,51 @@ export function LocationPicker({
   const markerRef = useRef<google.maps.Marker | null>(null)
   const geocoderRef = useRef<google.maps.Geocoder | null>(null)
 
-  // Cargar Google Maps
+  const [usingLeaflet, setUsingLeaflet] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const leafletMapRef = useRef<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const leafletMarkerRef = useRef<any>(null)
+
+  // Cargar Google Maps o usar Leaflet como fallback premium
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 
-    // Si no hay API key, usar modo manual silenciosamente
+    // Si no hay API key o es de plantilla, cargar Leaflet inmediatamente
     if (!apiKey || apiKey === 'tu_api_key') {
-      setMapError(true)
-      setMapMode('manual')
+      setUsingLeaflet(true)
+      loadLeaflet()
+        .then(() => {
+          setMapLoaded(true)
+          setMapError(false)
+        })
+        .catch(() => {
+          setMapError(true)
+          setMapMode('manual')
+        })
       return
     }
 
-    // Verificar si ya está cargado
-    if (window.google?.maps) {
-      setMapLoaded(true)
-      return
-    }
-
-    // Cargar Google Maps usando la función global
+    // Intentar cargar Google Maps
     loadGoogleMaps()
       .then(() => {
         setMapLoaded(true)
         setMapError(false)
       })
       .catch(() => {
-        setMapError(true)
-        setMapMode('manual')
+        // En caso de error, usar Leaflet como fallback
+        setUsingLeaflet(true)
+        loadLeaflet()
+          .then(() => {
+            setMapLoaded(true)
+            setMapError(false)
+          })
+          .catch(() => {
+            setMapError(true)
+            setMapMode('manual')
+          })
       })
   }, [])
 
@@ -250,39 +312,166 @@ export function LocationPicker({
     }
   }
 
+  // Geocodificación inversa gratuita con Nominatim (OpenStreetMap)
+  const reverseGeocodeNominatim = async (lat: number, lng: number) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=es`
+      )
+      if (response.ok) {
+        const data = await response.json()
+        const formatted = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`
+        onLocationChange(lat, lng, formatted)
+      } else {
+        onLocationChange(lat, lng, `${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+      }
+    } catch (error) {
+      console.error('Error reverse geocoding with Nominatim:', error)
+      onLocationChange(lat, lng, `${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+    }
+  }
+
+  // Función para inicializar el mapa de Leaflet (OpenStreetMap)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const initializeLeafletMap = (L: any) => {
+    if (!mapRef.current) return
+
+    // Si el mapa ya existe, actualizar centro y marcador
+    if (leafletMapRef.current) {
+      const center = latitude && longitude
+        ? [latitude, longitude]
+        : defaultLatitude && defaultLongitude
+        ? [defaultLatitude, defaultLongitude]
+        : [-0.180653, -78.467834]
+      leafletMapRef.current.setView(center, 15)
+      if (leafletMarkerRef.current) {
+        leafletMarkerRef.current.setLatLng(center)
+      }
+      return
+    }
+
+    try {
+      const center = latitude && longitude
+        ? [latitude, longitude]
+        : defaultLatitude && defaultLongitude
+        ? [defaultLatitude, defaultLongitude]
+        : [-0.180653, -78.467834] // Quito por defecto
+
+      // Inicializar mapa de Leaflet
+      const map = L.map(mapRef.current, {
+        zoomControl: true,
+      }).setView(center, latitude && longitude ? 15 : 12)
+      leafletMapRef.current = map
+
+      // Agregar capa de OpenStreetMap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(map)
+
+      // Diseñar un pin SVG premium de color esmeralda usando Material Icons
+      const customPin = L.divIcon({
+        html: `
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 animate-pulse absolute -top-4 -left-4"></div>
+          <span class="material-symbols-outlined text-emerald-600 text-4xl filter drop-shadow absolute -top-8 -left-4" style="font-variation-settings: 'FILL' 1">location_on</span>
+        `,
+        className: 'custom-leaflet-icon',
+        iconSize: [32, 32],
+        iconAnchor: [0, 0]
+      })
+
+      // Agregar marcador arrastrable
+      const marker = L.marker(center, {
+        draggable: true,
+        icon: customPin,
+      }).addTo(map)
+      leafletMarkerRef.current = marker
+
+      // Escuchar arrastre del marcador
+      marker.on('dragend', () => {
+        const position = marker.getLatLng()
+        if (position) {
+          reverseGeocodeNominatim(position.lat, position.lng)
+        }
+      })
+
+      // Escuchar clics en el mapa para mover el marcador
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      map.on('click', (e: any) => {
+        if (e.latlng) {
+          const lat = e.latlng.lat
+          const lng = e.latlng.lng
+          marker.setLatLng([lat, lng])
+          reverseGeocodeNominatim(lat, lng)
+        }
+      })
+
+      // Invalidar tamaño para renderizado correcto en contenedores dinámicos
+      setTimeout(() => {
+        map.invalidateSize()
+      }, 200)
+
+    } catch (error) {
+      console.error('Error initializing Leaflet map:', error)
+      setMapError(true)
+      setMapMode('manual')
+    }
+  }
+
   // Inicializar mapa cuando esté cargado
   useEffect(() => {
     if (!mapLoaded || mapError) return
     if (mapMode !== 'map') return // Solo inicializar si estamos en modo mapa
 
-    // Verificar que Google Maps esté realmente disponible
-    if (!window.google?.maps) {
-      setMapError(true)
-      setMapMode('manual')
-      return
-    }
-
-    // Pequeño delay para asegurar que el DOM esté listo
-    const timer = setTimeout(() => {
-      if (mapRef.current) {
-        initializeMap()
+    if (usingLeaflet) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (typeof window !== 'undefined' && (window as any).L) {
+        const timer = setTimeout(() => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          initializeLeafletMap((window as any).L)
+        }, 100)
+        return () => clearTimeout(timer)
       }
-    }, 100)
+    } else {
+      // Verificar que Google Maps esté realmente disponible
+      if (!window.google?.maps) {
+        setMapError(true)
+        setMapMode('manual')
+        return
+      }
 
-    return () => clearTimeout(timer)
-  }, [mapLoaded, mapMode, mapError])
-
-  // Reinicializar mapa cuando cambia a modo mapa
-  useEffect(() => {
-    if (mapMode === 'map' && mapLoaded && !mapError && window.google?.maps) {
+      // Pequeño delay para asegurar que el DOM esté listo
       const timer = setTimeout(() => {
         if (mapRef.current) {
           initializeMap()
         }
       }, 100)
+
       return () => clearTimeout(timer)
     }
-  }, [mapMode])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapLoaded, mapMode, mapError, usingLeaflet])
+
+  // Reinicializar mapa cuando cambia a modo mapa
+  useEffect(() => {
+    if (mapMode === 'map' && mapLoaded && !mapError) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (usingLeaflet && (window as any).L) {
+        const timer = setTimeout(() => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          initializeLeafletMap((window as any).L)
+        }, 100)
+        return () => clearTimeout(timer)
+      } else if (!usingLeaflet && window.google?.maps) {
+        const timer = setTimeout(() => {
+          if (mapRef.current) {
+            initializeMap()
+          }
+        }, 100)
+        return () => clearTimeout(timer)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapMode, mapLoaded, mapError, usingLeaflet])
 
   const reverseGeocode = (lat: number, lng: number) => {
     if (!geocoderRef.current) return
@@ -325,72 +514,32 @@ export function LocationPicker({
   }, [])
 
   const requestLocationPermission = () => {
-    // Verificar si el navegador bloquea los permisos
-    if (typeof navigator !== 'undefined' && navigator.permissions) {
-      navigator.permissions.query({ name: 'geolocation' as PermissionName }).then((result) => {
-        if (result.state === 'denied') {
-          // El permiso ya fue bloqueado permanentemente
-          setShowLocationPermissionRequest(true)
-          return
-        }
-        // Si no está bloqueado, mostrar el modal y luego solicitar
-        setShowLocationPermissionRequest(true)
-      }).catch(() => {
-        // Si no soporta Permissions API, mostrar modal de todas formas
-        setShowLocationPermissionRequest(true)
-      })
-    } else {
-      // Si no soporta Permissions API, mostrar modal de todas formas
-      setShowLocationPermissionRequest(true)
-    }
-  }
-
-  const handleAcceptLocationPermission = () => {
-    setShowLocationPermissionRequest(false)
     getCurrentLocation()
-  }
-
-  const handleDenyLocationPermission = () => {
-    setShowLocationPermissionRequest(false)
-    setLocationPermissionDenied(true)
   }
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert('Tu navegador no soporta geolocalización. Por favor selecciona la ubicación en el mapa.')
+      setErrorMessage('Tu navegador no soporta geolocalización. Por favor selecciona tu ubicación directamente en el mapa.')
       return
     }
 
     setGettingCurrentLocation(true)
     setLocationPermissionDenied(false)
-
-    // Timeout para detectar si el navegador no muestra el diálogo
-    let permissionTimeout: NodeJS.Timeout
-    let permissionShown = false
-
-    // Detectar si el navegador muestra el diálogo
-    const checkPermissionDialog = () => {
-      permissionTimeout = setTimeout(() => {
-        if (!permissionShown) {
-          // El navegador no mostró el diálogo, probablemente está bloqueado
-          setGettingCurrentLocation(false)
-          setLocationPermissionDenied(true)
-          setShowLocationPermissionRequest(true)
-        }
-      }, 500) // Esperar 500ms para ver si aparece el diálogo
-    }
-
-    checkPermissionDialog()
+    setErrorMessage(null)
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        clearTimeout(permissionTimeout)
-        permissionShown = true
         const lat = position.coords.latitude
         const lng = position.coords.longitude
 
         // Mover mapa a la ubicación actual
-        if (mapInstanceRef.current) {
+        if (usingLeaflet && leafletMapRef.current) {
+          leafletMapRef.current.setView([lat, lng], 15)
+          if (leafletMarkerRef.current) {
+            leafletMarkerRef.current.setLatLng([lat, lng])
+          }
+          reverseGeocodeNominatim(lat, lng)
+        } else if (mapInstanceRef.current) {
           mapInstanceRef.current.setCenter({ lat, lng })
           mapInstanceRef.current.setZoom(15)
 
@@ -416,30 +565,29 @@ export function LocationPicker({
           reverseGeocode(lat, lng)
         } else {
           // Si el mapa no está listo, solo actualizar coordenadas
-          onLocationChange(lat, lng, address || '')
+          if (usingLeaflet) {
+            reverseGeocodeNominatim(lat, lng)
+          } else {
+            onLocationChange(lat, lng, address || '')
+          }
         }
 
         setGettingCurrentLocation(false)
       },
       (error) => {
-        clearTimeout(permissionTimeout)
-        permissionShown = true
         setGettingCurrentLocation(false)
 
         switch (error.code) {
           case error.PERMISSION_DENIED:
             setLocationPermissionDenied(true)
-            // Mostrar instrucciones si el permiso fue bloqueado
-            setShowLocationPermissionRequest(true)
             break
           case error.POSITION_UNAVAILABLE:
-            alert('No pudimos obtener tu ubicación. Por favor selecciona la ubicación en el mapa.')
+            setErrorMessage('No pudimos determinar tu posición geográfica. Por favor selecciona en el mapa.')
             break
           case error.TIMEOUT:
-            alert('Tiempo de espera agotado. Por favor intenta de nuevo o selecciona en el mapa.')
+            setErrorMessage('Tiempo de espera agotado. Por favor intenta de nuevo o selecciona en el mapa.')
             break
           default:
-            // Solo loggear, no mostrar alert molesto
             console.warn('Error getting location:', {
               code: error.code,
               message: error.message,
@@ -521,135 +669,62 @@ export function LocationPicker({
             {gettingCurrentLocation ? 'Obteniendo ubicación...' : '📍 Usar mi ubicación actual'}
           </Button>
           
+          {errorMessage && (
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-3 text-xs text-red-800 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">error</span>
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           {locationPermissionDenied && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
-              <p className="text-xs text-yellow-800">
-                ⚠️ No se pudo obtener tu ubicación. Por favor selecciona en el mapa o escribe la dirección manualmente.
+            <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-left space-y-2">
+              <div className="flex items-center gap-2 text-orange-800 font-semibold">
+                <span className="material-symbols-outlined text-[20px]">location_disabled</span>
+                <span className="text-sm">Permisos de ubicación desactivados</span>
+              </div>
+              <p className="text-xs text-orange-700">
+                Tu navegador tiene bloqueado el acceso a tu ubicación. Mientras tanto, puedes:
               </p>
+              <ul className="text-xs text-orange-700 list-disc list-inside pl-1 space-y-1">
+                <li>Hacer clic o tocar en el mapa para marcar tu ubicación exacta.</li>
+                <li>Arrastrar el pin esmeralda para ajustar la posición.</li>
+                <li>Escribir tu dirección en el campo de texto de abajo.</li>
+              </ul>
+              <div className="pt-1.5 text-[11px] text-orange-600 border-t border-orange-200/60">
+                🔧 **Cómo activarlo:** Haz clic en el icono del candado 🔒 en la barra de direcciones del navegador, cambia &quot;Ubicación&quot; a &quot;Permitir&quot; y recarga la página.
+              </div>
             </div>
           )}
 
           {latitude && longitude && (
-            <p className="text-xs text-green-600">
+            <p className="text-xs text-green-600 font-medium">
               ✓ Ubicación seleccionada: {latitude.toFixed(6)}, {longitude.toFixed(6)}
             </p>
           )}
 
           <p className="text-xs text-gray-500">
-            Haz clic en el mapa para seleccionar la ubicación exacta de la tienda
+            Toca el mapa o arrastra el pin para seleccionar la ubicación exacta de entrega
           </p>
 
-          {/* Modal de solicitud de permiso */}
-          {showLocationPermissionRequest && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="location-permission-title">
-              <div className="bg-white rounded-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
-                <div className="text-center mb-4">
-                  <div className="text-4xl mb-3">📍</div>
-                  <h3 id="location-permission-title" className="text-lg font-semibold text-gray-900 mb-2">
-                    {locationPermissionDenied ? 'Permisos de ubicación bloqueados' : 'Acceso a tu ubicación'}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {locationPermissionDenied 
-                      ? 'Tu navegador ha bloqueado el acceso a tu ubicación.'
-                      : 'Denos acceso a tu ubicación para poder llevar de forma precisa tu pedido.'}
-                  </p>
-                  {locationPermissionDenied ? (
-                    <div className="mt-4 space-y-3">
-                      {/* Instrucciones para habilitar manualmente */}
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-left">
-                        <p className="text-sm text-orange-800 font-medium mb-2">
-                          🔧 Para habilitar tu ubicación:
-                        </p>
-                        <ol className="text-xs text-orange-700 space-y-1 list-decimal list-inside">
-                          <li>Haz clic en el icono de candado 🔒 en la barra de direcciones</li>
-                          <li>Busca &quot;Ubicación&quot; o &quot;Location&quot;</li>
-                          <li>Cambia a &quot;Permitir&quot; o &quot;Allow&quot;</li>
-                          <li>Recarga la página</li>
-                        </ol>
-                      </div>
-                      
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
-                        <p className="text-sm text-blue-800 font-medium mb-2">
-                          ✅ Mientras tanto, puedes:
-                        </p>
-                        <ul className="text-sm text-blue-700 space-y-1">
-                          <li>• Hacer clic en el mapa para seleccionar tu ubicación exacta</li>
-                          <li>• Arrastrar el marcador para ajustar la posición</li>
-                          <li>• Escribir la dirección manualmente si prefieres</li>
-                        </ul>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-500 mt-2">
-                      Tu ubicación nos ayuda a calcular la ruta exacta y asegurar que el repartidor llegue correctamente.
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-3">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    className="flex-1"
-                    onClick={handleDenyLocationPermission}
-                  >
-                    {locationPermissionDenied ? 'Usar mapa' : 'Cancelar'}
-                  </Button>
-                  {locationPermissionDenied ? (
-                    <Button
-                      type="button"
-                      className="flex-1"
-                      onClick={() => {
-                        setLocationPermissionDenied(false)
-                        setShowLocationPermissionRequest(false)
-                        getCurrentLocation()
-                      }}
-                    >
-                      🔄 Reintentar
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      className="flex-1"
-                      onClick={handleAcceptLocationPermission}
-                    >
-                      Permitir ubicación
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
         </div>
       )}
 
-      {/* Modo Manual o Fallback */}
-      {(mapMode === 'manual' || mapError) && (
-        <div className="space-y-4">
-          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary-fixed/50 flex items-center justify-center text-primary">
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
-              </div>
-              <div>
-                <h4 className="font-headline-sm text-headline-sm text-on-surface">Dirección de entrega</h4>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">Ingresa los detalles de tu ubicación</p>
-              </div>
-            </div>
-            
-            <div className="mt-2">
-              <input
-                type="text"
-                className="w-full bg-surface-container border border-outline-variant rounded-xl px-4 py-3 font-body-md text-on-surface outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-outline"
-                value={address}
-                onChange={(e) => onAddressChange(e.target.value)}
-                placeholder="Ej. Calle Principal 123, Apartamento 4B..."
-                required={required}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Entrada de dirección (Siempre visible y editable para que el usuario pueda completarla o escribirla) */}
+      <div className="mt-2">
+        <label className="block text-xs font-medium text-gray-500 mb-1">
+          {mapMode === 'map' && !mapError 
+            ? 'Dirección detectada (puedes completarla con departamento, edificio, etc.):' 
+            : 'Escribe tu dirección exacta:'}
+        </label>
+        <input
+          type="text"
+          className="w-full rounded-2xl border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition shadow-[0px_4px_12px_rgba(0,0,0,0.02)]"
+          value={address}
+          onChange={(e) => onAddressChange(e.target.value)}
+          placeholder="Ej. Av. de los Shyris 123 y Av. Naciones Unidas, Edificio X, Dpto 4B"
+          required={required}
+        />
+      </div>
     </div>
   )
 }
