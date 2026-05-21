@@ -29,9 +29,16 @@ export default function DriverLayout({ children }: { children: React.ReactNode }
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
             <span className="font-label-md text-label-md text-primary dark:text-primary-fixed-dim">Disponible</span>
+            <Link
+              href="/azul"
+              className="ml-2 text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-high flex items-center justify-center"
+              title="Ir a la Tienda"
+            >
+              <span className="material-symbols-outlined text-[20px]">home</span>
+            </Link>
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}
-              className="ml-2 text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-container"
+              className="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-container flex items-center justify-center"
               title="Cerrar sesión"
             >
               <span className="material-symbols-outlined text-[20px]">logout</span>

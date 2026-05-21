@@ -13,10 +13,10 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
 
   const navItems = [
-    { href: '/vendor', icon: 'dashboard', label: 'Dashboard' },
-    { href: '/vendor/orders', icon: 'package_2', label: 'Orders' },
-    { href: '/vendor/products', icon: 'inventory_2', label: 'Inventory' },
-    { href: '/vendor/settings', icon: 'settings', label: 'Settings' },
+    { href: '/vendor', icon: 'dashboard', label: 'Panel' },
+    { href: '/vendor/orders', icon: 'package_2', label: 'Pedidos' },
+    { href: '/vendor/products', icon: 'inventory_2', label: 'Inventario' },
+    { href: '/vendor/settings', icon: 'settings', label: 'Configuración' },
   ]
 
   return (
@@ -49,8 +49,8 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
             <div className="w-12 h-12 rounded-lg mb-2 bg-primary flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-3xl">storefront</span>
             </div>
-            <h2 className="font-headline-sm text-headline-sm font-bold text-primary">BlueExpress Vendor</h2>
-            <p className="text-body-sm text-secondary">Manage your store</p>
+            <h2 className="font-headline-sm text-headline-sm font-bold text-primary">BlueExpress Vendedor</h2>
+            <p className="text-body-sm text-secondary">Gestiona tu tienda</p>
           </div>
 
           <nav className="flex-1 space-y-1">
@@ -69,8 +69,26 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
               )
             })}
           </nav>
-          <div className="mt-auto p-2 border-t border-outline-variant">
-            <span className="text-label-md font-label-md text-outline">v2.1.0</span>
+          
+          <div className="mt-auto flex flex-col gap-1 border-t border-outline-variant pt-4">
+            <Link
+              href="/azul"
+              onClick={() => setIsSidebarOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all active:scale-95 font-medium"
+            >
+              <span className="material-symbols-outlined">home</span>
+              <span>Ir a la Tienda</span>
+            </Link>
+            <button
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              className="flex items-center gap-3 p-3 rounded-lg text-error hover:bg-error-container/30 transition-all active:scale-95 font-bold w-full text-left"
+            >
+              <span className="material-symbols-outlined">logout</span>
+              <span>Cerrar Sesión</span>
+            </button>
+            <div className="p-2">
+              <span className="text-label-md font-label-md text-outline">v2.1.0</span>
+            </div>
           </div>
         </aside>
 

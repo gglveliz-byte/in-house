@@ -22,7 +22,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
     switch (user.role) {
       case 'SUPER_ADMIN':
         return [
-          { href: '/superadmin', label: 'Dashboard', icon: '📊' },
+          { href: '/superadmin', label: 'Panel', icon: '📊' },
           { href: '/superadmin/zones', label: 'Zonas', icon: '🗺️' },
           { href: '/superadmin/admins', label: 'Admins', icon: '👥' },
           { href: '/superadmin/billing', label: 'Facturación', icon: '💰' },
@@ -30,7 +30,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
         ]
       case 'ADMIN':
         return [
-          { href: '/admin', label: 'Dashboard', icon: '📊' },
+          { href: '/admin', label: 'Panel', icon: '📊' },
           { href: '/admin/stores', label: 'Tiendas', icon: '🏪' },
           { href: '/admin/users', label: 'Usuarios', icon: '👥' },
           { href: '/admin/orders', label: 'Pedidos', icon: '📦' },
@@ -117,6 +117,14 @@ export function DashboardNav({ user }: DashboardNavProps) {
               <p className="text-sm font-semibold text-gray-900">{user.name}</p>
               <p className="text-xs text-gray-500">{getRoleLabel()}</p>
             </div>
+            <Link
+              href="/azul"
+              className="text-sm text-[#003f87] hover:text-[#003f87]/80 px-3 py-1.5 rounded-lg hover:bg-gray-100 border border-gray-200 transition-all duration-200 font-medium flex items-center gap-1.5"
+              title="Ir a la Tienda de Clientes"
+            >
+              <span>🏪</span>
+              <span className="hidden md:inline">Ver Tienda</span>
+            </Link>
             <button
               onClick={async () => {
                 try {
