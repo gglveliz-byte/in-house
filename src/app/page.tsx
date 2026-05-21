@@ -110,21 +110,21 @@ export default function BlueExpressArtisanalLanding() {
 
       {/* Header / Premium Glassmorphic Navbar */}
       <header className="bg-[#0b0f19]/80 backdrop-blur-lg border-b border-slate-800/80 sticky top-0 z-50 w-full transition-all">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex justify-between items-center">
           
           {/* Logo with Tech Vibe */}
-          <div className="flex items-center gap-3 group cursor-pointer">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#003f87] to-blue-600 flex items-center justify-center text-white shadow-[0px_8px_24px_rgba(0,63,135,0.4)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0px_8px_32px_rgba(0,63,135,0.6)] border border-blue-400/20">
-              <Bike className="w-6 h-6 animate-pulse" />
+          <div className="flex items-center gap-2 sm:gap-3 group cursor-pointer">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#003f87] to-blue-600 flex items-center justify-center text-white shadow-[0px_8px_24px_rgba(0,63,135,0.4)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0px_8px_32px_rgba(0,63,135,0.6)] border border-blue-400/20">
+              <Bike className="w-5 h-5 sm:w-6 sm:h-6 animate-pulse" />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-black text-white tracking-tight flex items-center gap-1.5">
+              <span className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-1.5">
                 BlueExpress
                 <span className="bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 text-[9px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">
                   LIVE
                 </span>
               </span>
-              <span className="text-[9px] text-slate-400 tracking-widest font-black uppercase">LOGÍSTICA URBANA E2E</span>
+              <span className="text-[9px] text-slate-400 tracking-widest font-black uppercase hidden sm:block">LOGÍSTICA URBANA E2E</span>
             </div>
           </div>
 
@@ -137,7 +137,7 @@ export default function BlueExpressArtisanalLanding() {
           </nav>
 
           {/* Action Links */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <LinkComponent 
               href="/login" 
               className="hidden sm:flex text-slate-300 font-bold text-sm hover:text-white hover:bg-slate-800/60 border border-slate-800/80 px-4 py-2 rounded-full transition-all"
@@ -146,10 +146,10 @@ export default function BlueExpressArtisanalLanding() {
             </LinkComponent>
             <LinkComponent 
               href="/azul" 
-              className="bg-gradient-to-r from-[#003f87] to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white font-bold text-sm px-6 py-3 rounded-full shadow-[0px_10px_24px_rgba(0,63,135,0.3)] hover:scale-[1.03] active:scale-95 transition-all flex items-center gap-2 border border-blue-400/20"
+              className="bg-gradient-to-r from-[#003f87] to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white font-bold text-xs sm:text-sm px-4 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-[0px_10px_24px_rgba(0,63,135,0.3)] hover:scale-[1.03] active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 border border-blue-400/20"
             >
               Pedir Ahora
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </LinkComponent>
           </div>
         </div>
@@ -216,7 +216,7 @@ export default function BlueExpressArtisanalLanding() {
             )}
 
             {/* Quick stats grid */}
-            <div className="grid grid-cols-3 gap-8 sm:gap-12 border-t border-slate-800 pt-8 w-full max-w-lg lg:max-w-none text-left">
+            <div className="grid grid-cols-3 gap-3 sm:gap-12 border-t border-slate-800 pt-8 w-full max-w-lg lg:max-w-none text-left">
               <div>
                 <h3 className="text-2xl font-black text-white flex items-center gap-1">
                   18m <Sparkles className="w-4 h-4 text-teal-400" />
@@ -400,7 +400,7 @@ export default function BlueExpressArtisanalLanding() {
             </div>
 
             {/* Premium Absolute Float Badges */}
-            <div className="absolute top-1/4 right-0 lg:-right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-800 p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-float max-w-[190px] z-20">
+            <div className="hidden sm:flex absolute top-1/4 right-0 lg:-right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-800 p-4 rounded-2xl shadow-2xl items-center gap-3 animate-float max-w-[190px] z-20">
               <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
                 <Lock className="w-4 h-4" />
               </div>
@@ -410,7 +410,7 @@ export default function BlueExpressArtisanalLanding() {
               </div>
             </div>
 
-            <div className="absolute bottom-1/4 left-0 lg:-left-4 bg-slate-900/90 backdrop-blur-sm border border-slate-800 p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-float max-w-[190px] z-20" style={{ animationDelay: '2s' }}>
+            <div className="hidden sm:flex absolute bottom-1/4 left-0 lg:-left-4 bg-slate-900/90 backdrop-blur-sm border border-slate-800 p-4 rounded-2xl shadow-2xl items-center gap-3 animate-float max-w-[190px] z-20" style={{ animationDelay: '2s' }}>
               <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
@@ -438,7 +438,7 @@ export default function BlueExpressArtisanalLanding() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Step 1: Client */}
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-8 hover:border-blue-500/30 transition-all group relative">
+            <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-5 sm:p-8 hover:border-blue-500/30 transition-all group relative">
               <div className="absolute top-4 right-4 text-5xl font-black text-slate-800/60">01</div>
               <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-8 border border-blue-500/20">
                 <ShoppingBag className="w-5 h-5" />
@@ -453,7 +453,7 @@ export default function BlueExpressArtisanalLanding() {
             </div>
 
             {/* Step 2: Vendor */}
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-8 hover:border-orange-500/30 transition-all group relative">
+            <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-5 sm:p-8 hover:border-orange-500/30 transition-all group relative">
               <div className="absolute top-4 right-4 text-5xl font-black text-slate-800/60">02</div>
               <div className="w-12 h-12 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mb-8 border border-orange-500/20">
                 <UtensilsCrossed className="w-5 h-5" />
@@ -468,7 +468,7 @@ export default function BlueExpressArtisanalLanding() {
             </div>
 
             {/* Step 3: Driver */}
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-8 hover:border-emerald-500/30 transition-all group relative">
+            <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-5 sm:p-8 hover:border-emerald-500/30 transition-all group relative">
               <div className="absolute top-4 right-4 text-5xl font-black text-slate-800/60">03</div>
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-8 border border-emerald-500/20">
                 <Bike className="w-5 h-5" />
@@ -497,7 +497,7 @@ export default function BlueExpressArtisanalLanding() {
             <p className="text-slate-400 mt-4 text-base">Ajusta los sliders según tu volumen proyectado para calcular tus ingresos netos mensuales.</p>
           </div>
 
-          <div className="bg-[#0e1424] rounded-3xl border border-slate-800 p-8 md:p-12 flex flex-col lg:flex-row items-center gap-12">
+          <div className="bg-[#0e1424] rounded-3xl border border-slate-800 p-5 sm:p-8 md:p-12 flex flex-col lg:flex-row items-center gap-12">
             
             {/* Left: Interactive Controls */}
             <div className="flex-1 space-y-8 w-full">
@@ -574,7 +574,7 @@ export default function BlueExpressArtisanalLanding() {
             </div>
 
             {/* Right: Custom dynamic meter visual */}
-            <div className="w-full lg:w-[350px] bg-gradient-to-br from-[#003f87] to-slate-950 text-white rounded-3xl p-8 border border-slate-800 flex flex-col justify-between min-h-[320px] shadow-2xl relative overflow-hidden">
+            <div className="w-full lg:w-[350px] bg-gradient-to-br from-[#003f87] to-slate-950 text-white rounded-3xl p-5 sm:p-8 border border-slate-800 flex flex-col justify-between min-h-[320px] shadow-2xl relative overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.04),transparent)] pointer-events-none"></div>
 
               <div>
@@ -632,7 +632,7 @@ export default function BlueExpressArtisanalLanding() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Tech 1 */}
-            <div className="md:col-span-2 bg-slate-900/40 border border-slate-800 rounded-3xl p-8 hover:border-slate-700 transition-all flex flex-col justify-between">
+            <div className="md:col-span-2 bg-slate-900/40 border border-slate-800 rounded-3xl p-5 sm:p-8 hover:border-slate-700 transition-all flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-6">
                   <TrendingUp className="w-6 h-6" />
@@ -649,7 +649,7 @@ export default function BlueExpressArtisanalLanding() {
             </div>
 
             {/* Tech 2 */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 hover:border-slate-700 transition-all flex flex-col justify-between">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-5 sm:p-8 hover:border-slate-700 transition-all flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mb-6">
                   <MapPin className="w-6 h-6" />
@@ -663,7 +663,7 @@ export default function BlueExpressArtisanalLanding() {
             </div>
 
             {/* Tech 3 */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 hover:border-slate-700 transition-all flex flex-col justify-between">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-5 sm:p-8 hover:border-slate-700 transition-all flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-6">
                   <Shield className="w-6 h-6" />
@@ -677,7 +677,7 @@ export default function BlueExpressArtisanalLanding() {
             </div>
 
             {/* Tech 4 */}
-            <div className="md:col-span-2 bg-slate-900/40 border border-slate-800 rounded-3xl p-8 hover:border-slate-700 transition-all flex flex-col justify-between">
+            <div className="md:col-span-2 bg-slate-900/40 border border-slate-800 rounded-3xl p-5 sm:p-8 hover:border-slate-700 transition-all flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center mb-6">
                   <Smartphone className="w-6 h-6" />
@@ -718,9 +718,9 @@ export default function BlueExpressArtisanalLanding() {
                 >
                   <button
                     onClick={() => setActiveFaq(isOpen ? null : index)}
-                    className="w-full p-6 text-left flex justify-between items-center font-bold text-white text-sm sm:text-base gap-4 hover:bg-slate-800/30 transition-colors"
+                    className="w-full p-4 sm:p-6 text-left flex justify-between items-center font-bold text-white text-sm sm:text-base gap-4 hover:bg-slate-800/30 transition-colors"
                   >
-                    <span className="flex items-center gap-3">
+                    <span className="flex items-center gap-2 sm:gap-3">
                       <HelpCircle className="w-5 h-5 text-blue-400 shrink-0" />
                       {faq.q}
                     </span>
@@ -729,7 +729,7 @@ export default function BlueExpressArtisanalLanding() {
                   
                   {/* Dynamic Slide Transition */}
                   <div 
-                    className={`transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 border-t border-slate-800/80 p-6 bg-slate-950/20' : 'max-h-0 opacity-0 pointer-events-none'}`}
+                    className={`transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 border-t border-slate-800/80 p-4 sm:p-6 bg-slate-950/20' : 'max-h-0 opacity-0 pointer-events-none'}`}
                   >
                     <p className="text-slate-400 text-sm leading-relaxed">{faq.a}</p>
                   </div>
