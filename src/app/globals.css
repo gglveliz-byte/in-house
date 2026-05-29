@@ -31,10 +31,13 @@
     --font-family-main: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
-html, body {
+html {
+  scroll-behavior: smooth;
+}
+
+body {
   overflow-x: hidden;
   max-width: 100%;
-  overscroll-behavior-y: contain; /* Evita rebote elástico en PWA móvil */
 }
 
 @media (min-width: 768px) {
