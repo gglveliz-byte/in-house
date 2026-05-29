@@ -32,12 +32,35 @@ export default function BlueExpressArtisanalLanding() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.user?.role) {
-      if (['SUPER_ADMIN', 'ADMIN', 'VENDOR', 'DRIVER'].includes(session.user.role)) {
-        router.replace('/dashboard');
-      } else {
+    // Detectar si la aplicación se ejecuta como PWA instalada (standalone)
+    const isStandalone = 
+      typeof window !== 'undefined' && (
+        window.matchMedia('(display-mode: standalone)').matches || 
+        (window.navigator as any).standalone
+      );
+
+    if (isStandalone) {
+      if (status === 'authenticated' && session?.user?.role) {
+        const role = session.user.role;
+        if (role === 'SUPER_ADMIN') router.replace('/superadmin');
+        else if (role === 'ADMIN') router.replace('/admin');
+        else if (role === 'VENDOR') router.replace('/vendor');
+        else if (role === 'DRIVER') router.replace('/driver/active');
+        else router.replace('/azul');
+      } else if (status === 'unauthenticated') {
         router.replace('/azul');
       }
+      return;
+    }
+
+    // Comportamiento normal en navegador web (redirigir al panel si ya está logueado)
+    if (status === 'authenticated' && session?.user?.role) {
+      const role = session.user.role;
+      if (role === 'SUPER_ADMIN') router.replace('/superadmin');
+      else if (role === 'ADMIN') router.replace('/admin');
+      else if (role === 'VENDOR') router.replace('/vendor');
+      else if (role === 'DRIVER') router.replace('/driver/active');
+      else router.replace('/azul');
     }
   }, [session, status, router]);
 
