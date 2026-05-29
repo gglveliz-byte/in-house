@@ -15,7 +15,7 @@ export default function BlueExpressArtisanalLanding() {
     const isStandalone = 
       typeof window !== 'undefined' && (
         window.matchMedia('(display-mode: standalone)').matches || 
-        (window.navigator as any).standalone
+        (window.navigator as unknown as { standalone?: boolean }).standalone
       )
 
     if (isStandalone) {
@@ -284,7 +284,7 @@ export default function BlueExpressArtisanalLanding() {
                     <span key={i} className="material-symbols-outlined font-fill text-[20px]">star</span>
                   ))}
                 </div>
-                <p className="text-sm text-[#43474f] mb-6 italic leading-relaxed">"Increíble la rapidez. Pedí una hamburguesa y llegó en menos de 20 minutos, caliente y fresca."</p>
+                <p className="text-sm text-[#43474f] mb-6 italic leading-relaxed">&quot;Increíble la rapidez. Pedí una hamburguesa y llegó en menos de 20 minutos, caliente y fresca.&quot;</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#eceef0]"></div>
                   <div>
@@ -299,7 +299,7 @@ export default function BlueExpressArtisanalLanding() {
                     <span key={i} className="material-symbols-outlined font-fill text-[20px]">star</span>
                   ))}
                 </div>
-                <p className="text-sm text-[#43474f] mb-6 italic leading-relaxed">"La app es súper fácil de usar y el rastreo en vivo me da mucha tranquilidad. El mejor servicio de logística."</p>
+                <p className="text-sm text-[#43474f] mb-6 italic leading-relaxed">&quot;La app es súper fácil de usar y el rastreo en vivo me da mucha tranquilidad. El mejor servicio de logística.&quot;</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#eceef0]"></div>
                   <div>
@@ -315,7 +315,7 @@ export default function BlueExpressArtisanalLanding() {
                   ))}
                   <span className="material-symbols-outlined text-[20px]">star</span>
                 </div>
-                <p className="text-sm text-[#43474f] mb-6 italic leading-relaxed">"Como repartidor, me encanta la flexibilidad de horarios. Los pagos son semanales y puntuales."</p>
+                <p className="text-sm text-[#43474f] mb-6 italic leading-relaxed">&quot;Como repartidor, me encanta la flexibilidad de horarios. Los pagos son semanales y puntuales.&quot;</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#eceef0]"></div>
                   <div>
