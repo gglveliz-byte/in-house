@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const role = searchParams.get('role')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
+    const skip = (page - 1) * limit
 
     // Obtener sesión para filtrar por zona si es admin
     const session = await getServerSession(authOptions)
@@ -46,29 +49,55 @@ export async function GET(request: NextRequest) {
       delete where.role
     }
 
-    const users = await prisma.user.findMany({
-      where: Object.keys(where).length > 0 ? where : undefined,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        phone: true,
-        createdAt: true,
-        zoneId: true,
-        stores: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            zoneId: true,
-          },
+    const userSelect = {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      phone: true,
+      createdAt: true,
+      zoneId: true,
+      stores: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          zoneId: true,
         },
       },
-      orderBy: { createdAt: 'desc' },
-    })
+    }
 
-    return NextResponse.json(users)
+    if (searchParams.has('page') || searchParams.has('limit')) {
+      const [users, total] = await Promise.all([
+        prisma.user.findMany({
+          where: Object.keys(where).length > 0 ? where : undefined,
+          select: userSelect,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        }),
+        prisma.user.count({
+          where: Object.keys(where).length > 0 ? where : undefined,
+        }),
+      ])
+
+      return NextResponse.json({
+        data: users,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      })
+    } else {
+      const users = await prisma.user.findMany({
+        where: Object.keys(where).length > 0 ? where : undefined,
+        select: userSelect,
+        orderBy: { createdAt: 'desc' },
+      })
+      return NextResponse.json(users)
+    }
   } catch (error) {
     console.error('Error fetching users:', error)
     return NextResponse.json({ error: 'Error al obtener usuarios' }, { status: 500 })

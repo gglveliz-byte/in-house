@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -52,6 +54,15 @@ export async function POST(request: NextRequest) {
     // Validar folder permitidos
     const allowedFolders = ['products', 'stores', 'payments', 'general', 'banners', 'logos']
     const safeFolder = allowedFolders.includes(folder) ? folder : 'general'
+
+    // Proteger carpetas administrativas (solo VENDOR, ADMIN, SUPER_ADMIN)
+    const adminFolders = ['products', 'stores', 'banners', 'logos']
+    if (adminFolders.includes(safeFolder)) {
+      const session = await getServerSession(authOptions)
+      if (!session || !['VENDOR', 'ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
+        return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+      }
+    }
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)

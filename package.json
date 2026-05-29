@@ -7,13 +7,17 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "reset-password": "tsx scripts/reset-password.ts",
     "list-users": "tsx scripts/list-users.ts",
-    "db:clean": "tsx scripts/clean-database.ts"
+    "db:clean": "tsx scripts/clean-database.ts",
+    "scan:routes": "tsx scripts/scan-next-routes.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -47,6 +51,9 @@
     "pg": "^8.17.2",
     "postcss": "^8.4.0",
     "prisma": "^5.22.0",
+    "vitest": "^1.0.0",
+    "jsdom": "^21.1.0",
+    "@testing-library/react": "^13.0.0",
     "tailwindcss": "^3.4.0",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0"

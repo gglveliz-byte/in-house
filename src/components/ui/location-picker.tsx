@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Button } from './button'
+import { loadGoogleMaps, loadLeaflet } from '@/lib/google-maps'
 
 // Declarar el tipo global para Google Maps
 declare global {
@@ -23,128 +24,9 @@ interface LocationPickerProps {
   defaultLongitude?: number // Ubicación predeterminada de la zona
 }
 
-// Variable global para rastrear si el script ya se está cargando
-let googleMapsLoading = false
-let googleMapsLoadPromise: Promise<void> | null = null
-
 // Función para cargar Google Maps de forma global (solo una vez)
-function loadGoogleMaps(): Promise<void> {
-  // Si ya está cargado, retornar promesa resuelta
-  if (typeof window !== 'undefined' && window.google?.maps) {
-    return Promise.resolve()
-  }
-
-  // Si ya se está cargando, retornar la promesa existente
-  if (googleMapsLoading && googleMapsLoadPromise) {
-    return googleMapsLoadPromise
-  }
-
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-
-  if (!apiKey) {
-    return Promise.reject(new Error('Google Maps API key no configurada'))
-  }
-
-  // Verificar si ya existe el script en el DOM
-  const existingScript = document.querySelector(
-    `script[src*="maps.googleapis.com/maps/api/js"]`
-  )
-
-  if (existingScript) {
-    // Si el script existe, esperar a que cargue
-    googleMapsLoading = true
-    googleMapsLoadPromise = new Promise((resolve, reject) => {
-      const checkLoaded = () => {
-        if (window.google?.maps) {
-          googleMapsLoading = false
-          resolve()
-        } else {
-          setTimeout(checkLoaded, 100)
-        }
-      }
-      checkLoaded()
-      // Timeout después de 10 segundos
-      setTimeout(() => {
-        if (!window.google?.maps) {
-          googleMapsLoading = false
-          reject(new Error('Timeout cargando Google Maps'))
-        }
-      }, 10000)
-    })
-    return googleMapsLoadPromise
-  }
-
-  // Crear nuevo script
-  googleMapsLoading = true
-  googleMapsLoadPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script')
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`
-    script.async = true
-    script.defer = true
-    script.id = 'google-maps-script'
-
-    script.onload = () => {
-      googleMapsLoading = false
-      resolve()
-    }
-
-    script.onerror = () => {
-      googleMapsLoading = false
-      googleMapsLoadPromise = null
-      reject(new Error('Error cargando Google Maps'))
-    }
-
-    document.head.appendChild(script)
-  })
-
-  return googleMapsLoadPromise
-}
-
-// Variable global para rastrear si Leaflet se está cargando
-let leafletLoading = false
-let leafletLoadPromise: Promise<void> | null = null
-
-// Función para cargar Leaflet de forma global (solo una vez)
-function loadLeaflet(): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if (typeof window !== 'undefined' && (window as any).L) {
-    return Promise.resolve()
-  }
-
-  if (leafletLoading && leafletLoadPromise) {
-    return leafletLoadPromise
-  }
-
-  leafletLoading = true
-  leafletLoadPromise = new Promise((resolve, reject) => {
-    try {
-      // Cargar CSS
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-      document.head.appendChild(link)
-
-      // Cargar JS
-      const script = document.createElement('script')
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-      script.async = true
-      script.onload = () => {
-        leafletLoading = false
-        resolve()
-      }
-      script.onerror = () => {
-        leafletLoading = false
-        leafletLoadPromise = null
-        reject(new Error('Error cargando Leaflet'))
-      }
-      document.head.appendChild(script)
-    } catch (e) {
-      reject(e)
-    }
-  })
-
-  return leafletLoadPromise
-}
+// y usar Leaflet como fallback premium.
+// Las implementaciones reales están externalizadas para poder testearlas.
 
 export function LocationPicker({
   address,

@@ -128,13 +128,15 @@ function LoginForm({ formData, setFormData }: LoginFormProps) {
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' })
 
+  const router = useRouter()
+
   const handleRoleSelect = (role: string) => {
-    if (role === 'Vendedor') {
+    if (role === 'Comprador') {
+      router.push('/azul')
+    } else if (role === 'Vendedor') {
       setFormData({ email: 'vendor@demo.com', password: 'Vendor2024!' })
     } else if (role === 'Repartidor') {
       setFormData({ email: 'driver@demo.com', password: 'Driver2024!' })
-    } else if (role === 'Administrador') {
-      setFormData({ email: 'lveliz213@hotmail.com', password: '20021985FreeS@IN-HOUSE' })
     }
   }
 
@@ -175,9 +177,9 @@ export default function LoginPage() {
         {/* Role indicators */}
         <div className="mt-6 grid grid-cols-3 gap-3">
           {[
+            { icon: 'shopping_bag', label: 'Comprador', color: 'text-emerald-500' },
             { icon: 'store', label: 'Vendedor', color: 'text-primary' },
             { icon: 'two_wheeler', label: 'Repartidor', color: 'text-secondary' },
-            { icon: 'admin_panel_settings', label: 'Administrador', color: 'text-on-surface-variant' },
           ].map(({ icon, label, color }) => (
             <button
               key={label}

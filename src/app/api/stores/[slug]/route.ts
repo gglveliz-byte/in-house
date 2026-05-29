@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/stores/[slug] - Obtener tienda por slug o ID con productos
@@ -95,9 +97,6 @@ export async function PATCH(
   try {
     const { slug } = await params
     const body = await request.json()
-    
-    const { getServerSession } = await import('next-auth')
-    const { authOptions } = await import('@/lib/auth')
     const session = await getServerSession(authOptions)
 
     if (!session) {

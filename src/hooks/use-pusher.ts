@@ -5,9 +5,21 @@ import Pusher from 'pusher-js'
 import { CHANNELS, EVENTS, ORDER_STATUS_NOTIFICATIONS } from '@/lib/pusher'
 
 let pusherInstance: Pusher | null = null
+let __TEST_PUSHER_FACTORY: (() => Pusher | null) | null = null
+
+export function __setPusherFactory(factory: (() => Pusher | null) | null) {
+  __TEST_PUSHER_FACTORY = factory
+  pusherInstance = null
+}
 
 function getPusherInstance(): Pusher | null {
   if (typeof window === 'undefined') return null
+
+  // Allow tests to inject a custom Pusher instance
+  if (__TEST_PUSHER_FACTORY) {
+    if (!pusherInstance) pusherInstance = __TEST_PUSHER_FACTORY()
+    return pusherInstance
+  }
 
   const key = process.env.NEXT_PUBLIC_PUSHER_KEY
   const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER

@@ -10,6 +10,9 @@ export async function GET(request: NextRequest) {
     const onlyOpen = searchParams.get('onlyOpen') === 'true'
     const zoneId = searchParams.get('zoneId')
     const query = searchParams.get('query')?.trim()
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
+    const skip = (page - 1) * limit
 
     // Obtener sesión para filtrar por zona si es admin
     const session = await getServerSession(authOptions)
@@ -33,56 +36,82 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    const stores = await prisma.store.findMany({
-      where: Object.keys(where).length > 0 ? where : undefined,
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        logo: true,
-        banner: true,
-        whatsapp: true,
-        address: true,
-        latitude: true,
-        longitude: true,
-        isOpen: true,
-        minOrder: true,
-        deliveryFee: true,
-        minDeliveryFee: true,
-        maxDeliveryFee: true,
-        zoneId: true,
-        zone: { select: { currency: true } },
-        ownerId: true,
-        ...(session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN'
-          ? {
-              owner: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                },
+    const storeSelect = {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
+      logo: true,
+      banner: true,
+      whatsapp: true,
+      address: true,
+      latitude: true,
+      longitude: true,
+      isOpen: true,
+      minOrder: true,
+      deliveryFee: true,
+      minDeliveryFee: true,
+      maxDeliveryFee: true,
+      zoneId: true,
+      zone: { select: { currency: true } },
+      ownerId: true,
+      ...(session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN'
+        ? {
+            owner: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
               },
-            }
-          : {
-              owner: {
-                select: {
-                  id: true,
-                  name: true,
-                },
+            },
+          }
+        : {
+            owner: {
+              select: {
+                id: true,
+                name: true,
               },
-            }),
-        _count: {
-          select: {
-            products: true,
-            orders: true,
-          },
+            },
+          }),
+      _count: {
+        select: {
+          products: true,
+          orders: true,
         },
       },
-      orderBy: { name: 'asc' },
-    })
+    }
 
-    return NextResponse.json(stores)
+    if (searchParams.has('page') || searchParams.has('limit')) {
+      const [stores, total] = await Promise.all([
+        prisma.store.findMany({
+          where: Object.keys(where).length > 0 ? where : undefined,
+          select: storeSelect,
+          orderBy: { name: 'asc' },
+          skip,
+          take: limit,
+        }),
+        prisma.store.count({
+          where: Object.keys(where).length > 0 ? where : undefined,
+        }),
+      ])
+
+      return NextResponse.json({
+        data: stores,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      })
+    } else {
+      const stores = await prisma.store.findMany({
+        where: Object.keys(where).length > 0 ? where : undefined,
+        select: storeSelect,
+        orderBy: { name: 'asc' },
+      })
+      return NextResponse.json(stores)
+    }
   } catch (error) {
     console.error('Error fetching stores:', error)
     return NextResponse.json({ error: 'Error al obtener tiendas' }, { status: 500 })

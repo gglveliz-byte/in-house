@@ -1,0 +1,97 @@
+flowchart TD
+  n0[Inicio]
+  n1[Recolección de Requisitos]
+  n2[Identificar módulos: auth, carrito, pagos, admin]
+  n3[Documentar requisitos en PRD.md / README.md]
+  n4["Checkpoint: Validación de requisitos\n(PRD.md + issues)"]
+  n5[Cómo ayuda GitHub Copilot:\n• Redacta PRD/README\n• Propone módulos y criterios]
+  n6[Análisis y Diseño]
+  n7["Modelar rutas/pantallas:\nsrc/app/(dashboard),(public), login, reset-password"]
+  n8[Definir DB en schema.prisma]
+  n9[Diseñar componentes:\nsrc/components/cart, dashboard, ui]
+  n10[Checkpoint: Revisión de arquitectura y diseño]
+  n11[Cómo ayuda GitHub Copilot:\n• Sugiere estructura y rutas\n• Genera modelos Prisma\n• Propone componentes/props]
+  n12[Planificación]
+  n13[Dividir tareas por carpetas:\nscreens, components, lib, hooks]
+  n14[Crear issues/tareas por funcionalidad]
+  n15["Checkpoint: Backlog listo (issues priorizados)"]
+  n16[Cómo ayuda GitHub Copilot:\n• Desglosa tareas\n• Plantillas para issues/checklist]
+  n17[Desarrollo]
+  n18["Implementar pantallas en src/screens y src/app (ej: login)"]
+  n19["Crear hooks reutilizables en src/hooks (ej: use-pusher.ts)"]
+  n20["Lógica de negocio en src/lib\n(order-transitions.ts, billing.ts)"]
+  n21[Git: ramas feature + commits]
+  n22["Checkpoint: Revisión de código (pull requests)"]
+  n23[Cómo ayuda GitHub Copilot:\n• Sugerencias/refactor\n• Acelera hooks/lib\n• Mensajes de commit/PR]
+  n24[Pruebas]
+  n25[Unit tests para hooks y src/lib]
+  n26[Integración para endpoints en src/app/api]
+  n27[Automatizar en scripts/ + CI]
+  n28["Checkpoint: Pruebas automatizadas\n(unitarias + integración)"]
+  n29[Cómo ayuda GitHub Copilot:\n• Genera tests/mocks\n• Casos borde\n• Scripts/CI]
+  n30[Revisión y Validación]
+  n31[Code review en PRs]
+  n32[Validar cumplimiento de PRD.md]
+  n33[Documentar cambios:\nREADME.md + comentarios]
+  n34["Checkpoint: Documentación actualizada\n(README + comentarios)"]
+  n35[Cómo ayuda GitHub Copilot:\n• Sugerencias en review\n• Mejora legibilidad\n• Docstrings/comentarios]
+  n36[Despliegue]
+  n37["Configurar Vercel (vercel.json)"]
+  n38[Monitorear logs/errores post-lanzamiento]
+  n39[Checkpoint: Checklist de despliegue OK]
+  n40[Cómo ayuda GitHub Copilot:\n• Genera config/scripts\n• Interpreta logs y propone fixes]
+  n41[Mantenimiento y Mejora Continua]
+  n42[Corregir bugs + actualizar dependencias]
+  n43[Nuevas funcionalidades según feedback]
+  n44[Mantener documentación y scripts]
+  n45[Checkpoint: Feedback de usuarios/stakeholders incorporado]
+  n46[Cómo ayuda GitHub Copilot:\n• Refactors seguros\n• Sugerencias de upgrade\n• Automatiza tareas repetitivas]
+  n47[Resultado: Release estable + mejora continua]
+
+  n0 --> n1
+  n1 --> n2
+  n2 --> n3
+  n3 --> n4
+  n1 --> n5
+  n4 --> n6
+  n6 --> n7
+  n7 --> n8
+  n8 --> n9
+  n9 --> n10
+  n6 --> n11
+  n10 --> n12
+  n12 --> n13
+  n13 --> n14
+  n14 --> n15
+  n12 --> n16
+  n15 --> n17
+  n17 --> n18
+  n18 --> n19
+  n19 --> n20
+  n20 --> n21
+  n21 --> n22
+  n17 --> n23
+  n22 --> n24
+  n24 --> n25
+  n25 --> n26
+  n26 --> n27
+  n27 --> n28
+  n24 --> n29
+  n28 --> n30
+  n30 --> n31
+  n31 --> n32
+  n32 --> n33
+  n33 --> n34
+  n30 --> n35
+  n34 --> n36
+  n36 --> n37
+  n37 --> n38
+  n38 --> n39
+  n36 --> n40
+  n39 --> n41
+  n41 --> n42
+  n42 --> n43
+  n43 --> n44
+  n44 --> n45
+  n41 --> n46
+  n45 --> n47

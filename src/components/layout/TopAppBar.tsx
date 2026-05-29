@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useNotificationPermission } from '@/hooks/use-pusher';
 
 export interface Zone {
   id: string;
@@ -13,6 +16,28 @@ interface TopAppBarProps {
 }
 
 export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone = '', onZoneChange }) => {
+  const { permission, requestPermission } = useNotificationPermission();
+
+  const handleNotificationClick = async () => {
+    try {
+      const result = await requestPermission();
+      if (result === 'granted') {
+        if ('Notification' in window) {
+          new Notification('🔔 Notificaciones Activadas', {
+            body: '¡Todo listo! Recibirás avisos en tiempo real sobre tus pedidos en BlueExpress.',
+            icon: '/logo.png',
+          });
+        }
+      } else if (result === 'denied') {
+        alert('⚠️ Las notificaciones están bloqueadas. Habilítalas en los permisos de tu navegador para recibir avisos de tus pedidos.');
+      }
+    } catch (e) {
+      console.warn('Notification prompt failed:', e);
+    }
+  };
+
+  const showIndicator = permission === 'default';
+
   return (
     <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface dark:bg-surface-dim flat no-shadows">
       <div className="flex items-center justify-between px-margin-mobile h-16 w-full">
@@ -41,9 +66,15 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
             </button>
           )}
         </div>
-        <button aria-label="Notificaciones" className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high transition-colors active:scale-95 transition-transform text-primary dark:text-primary-fixed-dim relative">
+        <button
+          onClick={handleNotificationClick}
+          aria-label="Notificaciones"
+          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high transition-colors active:scale-95 transition-transform text-primary dark:text-primary-fixed-dim relative"
+        >
           <span className="material-symbols-outlined">notifications</span>
-          <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
+          {showIndicator && (
+            <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
+          )}
         </button>
       </div>
     </header>
