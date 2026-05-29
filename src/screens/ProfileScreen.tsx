@@ -83,8 +83,8 @@ export const ProfileScreen: React.FC = () => {
     setActiveSection('menu');
   };
 
-  const handleAddAddress = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddAddress = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (!newAddress.trim()) return;
     const updated = [...addresses, newAddress.trim()];
     setAddresses(updated);
@@ -371,6 +371,7 @@ export const ProfileScreen: React.FC = () => {
                   />
                   <button
                     type="submit"
+                    onClick={handleAddAddress}
                     className="bg-primary text-on-primary p-3 rounded-xl flex items-center justify-center active:scale-95 transition-transform"
                   >
                     <span className="material-symbols-outlined">add</span>
