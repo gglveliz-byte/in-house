@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { TopAppBar, Zone } from '@/components/layout/TopAppBar';
 import { BottomNavBar } from '@/components/layout/BottomNavBar';
 import { useCartStore } from '@/stores/cart-store';
@@ -43,6 +44,7 @@ const RestaurantCardSkeleton: React.FC = () => {
 };
 
 export const HomeScreen: React.FC = () => {
+  const router = useRouter();
   const [zones, setZones] = useState<Zone[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
   const [selectedZone, setSelectedZone] = useState<string>('');
@@ -158,6 +160,56 @@ export const HomeScreen: React.FC = () => {
             </Link>
           </section>
         )}
+
+        {/* Servicios Especiales Express */}
+        <section className="mt-6 px-margin-mobile">
+          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-3">¿Qué necesitas hoy?</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => {
+                if (!selectedZone) {
+                  alert('Por favor, selecciona tu zona en la parte superior primero para activar el servicio de envíos.')
+                  return
+                }
+                router.push('/azul/envios')
+              }}
+              className="bg-gradient-to-br from-[#003f87] to-blue-700 text-white rounded-2xl p-4 text-left transition-all active:scale-[0.97] hover:shadow-md border border-blue-400/20 flex flex-col justify-between h-36 relative overflow-hidden group shadow-sm cursor-pointer w-full"
+            >
+              <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-[88px]" style={{ fontVariationSettings: "'FILL' 1" }}>local_post_office</span>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center border border-white/10 shrink-0">
+                <span className="material-symbols-outlined text-white text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>local_post_office</span>
+              </div>
+              <div>
+                <p className="font-bold text-sm leading-tight text-white">Envíos Express</p>
+                <p className="text-[10px] text-blue-100 font-medium mt-0.5">Mandar encomiendas</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => {
+                if (!selectedZone) {
+                  alert('Por favor, selecciona tu zona en la parte superior primero para activar el servicio de encargos.')
+                  return
+                }
+                router.push('/azul/encargos')
+              }}
+              className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-2xl p-4 text-left transition-all active:scale-[0.97] hover:shadow-md border border-emerald-400/20 flex flex-col justify-between h-36 relative overflow-hidden group shadow-sm cursor-pointer w-full"
+            >
+              <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-[88px]" style={{ fontVariationSettings: "'FILL' 1" }}>medical_services</span>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center border border-white/10 shrink-0">
+                <span className="material-symbols-outlined text-white text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>medical_services</span>
+              </div>
+              <div>
+                <p className="font-bold text-sm leading-tight text-white">Encargos y Compras</p>
+                <p className="text-[10px] text-emerald-100 font-medium mt-0.5">Medicina, licores y más</p>
+              </div>
+            </button>
+          </div>
+        </section>
 
         <section className="mt-stack-lg px-margin-mobile">
           <div className="flex items-center justify-between mb-stack-md">
