@@ -128,6 +128,7 @@ export function LocationPicker({
         zoom: latitude && longitude ? 15 : 10,
         mapTypeControl: true,
         streetViewControl: true,
+        gestureHandling: 'greedy', // Permitir mover el mapa con un solo dedo de forma práctica en móviles
       })
 
       // Verificar errores después de un breve delay
