@@ -35,30 +35,6 @@
     --font-family-main: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      /* Superficies y Fondos Oscuros */
-      --color-background: #0f1113;
-      --color-surface: #0f1113;
-      --color-surface-dim: #1c1f21;
-      --color-surface-bright: #292c30;
-      --color-surface-container-lowest: #15181a;
-      --color-surface-container-low: #1c1f21;
-      --color-surface-container: #222528;
-      --color-surface-container-high: #292c30;
-      --color-surface-container-highest: #303337;
-      --color-inverse-surface: #15181a;
-      
-      /* Texto Oscuro */
-      --color-on-surface: #f0f1f2;
-      --color-on-surface-variant: #c2c6d4;
-      
-      /* Bordes Oscuros */
-      --color-outline: #8c919e;
-      --color-outline-variant: #424752;
-    }
-  }
-
 html {
   scroll-behavior: smooth;
   overscroll-behavior: none;

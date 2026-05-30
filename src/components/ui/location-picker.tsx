@@ -251,11 +251,11 @@ export function LocationPicker({
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map)
 
-      // Diseñar un pin SVG premium de color esmeralda usando Material Icons
+      // Diseñar un pin SVG premium de color azul usando Material Icons
       const customPin = L.divIcon({
         html: `
-          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 animate-pulse absolute -top-4 -left-4"></div>
-          <span class="material-symbols-outlined text-emerald-600 text-4xl filter drop-shadow absolute -top-8 -left-4" style="font-variation-settings: 'FILL' 1">location_on</span>
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500/40 animate-pulse absolute -top-4 -left-4"></div>
+          <span class="material-symbols-outlined text-blue-600 text-4xl filter drop-shadow absolute -top-8 -left-4" style="font-variation-settings: 'FILL' 1">location_on</span>
         `,
         className: 'custom-leaflet-icon',
         iconSize: [32, 32],
@@ -487,76 +487,76 @@ export function LocationPicker({
   }
 
   return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="space-y-3">
+      <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
-
-      {/* Toggle entre mapa y manual */}
+ 
+      {/* Toggle entre mapa y manual tipo Segmented Control / Pill */}
       {!mapError && (
-        <div className="flex gap-2 mb-2">
+        <div className="flex bg-gray-100 p-1 rounded-2xl gap-1 mb-2 border border-gray-200/40 shadow-inner">
           <button
             type="button"
             onClick={() => setMapMode('map')}
             aria-pressed={mapMode === 'map'}
             aria-label="Seleccionar ubicación en mapa"
-            className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${mapMode === 'map'
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 ${mapMode === 'map'
+                ? 'bg-white text-primary shadow-sm hover:scale-[1.01]'
+                : 'text-gray-500 hover:text-gray-800 hover:bg-white/40'
               }`}
           >
-            📍 Seleccionar en mapa
+            <span className="material-symbols-outlined text-[16px]">map</span>
+            Seleccionar en mapa
           </button>
           <button
             type="button"
             onClick={() => setMapMode('manual')}
             aria-pressed={mapMode === 'manual'}
             aria-label="Escribir dirección manualmente"
-            className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${mapMode === 'manual'
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 ${mapMode === 'manual'
+                ? 'bg-white text-primary shadow-sm hover:scale-[1.01]'
+                : 'text-gray-500 hover:text-gray-800 hover:bg-white/40'
               }`}
           >
-            ✏️ Escribir dirección
+            <span className="material-symbols-outlined text-[16px]">edit_note</span>
+            Escribir dirección
           </button>
         </div>
       )}
-
+ 
       {/* Modo Mapa */}
       {mapMode === 'map' && !mapError && (
-        <div className="space-y-2">
-          <div className="relative">
+        <div className="space-y-3">
+          <div className="relative overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
             <div
               ref={mapRef}
-              className="w-full h-64 rounded-lg border border-gray-300"
+              className="w-full h-60 relative"
             />
             {!mapLoaded && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-lg animate-pulse">
-                <div className="w-12 h-12 bg-gray-300 rounded-full mb-3" />
-                <p className="text-sm text-gray-500">Cargando mapa...</p>
-                <div className="mt-2 w-32 h-2 bg-gray-300 rounded" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 animate-pulse">
+                <span className="material-symbols-outlined text-4xl text-gray-300 animate-spin">progress_activity</span>
+                <p className="text-xs text-gray-500 font-medium mt-2">Cargando mapa interactivo...</p>
               </div>
             )}
           </div>
-
-          <Button
+ 
+          <button
             type="button"
-            variant="secondary"
-            size="sm"
             onClick={requestLocationPermission}
             disabled={gettingCurrentLocation || !mapLoaded}
-            className="w-full"
+            className="w-full py-3 px-4 rounded-2xl bg-blue-50 hover:bg-blue-100 text-primary font-bold text-xs transition-all duration-200 flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 border border-blue-100/50 shadow-sm"
           >
-            {gettingCurrentLocation ? 'Obteniendo ubicación...' : '📍 Usar mi ubicación actual'}
-          </Button>
-
+            <span className="material-symbols-outlined text-[16px] animate-pulse">my_location</span>
+            {gettingCurrentLocation ? 'Obteniendo ubicación...' : 'Usar mi ubicación actual'}
+          </button>
+ 
           {errorMessage && (
             <div className="bg-red-50 border border-red-200 rounded-2xl p-3 text-xs text-red-800 flex items-center gap-2">
               <span className="material-symbols-outlined text-[16px]">error</span>
               <span>{errorMessage}</span>
             </div>
           )}
-
+ 
           {locationPermissionDenied && (
             <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-left space-y-2">
               <div className="flex items-center gap-2 text-orange-800 font-semibold">
@@ -568,7 +568,7 @@ export function LocationPicker({
               </p>
               <ul className="text-xs text-orange-700 list-disc list-inside pl-1 space-y-1">
                 <li>Hacer clic o tocar en el mapa para marcar tu ubicación exacta.</li>
-                <li>Arrastrar el pin esmeralda para ajustar la posición.</li>
+                <li>Arrastrar el pin para ajustar la posición.</li>
                 <li>Escribir tu dirección en el campo de texto de abajo.</li>
               </ul>
               <div className="pt-1.5 text-[11px] text-orange-600 border-t border-orange-200/60">
@@ -576,35 +576,41 @@ export function LocationPicker({
               </div>
             </div>
           )}
-
+ 
           {latitude && longitude && (
-            <p className="text-xs text-green-600 font-medium">
-              ✓ Ubicación seleccionada: {latitude.toFixed(6)}, {longitude.toFixed(6)}
+            <p className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
+              <span className="material-symbols-outlined text-[14px]">check_circle</span>
+              Ubicación seleccionada: {latitude.toFixed(6)}, {longitude.toFixed(6)}
             </p>
           )}
-
-          <p className="text-xs text-gray-500">
+ 
+          <p className="text-[10px] text-gray-400 text-center">
             Toca el mapa o arrastra el pin para seleccionar la ubicación exacta de entrega
           </p>
-
         </div>
       )}
-
+ 
       {/* Entrada de dirección (Siempre visible y editable para que el usuario pueda completarla o escribirla) */}
-      <div className="mt-2">
-        <label className="block text-xs font-medium text-gray-500 mb-1">
+      <div className="mt-2.5">
+        <label className="block text-xs font-bold text-gray-500 mb-1.5 flex items-center gap-1">
+          <span className="material-symbols-outlined text-sm text-gray-400">home_pin</span>
           {mapMode === 'map' && !mapError
-            ? 'Dirección detectada (puedes completarla con departamento, edificio, etc.):'
+            ? 'Dirección detectada (puedes completarla con depto, edificio, etc.):'
             : 'Escribe tu dirección exacta:'}
         </label>
-        <input
-          type="text"
-          className="w-full rounded-2xl border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition shadow-[0px_4px_12px_rgba(0,0,0,0.02)]"
-          value={address}
-          onChange={(e) => onAddressChange(e.target.value)}
-          placeholder="Ej. Av. de los Shyris 123 y Av. Naciones Unidas, Edificio X, Dpto 4B"
-          required={required}
-        />
+        <div className="relative">
+          <input
+            type="text"
+            className="w-full rounded-2xl border border-gray-200 bg-white pl-10 pr-4 py-3.5 font-body-md text-xs text-gray-800 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all duration-200 shadow-sm placeholder:text-gray-400"
+            value={address}
+            onChange={(e) => onAddressChange(e.target.value)}
+            placeholder="Ej. Av. de los Shyris 123, Edificio X, Dpto 4B"
+            required={required}
+          />
+          <span className="material-symbols-outlined text-[18px] text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+            pin_drop
+          </span>
+        </div>
       </div>
     </div>
   )
