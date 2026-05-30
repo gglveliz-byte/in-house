@@ -34,6 +34,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
   const [tempAddress, setTempAddress] = useState(customerAddress || '');
   const [tempLat, setTempLat] = useState<number | null>(customerLat || null);
   const [tempLng, setTempLng] = useState<number | null>(customerLng || null);
+  const [alertConfig, setAlertConfig] = useState<{ title: string; message: string } | null>(null);
 
   // Sincronizar estado local al abrir el modal
   useEffect(() => {
@@ -101,14 +102,15 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
           });
         }
       } else if (result === 'denied') {
-        alert(
-          '🔔 Las notificaciones están bloqueadas en tu navegador.\n\n' +
-          'Para poder recibir avisos en tiempo real sobre el estado de tus pedidos, por favor sigue estos sencillos pasos:\n\n' +
-          '1️⃣ Haz clic en el icono de configuración o candado (🔒) a la izquierda de la barra de dirección web de tu navegador.\n' +
-          '2️⃣ Busca la opción "Notificaciones".\n' +
-          '3️⃣ Cambia el permiso a "Permitir" o "Activar".\n' +
-          '4️⃣ Recarga la página y ¡listo! 👍'
-        );
+        setAlertConfig({
+          title: 'Notificaciones bloqueadas',
+          message: 'Las notificaciones están bloqueadas en tu navegador.\n\n' +
+            'Para poder recibir avisos en tiempo real sobre el estado de tus pedidos, sigue estos sencillos pasos:\n\n' +
+            '1. Haz clic en el icono de configuración o candado a la izquierda de la barra de dirección web de tu navegador.\n' +
+            '2. Busca la opción Notificaciones.\n' +
+            '3. Cambia el permiso a Permitir o Activar.\n' +
+            '4. Recarga la página.'
+        });
       }
     } catch (e) {
       console.warn('Notification prompt failed:', e);
@@ -222,6 +224,24 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
               >
                 <span className="material-symbols-outlined text-xs">check_circle</span>
                 Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {alertConfig && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-surface dark:bg-surface-dim border border-surface-container-high rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-scale-up">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-on-surface mb-2">{alertConfig.title}</h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">{alertConfig.message}</p>
+            </div>
+            <div className="border-t border-surface-container-high px-4 py-3 bg-surface-container-low flex justify-end">
+              <button
+                onClick={() => setAlertConfig(null)}
+                className="px-5 py-2 bg-primary text-on-primary rounded-xl text-sm font-bold active:scale-95 transition-transform"
+              >
+                Aceptar
               </button>
             </div>
           </div>

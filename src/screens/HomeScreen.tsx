@@ -53,6 +53,7 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
   const [selectedZone, setSelectedZone] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [alertConfig, setAlertConfig] = useState<{ title: string; message: string } | null>(null);
 
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(defaultShowCategories);
 
@@ -182,10 +183,10 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
   const isAllZones = selectedZone === '';
 
   return (
-    <div className="bg-background text-on-surface antialiased h-[100dvh] overflow-hidden flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+    <div className="bg-background text-on-surface antialiased h-full overflow-hidden flex flex-col selection:bg-primary-container selection:text-on-primary-container">
       <TopAppBar zones={zones} selectedZone={selectedZone} onZoneChange={handleZoneChange} />
 
-      <main className="flex-1 overflow-y-auto pt-16 pb-24 w-full max-w-md mx-auto">
+      <main className="flex-1 overflow-y-auto azul-scrollable-content pt-16 pb-24 w-full max-w-md mx-auto">
         <section className="bg-surface-container-lowest border-b border-surface-container-high px-margin-mobile py-stack-sm">
           <Link href="/azul/search" className="block w-full">
             <div className="rounded-full bg-surface-container-lowest shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-surface-variant flex items-center px-4 h-14 cursor-pointer transition-colors hover:border-primary active:scale-[0.98] transition-all">
@@ -247,7 +248,10 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
             <button
               onClick={() => {
                 if (!selectedZone) {
-                  alert('Por favor, selecciona tu zona en la parte superior primero para activar el servicio de envíos.')
+                  setAlertConfig({
+                    title: 'Seleccionar ubicación',
+                    message: 'Por favor, selecciona tu zona en la parte superior primero para activar el servicio de envíos.'
+                  });
                   return
                 }
                 router.push('/azul/envios')
@@ -269,7 +273,10 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
             <button
               onClick={() => {
                 if (!selectedZone) {
-                  alert('Por favor, selecciona tu zona en la parte superior primero para activar el servicio de encargos.')
+                  setAlertConfig({
+                    title: 'Seleccionar ubicación',
+                    message: 'Por favor, selecciona tu zona en la parte superior primero para activar el servicio de encargos.'
+                  });
                   return
                 }
                 router.push('/azul/encargos')
@@ -426,6 +433,25 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
         onClose={handleCloseCategories}
         onSelectCategory={handleCategorySelect}
       />
+
+      {alertConfig && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-surface dark:bg-surface-dim border border-surface-container-high rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-scale-up">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-on-surface mb-2">{alertConfig.title}</h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">{alertConfig.message}</p>
+            </div>
+            <div className="border-t border-surface-container-high px-4 py-3 bg-surface-container-low flex justify-end">
+              <button
+                onClick={() => setAlertConfig(null)}
+                className="px-5 py-2 bg-primary text-on-primary rounded-xl text-sm font-bold active:scale-95 transition-transform"
+              >
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

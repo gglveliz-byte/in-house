@@ -103,7 +103,8 @@ export const RestaurantScreen: React.FC<RestaurantScreenProps> = ({ slug }) => {
   const heroImage = store?.banner || store?.logo || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=80';
 
   return (
-    <div className="bg-background text-on-surface font-body-md antialiased pb-24 w-full max-w-md mx-auto relative min-h-screen">
+    <div className="bg-background text-on-surface font-body-md antialiased w-full max-w-md mx-auto relative h-[100dvh] overflow-hidden flex flex-col">
+      <main className="flex-1 overflow-y-auto pb-28">
       <header className="relative w-full h-64 bg-surface-variant">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${heroImage}')` }}></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-transparent"></div>
@@ -196,7 +197,7 @@ export const RestaurantScreen: React.FC<RestaurantScreenProps> = ({ slug }) => {
             ))}
           </nav>
 
-          <main className="px-margin-mobile mt-stack-lg">
+          <div className="px-margin-mobile mt-stack-lg azul-scrollable-content">
             {visibleCategories.map((category) => (
               <section key={category.id} className="mb-stack-lg">
                 <h2 className="font-headline-md text-headline-md text-on-surface mb-stack-md">{category.name}</h2>
@@ -272,9 +273,10 @@ export const RestaurantScreen: React.FC<RestaurantScreenProps> = ({ slug }) => {
                 </div>
               </section>
             )}
-          </main>
+          </div>
         </>
       ) : null}
+      </main>
 
       {toast ? (
         <div className="fixed left-1/2 bottom-28 z-50 -translate-x-1/2 rounded-full bg-surface py-3 px-5 shadow-[0px_10px_30px_rgba(0,0,0,0.12)] text-on-surface font-body-md text-body-md">
