@@ -26,6 +26,7 @@ interface Order {
   orderNumber: number
   status: string
   paymentStatus: string
+  paymentMethod: string
   paymentProof: string | null
   customerName: string
   customerPhone: string
@@ -105,6 +106,42 @@ export default function VendorChatPage({
     },
     !!order?.store?.id
   )
+
+  // Confirmar pago en efectivo (sin comprobante)
+  const handleConfirmCashPayment = async () => {
+    if (!orderId) return
+    setUpdating(true)
+    try {
+      await fetch(`/api/orders/${orderId}/payment`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentStatus: 'VERIFIED' }),
+      })
+
+      await fetch(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'CONFIRMED' }),
+      })
+
+      await fetch(`/api/orders/${orderId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: 'Pago en efectivo confirmado. Tu pedido está siendo preparado.',
+          senderType: 'SYSTEM',
+          senderName: 'Sistema',
+        }),
+      })
+
+      fetchOrder()
+    } catch (error) {
+      console.error('Error confirming cash payment:', error)
+      alert('Error al confirmar el pago')
+    } finally {
+      setUpdating(false)
+    }
+  }
 
   // Verificar pago
   const handleVerifyPayment = async () => {
@@ -242,6 +279,7 @@ export default function VendorChatPage({
     )
   }
 
+  const isCash = order.paymentMethod === 'CASH'
   const paymentVerified = order.paymentStatus === 'VERIFIED'
   const paymentUploaded = order.paymentStatus === 'UPLOADED'
   const isConfirmed = order.status === 'CONFIRMED'
@@ -362,6 +400,20 @@ export default function VendorChatPage({
 
           {/* Acciones del vendedor - compactas */}
           <div className="flex gap-2">
+            {/* Efectivo pendiente: confirmar pago */}
+            {isCash && !paymentVerified && !paymentUploaded && (isPending || isConfirmed) && (
+              <Button
+                onClick={handleConfirmCashPayment}
+                disabled={updating}
+                size="sm"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-sm flex items-center justify-center gap-1.5"
+              >
+                {updating ? <Clock size={16} className="animate-spin" /> : <CheckSquare size={16} />}
+                {updating ? 'Procesando...' : 'Confirmar pago efectivo'}
+              </Button>
+            )}
+
+            {/* Tarjeta: verificar comprobante */}
             {paymentUploaded && !paymentVerified && (
               <Button
                 onClick={handleVerifyPayment}
@@ -369,8 +421,8 @@ export default function VendorChatPage({
                 size="sm"
                 className="flex-1 bg-green-600 hover:bg-green-700 text-sm flex items-center justify-center gap-1.5"
               >
-                {updating ? <Clock size={16} className="animate-spin" /> : <CheckSquare size={16} />} 
-                {updating ? 'Procesando...' : 'Verificar pago'}
+                {updating ? <Clock size={16} className="animate-spin" /> : <CheckSquare size={16} />}
+                {updating ? 'Procesando...' : 'Verificar comprobante'}
               </Button>
             )}
 

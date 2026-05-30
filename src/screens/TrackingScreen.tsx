@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cart-store';
 import { pusherClient, CHANNELS, EVENTS } from '@/lib/pusher';
 import { Order, OrderStatus } from '@/types';
+import { OrderChat } from '@/components/chat/order-chat';
 
 interface TrackingOrder extends Order {
   store?: {
@@ -47,6 +48,7 @@ export const TrackingScreen: React.FC = () => {
   const [order, setOrder] = useState<TrackingOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     if (!orderId) {
@@ -312,6 +314,45 @@ export const TrackingScreen: React.FC = () => {
           )}
         </section>
       </main>
+
+      {/* Chat FAB */}
+      {order && (
+        <button
+          onClick={() => setShowChat(true)}
+          className="fixed bottom-6 right-4 z-40 w-14 h-14 bg-primary text-on-primary rounded-full shadow-[0px_4px_16px_rgba(0,63,135,0.35)] flex items-center justify-center active:scale-95 transition-transform"
+          aria-label="Abrir chat con la tienda"
+        >
+          <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>chat</span>
+        </button>
+      )}
+
+      {/* Chat Panel (bottom sheet) */}
+      {showChat && order && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setShowChat(false)} />
+          <div className="relative bg-background rounded-t-2xl overflow-hidden" style={{ height: '75dvh' }}>
+            {/* Handle + close */}
+            <div className="flex items-center justify-between px-4 pt-3 pb-2 bg-surface border-b border-outline-variant/20">
+              <div className="w-10 h-1 bg-outline-variant rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-2" />
+              <p className="font-semibold text-sm text-on-surface">
+                Chat — {order.store?.name || 'Tienda'}
+              </p>
+              <button onClick={() => setShowChat(false)} className="p-1.5 rounded-full hover:bg-surface-container-high transition-colors">
+                <span className="material-symbols-outlined text-[20px] text-on-surface-variant">close</span>
+              </button>
+            </div>
+            <div className="h-full">
+              <OrderChat
+                orderId={order.id}
+                orderNumber={order.orderNumber}
+                userType="CUSTOMER"
+                userName={order.customerName || 'Cliente'}
+                storeName={order.store?.name}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

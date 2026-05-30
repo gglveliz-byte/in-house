@@ -166,6 +166,7 @@ model Order {
   pickedUpAt      DateTime?
   deliveredAt     DateTime?
 
+  paymentMethod   String    @default("CASH")
   paymentStatus   String    @default("PENDING")
   paymentProof    String?
 

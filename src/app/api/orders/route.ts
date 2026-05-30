@@ -81,6 +81,7 @@ export async function POST(request: NextRequest) {
       customerNotes,
       items,
       couponCode,
+      paymentMethod,
     } = body
 
     // Validación de inputs
@@ -190,6 +191,7 @@ export async function POST(request: NextRequest) {
           customerLat,
           customerLng,
           customerNotes: customerNotes?.trim() || null,
+          paymentMethod: paymentMethod || 'CASH',
           subtotal,
           deliveryFee,
           total,
