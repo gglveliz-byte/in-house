@@ -33,17 +33,27 @@ export default function VendorDashboardPage() {
       let sid = session?.user?.storeId
       if (!sid && session?.user?.id) {
         try {
-          const stores = await (await fetch('/api/stores')).json()
-          const found = stores.find((s: { ownerId: string }) => s.ownerId === session.user.id)
-          if (found) { sid = found.id; setStoreInfo(found) }
+          const res = await fetch('/api/stores')
+          if (res.ok) {
+            const stores = await res.json()
+            if (Array.isArray(stores)) {
+              const found = stores.find((s: { ownerId: string }) => s.ownerId === session.user.id)
+              if (found) { sid = found.id; setStoreInfo(found) }
+            }
+          }
         } catch {}
       }
       if (sid) {
         if (!storeInfo) {
           try {
-            const stores = await (await fetch('/api/stores')).json()
-            const s = stores.find((s: { id: string }) => s.id === sid)
-            if (s) setStoreInfo(s)
+            const res = await fetch('/api/stores')
+            if (res.ok) {
+              const stores = await res.json()
+              if (Array.isArray(stores)) {
+                const s = stores.find((s: { id: string }) => s.id === sid)
+                if (s) setStoreInfo(s)
+              }
+            }
           } catch {}
         }
         await fetchOrders(sid)

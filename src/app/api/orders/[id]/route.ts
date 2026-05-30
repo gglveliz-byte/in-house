@@ -130,16 +130,49 @@ export async function PATCH(
       updateData.driverId = driverId
     }
 
-    const order = await prisma.order.update({
-      where: { id },
-      data: updateData,
-      include: {
-        items: {
-          include: { product: true },
+    let order
+    if (driverId !== undefined && driverId !== null) {
+      // Mitigar condiciones de carrera: actualizar solo si no hay repartidor ya asignado
+      const updateResult = await prisma.order.updateMany({
+        where: {
+          id,
+          driverId: null, // Condición atómica
         },
-        store: true,
-      },
-    })
+        data: updateData,
+      })
+
+      if (updateResult.count === 0) {
+        return NextResponse.json(
+          { error: 'El pedido ya fue asignado a otro repartidor o no está disponible.' },
+          { status: 409 } // Código HTTP 409: Conflicto
+        )
+      }
+
+      order = await prisma.order.findUnique({
+        where: { id },
+        include: {
+          items: {
+            include: { product: true },
+          },
+          store: true,
+        },
+      })
+    } else {
+      order = await prisma.order.update({
+        where: { id },
+        data: updateData,
+        include: {
+          items: {
+            include: { product: true },
+          },
+          store: true,
+        },
+      })
+    }
+
+    if (!order) {
+      return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
+    }
 
     try {
       const orderData = {
@@ -153,6 +186,7 @@ export async function PATCH(
       await pusherServer.trigger(CHANNELS.ORDER(order.id), EVENTS.ORDER_UPDATED, orderData)
       await pusherServer.trigger(CHANNELS.STORE(order.storeId), EVENTS.ORDER_UPDATED, orderData)
       await pusherServer.trigger(CHANNELS.ADMIN, EVENTS.ORDER_UPDATED, orderData)
+      await pusherServer.trigger(CHANNELS.DRIVER, EVENTS.ORDER_UPDATED, orderData)
 
       if (status === 'READY') {
         await pusherServer.trigger(CHANNELS.DRIVER, EVENTS.ORDER_READY, {

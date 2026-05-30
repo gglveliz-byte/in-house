@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useCartStore } from '@/stores/cart-store'
 
@@ -12,17 +12,29 @@ const ERAND_CATEGORIES = [
   { id: 'otro', label: 'Otro Mandado Especial', icon: 'shopping_basket', color: 'text-purple-500 bg-purple-50' },
 ]
 
-export default function EncargosPage() {
+function EncargosContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const setActiveOrderId = useCartStore((state) => state.setActiveOrderId)
 
   const [selectedZone, setSelectedZone] = useState<string>('')
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
-  const [category, setCategory] = useState('medicina')
+  
+  const initialCategory = searchParams.get('category') || 'medicina'
+  const [category, setCategory] = useState(initialCategory)
+  
   const [pickupAddress, setPickupAddress] = useState('') // Punto de recogida
   const [deliveryAddress, setDeliveryAddress] = useState('') // Destino
   const [details, setDetails] = useState('') // Qué hay que hacer / comprar
+
+  // Sincronizar el estado del selector con los query params
+  useEffect(() => {
+    const cat = searchParams.get('category')
+    if (cat) {
+      setCategory(cat)
+    }
+  }, [searchParams])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -282,5 +294,17 @@ export default function EncargosPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function EncargosPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <EncargosContent />
+    </Suspense>
   )
 }

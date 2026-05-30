@@ -48,6 +48,9 @@ export default function DriverActiveOrdersPage() {
         showToast(`¡Nuevo pedido disponible en ${data.storeName}!`);
         fetchOrders();
       });
+      channel.bind(EVENTS.ORDER_UPDATED, () => {
+        fetchOrders();
+      });
 
       return () => {
         channel.unbind_all();
@@ -59,12 +62,19 @@ export default function DriverActiveOrdersPage() {
   const acceptOrder = async (orderId: string) => {
     setAcceptingId(orderId)
     try {
-      await fetch(`/api/orders/${orderId}`, {
+      const res = await fetch(`/api/orders/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'PICKED_UP', driverId: session?.user?.id }),
       })
-      showToast('¡Pedido aceptado! Ve a recogerlo.')
+      
+      const data = await res.json()
+      
+      if (!res.ok) {
+        showToast(data.error || 'El pedido ya fue tomado por otro repartidor.', false)
+      } else {
+        showToast('¡Pedido aceptado! Ve a recogerlo.')
+      }
       fetchOrders()
     } catch {
       showToast('Error al aceptar el pedido', false)

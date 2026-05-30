@@ -107,7 +107,7 @@ export function LocationPicker({
       if (latitude && longitude) {
         mapInstanceRef.current.setCenter({ lat: latitude, lng: longitude })
         mapInstanceRef.current.setZoom(15)
-        
+
         if (markerRef.current) {
           markerRef.current.setPosition({ lat: latitude, lng: longitude })
         }
@@ -120,8 +120,8 @@ export function LocationPicker({
       const defaultCenter = latitude && longitude
         ? { lat: latitude, lng: longitude }
         : defaultLatitude && defaultLongitude
-        ? { lat: defaultLatitude, lng: defaultLongitude }
-        : { lat: -2.182874, lng: -79.518009 } // Ecuador por defecto
+          ? { lat: defaultLatitude, lng: defaultLongitude }
+          : { lat: -2.182874, lng: -79.518009 } // Ecuador por defecto
 
       const map = new google.maps.Map(mapRef.current, {
         center: defaultCenter,
@@ -166,7 +166,7 @@ export function LocationPicker({
         if (e.latLng) {
           const lat = e.latLng.lat()
           const lng = e.latLng.lng()
-          
+
           if (markerRef.current) {
             markerRef.current.setPosition({ lat, lng })
           } else {
@@ -224,8 +224,8 @@ export function LocationPicker({
       const center = latitude && longitude
         ? [latitude, longitude]
         : defaultLatitude && defaultLongitude
-        ? [defaultLatitude, defaultLongitude]
-        : [-0.180653, -78.467834]
+          ? [defaultLatitude, defaultLongitude]
+          : [-0.180653, -78.467834]
       leafletMapRef.current.setView(center, 15)
       if (leafletMarkerRef.current) {
         leafletMarkerRef.current.setLatLng(center)
@@ -237,8 +237,8 @@ export function LocationPicker({
       const center = latitude && longitude
         ? [latitude, longitude]
         : defaultLatitude && defaultLongitude
-        ? [defaultLatitude, defaultLongitude]
-        : [-0.180653, -78.467834] // Quito por defecto
+          ? [defaultLatitude, defaultLongitude]
+          : [-0.180653, -78.467834] // Quito por defecto
 
       // Inicializar mapa de Leaflet
       const map = L.map(mapRef.current, {
@@ -388,7 +388,7 @@ export function LocationPicker({
             setLocationPermissionDenied(false)
           }
         }
-      }).catch(() => {})
+      }).catch(() => { })
     }
 
     return () => {
@@ -500,11 +500,10 @@ export function LocationPicker({
             onClick={() => setMapMode('map')}
             aria-pressed={mapMode === 'map'}
             aria-label="Seleccionar ubicación en mapa"
-            className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${
-              mapMode === 'map'
+            className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${mapMode === 'map'
                 ? 'bg-primary-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             📍 Seleccionar en mapa
           </button>
@@ -513,11 +512,10 @@ export function LocationPicker({
             onClick={() => setMapMode('manual')}
             aria-pressed={mapMode === 'manual'}
             aria-label="Escribir dirección manualmente"
-            className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${
-              mapMode === 'manual'
+            className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${mapMode === 'manual'
                 ? 'bg-primary-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             ✏️ Escribir dirección
           </button>
@@ -551,7 +549,7 @@ export function LocationPicker({
           >
             {gettingCurrentLocation ? 'Obteniendo ubicación...' : '📍 Usar mi ubicación actual'}
           </Button>
-          
+
           {errorMessage && (
             <div className="bg-red-50 border border-red-200 rounded-2xl p-3 text-xs text-red-800 flex items-center gap-2">
               <span className="material-symbols-outlined text-[16px]">error</span>
@@ -595,8 +593,8 @@ export function LocationPicker({
       {/* Entrada de dirección (Siempre visible y editable para que el usuario pueda completarla o escribirla) */}
       <div className="mt-2">
         <label className="block text-xs font-medium text-gray-500 mb-1">
-          {mapMode === 'map' && !mapError 
-            ? 'Dirección detectada (puedes completarla con departamento, edificio, etc.):' 
+          {mapMode === 'map' && !mapError
+            ? 'Dirección detectada (puedes completarla con departamento, edificio, etc.):'
             : 'Escribe tu dirección exacta:'}
         </label>
         <input

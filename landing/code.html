@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BlueExpress | Tu comida favorita, en minutos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary-fixed-variant": "#1f477b",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary-fixed": "#341100",
+                        "tertiary": "#381300",
+                        "surface": "#f7f9fb",
+                        "inverse-primary": "#a7c8ff",
+                        "on-surface-variant": "#43474f",
+                        "secondary-fixed": "#c6e7ff",
+                        "secondary-fixed-dim": "#82cfff",
+                        "surface-container-low": "#f2f4f6",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "primary": "#001e40",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#3a5f94",
+                        "surface-dim": "#d8dadc",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "tertiary-fixed": "#ffdbca",
+                        "on-background": "#191c1e",
+                        "on-secondary-fixed": "#001e2d",
+                        "primary-container": "#003366",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#592300",
+                        "on-secondary-fixed-variant": "#004c6b",
+                        "secondary": "#00658d",
+                        "on-error": "#ffffff",
+                        "outline": "#737780",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-container": "#2dbcfe",
+                        "inverse-surface": "#2d3133",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#004866",
+                        "tertiary-fixed-dim": "#ffb690",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#799dd6",
+                        "outline-variant": "#c3c6d1",
+                        "surface-bright": "#f7f9fb",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d5e3ff",
+                        "on-primary-fixed": "#001b3c",
+                        "surface-container": "#eceef0",
+                        "background": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "on-tertiary-container": "#d8885c",
+                        "on-tertiary-fixed-variant": "#723610"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "margin-desktop": "64px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "gutter": "20px",
+                        "unit": "4px",
+                        "margin-mobile": "16px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-glass {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        body {
+            min-height: 100dvh;
+        }
+        .section-padding {
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md border-b border-outline-variant/30">
+<div class="flex justify-between items-center px-6 md:px-margin-desktop py-md max-w-full mx-auto">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed text-3xl" data-icon="motorcycle">motorcycle</span>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed tracking-tight">BlueExpress</h1>
+</div>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="text-secondary dark:text-secondary-fixed-dim font-bold border-b-2 border-secondary font-label-md text-label-md" href="#">Inicio</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#como-funciona">Cómo Funciona</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#franquicia">Franquicia</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Restaurantes</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="px-lg py-sm rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md hover:shadow-md active:scale-95 duration-150 transition-all">Únete</button>
+</div>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative flex items-center px-margin-mobile md:px-margin-desktop py-20 overflow-hidden">
+<div class="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-xl items-center">
+<div class="z-10 space-y-lg text-center md:text-left">
+<h2 class="font-display-lg text-display-lg md:text-[64px] text-primary leading-[1.1] tracking-tight">Tu comida favorita,<br/><span class="text-secondary">en pocos minutos</span></h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg mx-auto md:mx-0">Logística de última milla diseñada para el sabor. Entregamos tus antojos con la rapidez de nuestras motos y la calidad que esperas.</p>
+<div class="flex flex-wrap justify-center md:justify-start gap-md pt-sm">
+<button class="px-xl py-md rounded-xl bg-secondary-container text-on-secondary-container font-label-md text-label-md shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all active:scale-95">Pedir Comida</button>
+<button class="px-xl py-md rounded-xl border-2 border-primary text-primary font-label-md text-label-md hover:bg-primary/5 transition-all active:scale-95">Ver Restaurantes</button>
+</div>
+</div>
+<div class="relative h-[400px] md:h-[550px] rounded-[2.5rem] overflow-hidden shadow-2xl mt-12 md:mt-0">
+<img alt="Motorcycle Delivery" class="w-full h-full object-cover" data-alt="A professional food delivery rider on a sleek navy blue motorcycle with a large professional delivery box on the back. The rider is wearing a modern blue helmet and professional uniform. The setting is a bustling but clean city street at golden hour, with soft sunlight reflecting off glass buildings. High-end, reliable commercial photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8PA5ZaGj27Vx6EHrF6GyURXXil5NV0eGnUfi1OXsFf6ZN1POwqPrJ60bgNv9ooxKMFE3wTsw465hULAqHxqu88xr4WFelLfgKu_tqURzADyQf283ioCsLVJRM64hYiT5GkxtCVriss6hUjTpmCOyuC9wFBlqEy9dPaNpHQcpiR0cYlbu58c2Gn5JwtBONXVdLkk_puG2Ek_eZRSxBmsOBG93oRznrgZZXxy5GIDtK0ZVQ9KQye92i-T_6W5bS1jwt0d5WLPaAsMwO"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent"></div>
+</div>
+</div>
+<!-- Abstract background pattern element -->
+<div class="absolute top-0 right-0 -z-10 w-1/2 h-full opacity-[0.03] pointer-events-none">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path class="text-secondary" d="M0,100 C30,80 70,80 100,100 L100,0 L0,0 Z" fill="currentColor"></path>
+</svg>
+</div>
+</section>
+<!-- Cómo Funciona Section -->
+<section class="section-padding bg-surface-container-lowest" id="como-funciona">
+<div class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="text-center mb-16">
+<span class="text-secondary font-label-md tracking-widest uppercase mb-xs block">Proceso Simple</span>
+<h2 class="font-headline-lg text-headline-lg text-primary">¿Cómo funciona?</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
+<div class="text-center group">
+<div class="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-md group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-4xl" data-icon="app_shortcut">app_shortcut</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-sm">1. Pide</h3>
+<p class="font-body-md text-on-surface-variant">Elige tus platos favoritos desde nuestra app intuitiva y segura.</p>
+</div>
+<div class="text-center group">
+<div class="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-md group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-4xl" data-icon="outdoor_grill">outdoor_grill</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-sm">2. Preparamos</h3>
+<p class="font-body-md text-on-surface-variant">Nuestros restaurantes asociados cocinan con los mejores estándares.</p>
+</div>
+<div class="text-center group">
+<div class="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-md group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-4xl" data-icon="check_circle">check_circle</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-sm">3. Recibe</h3>
+<p class="font-body-md text-on-surface-variant">Tu pedido llega caliente y fresco en el tiempo prometido.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Consumer Benefits -->
+<section class="section-padding">
+<div class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="p-xl bg-surface-container-low/50 rounded-3xl border border-outline-variant/30 hover:shadow-xl hover:translate-y-[-4px] transition-all group">
+<div class="w-16 h-16 rounded-2xl bg-secondary-fixed flex items-center justify-center mb-lg group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-on-secondary-fixed-variant text-[32px]" data-icon="bolt">bolt</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-md">Entrega en minutos</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Nuestras motos sortean el tráfico para asegurar que tu pedido llegue en tiempo récord a tu puerta.</p>
+</div>
+<div class="p-xl bg-surface-container-low/50 rounded-3xl border border-outline-variant/30 hover:shadow-xl hover:translate-y-[-4px] transition-all group">
+<div class="w-16 h-16 rounded-2xl bg-secondary-fixed flex items-center justify-center mb-lg group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-on-secondary-fixed-variant text-[32px]" data-icon="restaurant">restaurant</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-md">Comida Caliente</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Utilizamos cajas térmicas de alta tecnología para preservar la frescura y temperatura ideal de tus platillos.</p>
+</div>
+<div class="p-xl bg-surface-container-low/50 rounded-3xl border border-outline-variant/30 hover:shadow-xl hover:translate-y-[-4px] transition-all group">
+<div class="w-16 h-16 rounded-2xl bg-secondary-fixed flex items-center justify-center mb-lg group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-on-secondary-fixed-variant text-[32px]" data-icon="near_me">near_me</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-md">Rastreo en vivo</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Sigue a tu repartidor en tiempo real por el mapa hasta que llegue a tu ubicación exacta.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Franchise Section -->
+<section class="section-padding bg-primary-container text-on-primary" id="franquicia">
+<div class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-2 gap-xl items-center">
+<div class="space-y-lg order-2 md:order-1">
+<span class="text-secondary-container font-label-md tracking-widest uppercase">Emprende con nosotros</span>
+<h2 class="font-display-lg text-[40px] md:text-display-lg leading-tight">Tu Propia Franquicia</h2>
+<p class="font-body-lg text-on-primary/80">Sé dueño de tu propio negocio de delivery con el respaldo de BlueExpress. Ofrecemos una oportunidad única para emprendedores en nuevas ciudades.</p>
+<div class="grid grid-cols-1 gap-md">
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-secondary-container" data-icon="verified">verified</span>
+<div>
+<h4 class="font-label-md text-lg">Modelo probado</h4>
+<p class="font-body-sm text-on-primary/60">Rentabilidad demostrada con procesos optimizados.</p>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-secondary-container" data-icon="rocket_launch">rocket_launch</span>
+<div>
+<h4 class="font-label-md text-lg">Tecnología de punta</h4>
+<p class="font-body-sm text-on-primary/60">Acceso a nuestra plataforma logística avanzada.</p>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-secondary-container" data-icon="support_agent">support_agent</span>
+<div>
+<h4 class="font-label-md text-lg">Soporte 24/7</h4>
+<p class="font-body-sm text-on-primary/60">Acompañamiento constante en tu operación.</p>
+</div>
+</div>
+</div>
+<button class="mt-lg px-xl py-md rounded-xl bg-secondary-container text-on-secondary-container font-label-md hover:bg-secondary transition-all active:scale-95 shadow-xl">Solicitar Información</button>
+</div>
+<div class="relative order-1 md:order-2">
+<div class="aspect-video md:aspect-square bg-surface-variant rounded-3xl overflow-hidden shadow-2xl relative">
+<img alt="Franchise Business" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmwWgXKmpuREmJuAEyKsUskstZjicej8Z9l43EkEbPwt8vlTMzH7p_TF19sku5HJKi-gwxoK3o7Hy7975G2zlMk2ToDZpP2ZlU6brmM_5AHB5vODpb792cFU3UOBCu7Ux4jtVL5RmRAOdRDguXGP92dcS_E33JyZbIyO9_C8PwBHcIu0XTZBmpyCu4Fesu2tHfw9lir19dtsJHG2m1treG56_FrjJrXZD9CVFiWLuuN_UtRj9gB6wJ_KnEYRO6cD1k1tS1Jj0IDk2Y"/>
+<div class="absolute inset-0 bg-primary/20 flex items-center justify-center">
+<span class="px-lg py-sm bg-white/90 text-primary font-bold rounded-full text-sm">Oportunidad de Negocio</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Driver Recruitment Section -->
+<section class="bg-primary py-32 overflow-hidden relative">
+<div class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+<div class="relative">
+<div class="aspect-square rounded-3xl overflow-hidden shadow-2xl relative z-10 border-8 border-primary-container/30">
+<img alt="Happy Rider" class="w-full h-full object-cover" data-alt="A portrait of a cheerful food delivery rider leaning on their motorcycle, holding a smartphone. They are wearing a professional navy blue vest and cap. Background shows a vibrant city street. Clean, high-contrast aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMlGuNpoVeE8iS4sWa0HeL9OUgAwd6tBGkU5SWalvvE-FfszXpfPdHGAuWAj_lfILY0dIB6RkvoNspviOc6XO1KBICkDNyu0F1XWg4SaS-P3Gg4AKjPvqNygu9LTyNl66kbcMdffb_IKTfmvp8yg_bUY6ZQMVEKveDYk2ejocvOUkf6rPcivtVHyaHxmZjiQ6v7T6RlOVACPhL74CmvEJgn25gDUQHq4dXOHhz1gg4uY_csmIhBvnhu7YACDUH732OZ-PIaNL6_tA4"/>
+</div>
+<div class="absolute -top-10 -left-10 w-40 h-40 bg-secondary-container/20 rounded-full blur-3xl"></div>
+</div>
+<div class="text-on-primary">
+<h2 class="font-headline-lg text-headline-lg mb-lg">Gana dinero con tu moto</h2>
+<p class="font-body-lg text-body-lg text-on-primary-container mb-xl">Únete a la flota de repartidores de comida más eficiente de la ciudad. Genera ingresos manejando en tus propios tiempos.</p>
+<ul class="space-y-md mb-xl">
+<li class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary-container" data-icon="schedule">schedule</span>
+<span class="font-body-md">Horarios 100% flexibles</span>
+</li>
+<li class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary-container" data-icon="payments">payments</span>
+<span class="font-body-md">Pagos semanales competitivos</span>
+</li>
+<li class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary-container" data-icon="motorcycle">motorcycle</span>
+<span class="font-body-md">Soporte continuo para repartidores</span>
+</li>
+</ul>
+<button class="px-xl py-md rounded-xl bg-secondary-container text-on-secondary-container font-label-md text-label-md shadow-xl hover:bg-secondary-fixed transition-all active:scale-95">Únete como repartidor</button>
+</div>
+</div>
+</section>
+<!-- Testimonios Section -->
+<section class="section-padding bg-surface-container">
+<div class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop text-center">
+<span class="text-secondary font-label-md tracking-widest uppercase mb-xs block">Experiencias Reales</span>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-16">Lo que dicen nuestros usuarios</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="bg-white p-xl rounded-3xl shadow-sm border border-outline-variant/30 text-left">
+<div class="flex gap-1 text-secondary mb-md">
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-lg italic">"Increíble la rapidez. Pedí una pizza y llegó en menos de 20 minutos, crujiente y caliente."</p>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-variant"></div>
+<div>
+<p class="font-label-md">Ricardo M.</p>
+<p class="text-xs text-on-surface-variant">Usuario frecuente</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-xl rounded-3xl shadow-sm border border-outline-variant/30 text-left">
+<div class="flex gap-1 text-secondary mb-md">
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-lg italic">"La app es súper fácil de usar y el rastreo en vivo me da mucha tranquilidad. El mejor servicio."</p>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-variant"></div>
+<div>
+<p class="font-label-md">Andrea P.</p>
+<p class="text-xs text-on-surface-variant">Restaurante asociado</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-xl rounded-3xl shadow-sm border border-outline-variant/30 text-left">
+<div class="flex gap-1 text-secondary mb-md">
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star">star</span>
+<span class="material-symbols-outlined fill-1" data-icon="star-half">star_half</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-lg italic">"Como repartidor, me encanta la flexibilidad. Los pagos son puntuales y el soporte siempre está ahí."</p>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-variant"></div>
+<div>
+<p class="font-label-md">Juan S.</p>
+<p class="text-xs text-on-surface-variant">Repartidor Blue</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Section -->
+<section class="section-padding bg-surface text-center px-margin-mobile">
+<div class="max-w-4xl mx-auto">
+<span class="text-secondary font-label-md text-label-md tracking-widest uppercase mb-sm block">Sabor garantizado</span>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-xl">Los mejores restaurantes confían en nosotros</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-lg items-center opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
+<div class="flex justify-center"><span class="font-headline-md text-headline-md font-bold">BURGER-X</span></div>
+<div class="flex justify-center"><span class="font-headline-md text-headline-md font-bold">PIZZA-PRO</span></div>
+<div class="flex justify-center"><span class="font-headline-md text-headline-md font-bold">SUSHI-GO</span></div>
+<div class="flex justify-center"><span class="font-headline-md text-headline-md font-bold">TACO-KING</span></div>
+</div>
+<div class="mt-xl p-lg bg-surface-container-low rounded-3xl inline-flex flex-col md:flex-row items-center gap-md">
+<div class="flex -space-x-4">
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnJfoA9BrpHtxHyglcPDliJDSrKv4ihFLtGqe9iLF-DR6AcRaoujTY4B7uLpAAGobgOYthiNvXqZ1Ds_wxHvc2zSn23UkYwubo27IQULe6QZ2c9skCbILiVgC1LoMsgXh1RgNLPVedVMMz_ee8EG9qkcK7oVnU-4o4BqHjm6GiuDM23g43cAsQcRfx3GENnSg4MfXnRD7AA0XzN9AEM9UlTGaAeygqXg9kQn7G6BXetj63IGe_DpeiYOu22Ze4lKNWzpnz2z__-Rqf"/>
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAr3NovbSfPwqCWYgyb7aRczphR10Wf6JLHfPQ3sV-vxbE2_G-uTH4YIKpAMqardgCwNgU_o7JUiSGbexNbOuGRoAFL04DofRCmhA4aSsTV4XhIIhN3rAbqJOQzkrKbvMJtff6ph8HhUmUllOgbP4ert-BbQLtScYBee1OjMzOVv6K4szF7h69F0eVbBxCRXQv-VL1QDTjNpz2Sf-ImLsHIkTlha7qwQjxmVvWwB9HBd1ifQBANLPpQN-V3wG1lsCQ52DuSvsT1nxu-"/>
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw4mjpoFKDVahsEMEI7YTpDQsyVdR_K19Zglc8aukrXhgZXxbSpQ-zBBkq5HQNEVzty_p_6KbrSYsnbAnrMEEHrgzh-Fg2RilLqpmzT31mIKTnSteM5uJJ6EwN6aw-iscVoe3ToF9u1bioPx2WFOIyZzvsA-PNAXUPtrb6_V4VE7_g123ehgrFTCw9Aqb3Y9B_HOKWluNskA3TrUbNiwXEofvIFPbY93ny4O2AwDeqvG3qXD9R-RZaT9UFn2_5_m5ZTfv-nOy8frbP"/>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">Calificación 4.9/5 basada en +50k entregas</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary text-on-primary w-full pt-16 pb-8 px-6 md:px-margin-desktop">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+<div class="space-y-md col-span-1 md:col-span-1">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary-container text-3xl" data-icon="motorcycle">motorcycle</span>
+<h2 class="font-headline-md text-headline-md font-extrabold text-secondary-container">BlueExpress</h2>
+</div>
+<p class="font-body-sm text-on-primary/70 leading-relaxed">Revolucionando el delivery de comida con rapidez y tecnología. Tu pedido, nuestra misión.</p>
+<div class="flex gap-md pt-md">
+<a class="w-10 h-10 bg-on-primary/10 rounded-full flex items-center justify-center hover:bg-secondary-container transition-colors" href="#"><span class="material-symbols-outlined text-sm" data-icon="public">public</span></a>
+<a class="w-10 h-10 bg-on-primary/10 rounded-full flex items-center justify-center hover:bg-secondary-container transition-colors" href="#"><span class="material-symbols-outlined text-sm" data-icon="share">share</span></a>
+</div>
+</div>
+<div class="space-y-sm">
+<h4 class="font-label-md text-secondary-container uppercase tracking-widest text-xs mb-md">Compañía</h4>
+<nav class="flex flex-col gap-sm">
+<a class="font-body-sm text-on-primary/70 hover:text-white transition-colors" href="#">Carreras</a>
+<a class="font-body-sm text-on-primary/70 hover:text-white transition-colors" href="#como-funciona">Cómo Funciona</a>
+<a class="font-body-sm text-on-primary/70 hover:text-white transition-colors" href="#franquicia">Franquicias</a>
+<a class="font-body-sm text-on-primary/70 hover:text-white transition-colors" href="#">Contacto</a>
+</nav>
+</div>
+<div class="space-y-sm">
+<h4 class="font-label-md text-secondary-container uppercase tracking-widest text-xs mb-md">Contáctanos (WhatsApp)</h4>
+<div class="flex flex-col gap-sm">
+<a class="flex items-center gap-sm group" href="https://wa.me/593988856462" target="_blank">
+<div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center group-hover:bg-green-500 transition-colors">
+<span class="material-symbols-outlined text-green-500 text-sm group-hover:text-white" data-icon="chat">chat</span>
+</div>
+<span class="font-body-sm text-on-primary/70 group-hover:text-white transition-colors">+593 98 885 6462</span>
+</a>
+<a class="flex items-center gap-sm group" href="https://wa.me/593997811011" target="_blank">
+<div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center group-hover:bg-green-500 transition-colors">
+<span class="material-symbols-outlined text-green-500 text-sm group-hover:text-white" data-icon="chat">chat</span>
+</div>
+<span class="font-body-sm text-on-primary/70 group-hover:text-white transition-colors">+593 99 781 1011</span>
+</a>
+</div>
+</div>
+<div class="space-y-sm">
+<h4 class="font-label-md text-secondary-container uppercase tracking-widest text-xs mb-md">Legal</h4>
+<nav class="flex flex-col gap-sm">
+<a class="font-body-sm text-on-primary/70 hover:text-white transition-colors" href="#">Términos de servicio</a>
+<a class="font-body-sm text-on-primary/70 hover:text-white transition-colors" href="#">Políticas de privacidad</a>
+<a class="font-body-sm text-on-primary/70 hover:text-white transition-colors" href="#">Cookies</a>
+</nav>
+</div>
+</div>
+<div class="max-w-7xl mx-auto pt-8 border-t border-on-primary/10 flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="font-body-sm text-on-primary/60 text-center md:text-left">© 2024 BlueExpress Logistics. Todos los derechos reservados.</p>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-xs" data-icon="language">language</span>
+<span class="font-body-sm text-on-primary/60">Español (Latinoamérica)</span>
+</div>
+</div>
+</footer>
+<script>
+    window.addEventListener('scroll', () => {
+        const header = document.querySelector('header');
+        if (window.scrollY > 20) {
+            header.classList.add('shadow-lg', 'bg-surface/95');
+            header.classList.remove('bg-surface/80');
+        } else {
+            header.classList.remove('shadow-lg', 'bg-surface/95');
+            header.classList.add('bg-surface/80');
+        }
+    });
+
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('mousedown', () => button.classList.add('scale-95'));
+        button.addEventListener('mouseup', () => button.classList.remove('scale-95'));
+        button.addEventListener('mouseleave', () => button.classList.remove('scale-95'));
+    });
+
+    // Smooth scroll for anchors
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+</body></html>

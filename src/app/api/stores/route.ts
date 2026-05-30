@@ -33,6 +33,13 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { name: { contains: query, mode: 'insensitive' } },
         { description: { contains: query, mode: 'insensitive' } },
+        {
+          categories: {
+            some: {
+              name: { contains: query, mode: 'insensitive' }
+            }
+          }
+        }
       ]
     }
 

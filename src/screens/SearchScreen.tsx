@@ -1,7 +1,7 @@
 'use client';
-'use client';
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { BottomNavBar } from '@/components/layout/BottomNavBar';
 import type { Product, Store } from '@/types';
 
@@ -16,12 +16,24 @@ interface SearchProduct extends Product {
 const SEARCH_DEBOUNCE_MS = 320;
 
 export const SearchScreen: React.FC = () => {
-  const [query, setQuery] = useState('');
-  const [searchMode, setSearchMode] = useState<SearchMode>('stores');
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('query') || '';
+  const initialMode = (searchParams.get('mode') as SearchMode) || 'stores';
+
+  const [query, setQuery] = useState(initialQuery);
+  const [searchMode, setSearchMode] = useState<SearchMode>(initialMode);
   const [stores, setStores] = useState<Store[]>([]);
   const [products, setProducts] = useState<SearchProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Sincronizar el estado del input y modo cuando los parámetros URL cambien (ej. al presionar otra categoría)
+  useEffect(() => {
+    const q = searchParams.get('query') || '';
+    const m = (searchParams.get('mode') as SearchMode) || 'stores';
+    setQuery(q);
+    setSearchMode(m);
+  }, [searchParams]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -40,6 +52,12 @@ export const SearchScreen: React.FC = () => {
     const params = new URLSearchParams();
     if (cleanedQuery) params.set('query', cleanedQuery);
     if (searchMode === 'stores') params.set('onlyOpen', 'true');
+
+    // Cargar la zona activa seleccionada
+    const savedZone = typeof window !== 'undefined' ? localStorage.getItem('selectedZone') : null;
+    if (savedZone) {
+      params.set('zoneId', savedZone);
+    }
 
     const timer = window.setTimeout(() => {
       fetch(`/api/${searchMode === 'stores' ? 'stores' : 'products'}?${params.toString()}`, {

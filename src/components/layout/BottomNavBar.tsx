@@ -9,7 +9,9 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   activeTab = 'home',
 }) => {
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md rounded-t-xl z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-[0px_-4px_12px_rgba(0,0,0,0.06)]">
+    <nav 
+      className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-md rounded-t-xl z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-[0px_-4px_12px_rgba(0,0,0,0.06)]"
+    >
       <div className="flex justify-around items-center w-full h-20 px-4 pb-safe">
         <Link 
           href="/azul"

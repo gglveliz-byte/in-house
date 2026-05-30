@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Azul Entrega - Todas las categorías</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f8f9fa",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e1e3e4",
+                    "on-primary-fixed": "#001a40",
+                    "primary-container": "#0056b3",
+                    "secondary-fixed-dim": "#bac9d3",
+                    "inverse-surface": "#2e3132",
+                    "tertiary-container": "#575959",
+                    "primary-fixed-dim": "#acc7ff",
+                    "on-surface": "#191c1d",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "tertiary": "#404242",
+                    "surface-tint": "#115cb9",
+                    "surface-container-high": "#e7e8e9",
+                    "surface-container-highest": "#e1e3e4",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-dim": "#d9dadb",
+                    "primary": "#003f87",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-background": "#191c1d",
+                    "secondary-container": "#d3e2ed",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#004491",
+                    "surface-container": "#edeeef",
+                    "secondary-fixed": "#d6e5ef",
+                    "outline": "#727784",
+                    "secondary": "#526069",
+                    "on-secondary-container": "#56656e",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#bbd0ff",
+                    "outline-variant": "#c2c6d4",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "tertiary-fixed": "#e2e2e2",
+                    "on-secondary-fixed-variant": "#3b4951",
+                    "primary-fixed": "#d7e2ff",
+                    "surface": "#f8f9fa",
+                    "background": "#f8f9fa",
+                    "on-surface-variant": "#424752",
+                    "inverse-primary": "#acc7ff",
+                    "on-secondary-fixed": "#0f1d25",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "24px",
+                    "margin-mobile": "20px",
+                    "stack-sm": "4px",
+                    "stack-md": "12px",
+                    "gutter-mobile": "16px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bottom-sheet-active {
+            transform: translateY(0);
+        }
+        .bottom-sheet-hidden {
+            transform: translateY(100%);
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- Parent UI (Simulated Background) -->
+<div class="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm transition-opacity duration-300"></div>
+<!-- Main Navigation Header (Shared Component: TopAppBar) -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 w-full max-w-md mx-auto bg-surface dark:bg-surface-dim">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<span class="font-headline-sm text-headline-sm-mobile text-primary">Dirección de entrega</span>
+</div>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-high transition-colors" data-icon="notifications">notifications</span>
+</div>
+</header>
+<!-- Bottom Sheet Content -->
+<main class="fixed inset-x-0 bottom-0 z-50 flex justify-center items-end">
+<section class="bg-surface-container-lowest w-full max-w-md h-[795px] rounded-t-[32px] shadow-2xl flex flex-col overflow-hidden bottom-sheet-active transition-transform duration-500 ease-out">
+<!-- Handle & Header -->
+<div class="flex flex-col items-center pt-3 pb-stack-lg">
+<div class="w-12 h-1.5 bg-outline-variant rounded-full mb-6"></div>
+<div class="flex justify-between items-center w-full px-margin-mobile">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Todas las categorías</h1>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto px-margin-mobile pb-32 scrollbar-hide">
+<div class="grid grid-cols-4 gap-y-stack-lg gap-x-4">
+<!-- Category Item 1 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A professional top-down photograph of a traditional Ecuadorian Encebollado soup, featuring rich tuna broth, pickled red onions, and fresh cilantro in a clean ceramic bowl. The lighting is bright and airy, emphasizing a modern light-mode culinary aesthetic with vibrant natural colors." src="https://lh3.googleusercontent.com/aida/ADBb0uinCThoWjkEU3_LTG_qP75gOj0lvB7oum7tDuf1ilLkG3xdrAAxWkB-ROEaGe3laqxkZfQf-f1_JWwjiuo5asD9mJi2wbuXC96o20vpxm2JW4QLkoLPXUIYjBrxshNWDfdrhhdLpxY_2jSS5WA8PlT3wkmbZA63OYuOTBgCnUhU0JWmg5BxtGcRaNhUT1xu3uSX5cKGWttN5ZJT0fa9cG3ui4axhGZTUgAT9a0cAPi5a7bPfG5wDP4AGXk"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Encebollado</span>
+</div>
+<!-- Category Item 2 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A high-quality close-up of a fresh shrimp ceviche served in a clear glass dish, garnished with lime wedges and toasted corn nuts. The setting is a bright, upscale restaurant with natural sunlight, highlighting the crisp textures and the clean Corporate Blue branding of the delivery service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAghYZpc-ZO3U6EIQKVcrYQ3DENOkufFNFEJxVmwxRFyWuuxdMudk0CpGowiFF_0Zlpyo6DkGIJOO4_-kO-CyhCb11BjP1jKVAHsiUSl8XkYrItWIWRvL-G2fqQsEgdvBUExnK_1dRTUyJGcFOMIEMGGpjOZceiX7N1mmd-rpqlXXfUJQj-egt2HadoMjVzbEBKrjVPoq8bfJit9UiUpM-GO0I7rSqM1yfrsy9uYxD_YXdQ1Kci2-GV1IAHgFQJ__wodd-PcBkRuHE"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Ceviche</span>
+</div>
+<!-- Category Item 3 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="Authentic Ecuadorian Bolón de verde, a rounded ball of mashed green plantain with cheese and pork rinds, presented on a minimalist white plate. The lighting is soft and professional, emphasizing the golden-brown crust and the comforting, reliable nature of the local food delivery brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxsoeNKC07rsng5dU-t9dob3YGbmLoSmcfKAu6h0kEZGMdpCEtpz6nG-Nill5AR511sIrqlgUh4-n6l7mR-l8vR40tR-fRrm8MiPfJdosHfIlRApBe1eysJrjtWvyE-HItV8XuYFBZGxAv4rhw0RHE7wnqqIsr2LGlAdl5EjkbybALz_jfMve0a4QxD2q3LYDxWZ174kVG1t04kuYBbfsqFNbsXYjKYgq1BovDVB7TbUFhXeEGIJJP2NGail3BiusdMTLqdoWXudI"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Bolón</span>
+</div>
+<!-- Category Item 4 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A vibrant plate of Fritada, featuring braised pork chunks, hominy corn, and sweet plantains, photographed in a clean corporate style. The scene uses a bright palette of whites and warm earth tones, reflecting a trustworthy and efficient mobile commerce experience for high-quality local cuisine." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCti3MqaDieKc_AtgigkqDyKv3C-NTaP3gmBcuVG8uDOPofe9LnYC5D8dCjlI6NrQjqkv3IUaBMkgI3zoJPOKQgUdAfMSnItYo_Z0GpE5sQEpmX67hA5CXYnTVDNh-NQqhR-CH95FdUuVR2hyk0TjAgdk-VqNvU9U9nvBzzzIgMCW_MLLIPYen-Iw9rJlYs1FTR4Q-f_9hxZZRCOXNoRGzpLIBR1ryhn8SrIEzm7vGQqUjeEB0iBF3CD6NeuHRp8vTWLcpZM6X17HQ"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Fritada</span>
+</div>
+<!-- Category Item 5 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A gourmet presentation of Chaulafán, a savory Ecuadorian-Chinese fried rice dish with chicken, shrimp, and vegetables, served in a stylish dark bowl that contrasts with a bright minimalist background. The photography is clean and sharp, using professional lighting to showcase the service's reliability and speed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSVVxRKcY9i9BWpDcqJYR7FOhlCzR53z9hP2AK9_wFWN2FzFcsC7OcnRCbegt936TZ6hEsT31w_BK0gELZIYWb5hc-LatOHgcxW_2rUYir-4CsW8rMTnFKPMaEDiqlR5kM9QH59m9QhkdefAanXUnuyIQWhqj-RIyxki0cm9TFWFR41nEoU9uJ8O376GxnCsNs481DHC5DmGjNNdA5gENFfUmDH6CqbLJvaK1YzcF9DLxG4G93y6upO3pusoZ_Newln0kO7kRrUFs"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Chaulafán</span>
+</div>
+<!-- Category Item 6 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A generous Bandeja Paisa platter with beans, rice, ground beef, egg, and avocado, captured with high-speed studio lighting. The aesthetic is professional and accessible, maintaining the brand's trustworthy personality through a clean, whitespace-focused composition that highlights food variety." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHK6LLYKfGggAQJpL-T09Yb2mYzYWtB8boY7mM4ds6lacTwDWcuuOoliFE9gJkyCSmk7rsLTSviZCPHbv8Y7Qs9LbziaXiT0Fg3Gt15kmIkGPaIVCNIxYzN6xw0U1xeelwKfW1BLIFKwDmm_SxEdX-rUuSReMBD1hV6l69p2zDeQ_TXA2qiq_6v63EbeGUC8i-tnc4wFWtkxIGlYRTLaXaAS75lpN_bdbBJVyhl4qsnsArNCWkId-ch9aMC52fZzj8b6z5fYXPI0s"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Bandeja</span>
+</div>
+<!-- Category Item 7 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="Traditional Arroz con Pollo, vibrant yellow rice with tender chicken pieces and peas, served on a pristine white ceramic plate. The mood is confident and easy, using a refined color palette that reduces cognitive load and promotes a utility-first ordering experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4M1MbH38OzsjdejiA7HnmQuA_BwajTk8vxBzf-0jubROkuaNfTaD_rMNlONEpOKuqHpDce6SklTIW9frUGnrVSaXtMH-TGkUcfJHhH4ZiCK3S3bjCcouUTrTUZcEbiXubbmf59-ATSGqyB_9siHtSwKwmjfhnf6PvT88NyvB-ur9zzYUkVICcrlN9GpTRh-yY7lojqF4N2RnPt_AmsTOEIxu9Vr5e7UUHfJCkls4z0pFVYlp2Fy6xTONqj9Ey4WOJPf2sNdbl30o"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Arroz con Pollo</span>
+</div>
+<!-- Category Item 8 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A steaming bowl of Sancocho, a hearty Latin American stew with meat and tubers, photographed with soft ambient lighting. The visual style follows a modern corporate aesthetic, emphasizing clarity and reliability in the food and grocery selection process for the user." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhE-x34Dwd5M5UCZNoFl2faOJYVHVuqMLjopM55KyXc-U_Sof8PBpzc_dIjXZxVmHEfrxc-aikhJ6Rax6phoi-37fQOjxtwLnPv-UsjYA1bnh-L7tiNe_mjvDEGeeA1Xw73BbJkCXv-rGFc1senyCWS6d6XJbOd9T6USlOAjQmEa6CDpdzytLhwLGv5LjUB_kTGq9FobneTw_qTFTqR9o6QQ-mmmsnYLdvjdZcxLiRYxEX6-AnAkM4IOTdy1ky1syYw8OcRXdqk4E"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Sancocho</span>
+</div>
+<!-- Category Item 9 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="Golden, crispy fried empanadas stacked on a modern wooden tray against a bright, neutral background. The lighting is high-key and professional, creating an emotional response of confidence and ease for the customer browsing the category grid." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvjMIddL5I3LeHETt7Q5OA2PP3s9TAGcNif9Ssr7LlFWlBpVxMiTXS7anaOc2zdiPrgBFttUYhFICDdJDyM6n58gTsweTgatQYo5osixfK4Rp-I5wImpCakYMHjFKGy6RUpb9EigmmPhJiHPKYU5b7mSn87Xr5p3bOpk3nISOT51VNPvtJnCGY9SP6x-KkrTGrrHqJlYbJsWZRz79GiFiJ8q531h7j3Y_kRJY5PYy3XzEWx2Tu6VP69dZ26wwAQPZOq-h7NCUBkPM"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Empanadas</span>
+</div>
+<!-- Category Item 10 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A professional shot of a fresh pepperoni pizza with melting cheese and a crispy crust, presented in a clean, modern commercial style. The lighting is bright and appetizing, maintaining the brand's dependable and professional identity in a high-velocity mobile commerce environment." src="https://lh3.googleusercontent.com/aida/ADBb0uiUGdTJDOUU15N4mq7eSy-3s1pbyPR6Qmi4SSpzLHYAyZnk03J-cIH1huRp5D41Wp9PRd7dpD4G1eFgsPv8q5htyQJvaTY0h-onhuXNCgyCaYkt_we54RGxsOgpCJHiFcUqsIp5Kq3aCI8_fqmqywh2jIKWlPUMVk3TTxeMIwfQuSOvyceljGlCJXcsgTuKxdQ58rqkZnqHZLo0QyBHkAf-8AkBMsqJTqUyGsjdY7RuPCEdLS5Nj07vBQ"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Pizzas</span>
+</div>
+<!-- Category Item 11 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A delicious assortment of modern desserts, including a chocolate mousse and fresh fruit tart, styled for a premium corporate brand. The image uses a clean whitespace-heavy layout and soft shadows to suggest high-quality and trustworthiness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBP9HYPMW6Qqj_po_OaZ6vCRUFYLjhK3yOGOsTb3F-Dq33EouHRvARj_TuNsUaPKDUe-LGdpb4MlTts3EjPgOD9W_9yf6G0GKdCRcBkwJN3zwctN-1TwzrD-K0fQXVkKIHwiqJCY3xs0em7VZlY1C5GcIy-tc3jjs-QVghinZX1S9oJxqaAS4gt3fZYwL4UlCkHa00DCQYx_hKtxLTRblclmL7FCTnuTU13WM96Z9nHV3tb4jJ_tNFca1cpg9cFVVwC1ePetxUOB64"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Postres</span>
+</div>
+<!-- Category Item 12 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="Refreshing cold drinks with ice and citrus slices in elegant glassware, photographed with bright, clear lighting. The aesthetic is professional and dependable, fitting perfectly within the refined and modern corporate style of the delivery app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGiwxrCdvYfrNyVnu_p4KcJm11hJCPqktGzm3UVlHIp3xJZH8Trjh7c7-jE88T3Xf6n1ZEaD6CesTlRymuT8W9TTSGL2BlxsxY5lv6HJvrVfF5OQXlnJE2_hITnsK-DH7U-PuskxA-4Xu3FdO87gcHGna2gVVogtDTAI5D4XsQm8YizgAEyegsjFHp0PS65AhMrBgX5UfHnIejkSnlIsw6-KptUxYZMCl1qX1xmMsEVOUXDT236siphzLtXY1ToHk3WcvMNIE1flo"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Bebidas</span>
+</div>
+<!-- Category Item 13 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="A vibrant salad bowl with fresh greens, quinoa, and avocado, captured in a bright, modern studio setting. The visual style emphasizes wellness and speed, using a soft palette of greens and whites to create a calm, confidence-inspiring selection experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZGx43oydCPSS81Zd6BBqINAtujJ7AQtidp1FACGN5sw1i98N2O8_I0xEvCeSGFVwE7prSUwXkmBcyinAE9aUmliEUAjFh2wrNvaC36RN39_u6sNw2MGknBXIwMmpGCeJatZJM-WDXMzWsKz92jhe3bZYCJdx8SA7beRaXgqBO0fDplF7Ard7KmfvRW0wcACkvFf-c27BMoTyAiju9IAZKjM0BhTsAwkNVvnHPe3cJRY_DQ2HN0QwWWaU1XSRVnoZxhce5VeSXrNw"/>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Saludable</span>
+</div>
+<!-- Category Item 14 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 bg-primary-fixed-dim rounded-full flex items-center justify-center ring-2 ring-transparent group-hover:ring-primary transition-all"><img alt="Súper" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLZ_o2eV0GTB1DGtzfHxrD-tJqMz1wKVCsu8k4f97WchtrEeWpJdoXDYEZC7i8fRYOFOd0SLWUtCmCZxoC8VuuSR7UfQIRqW33gXmxNbnpD1p-n9kIvUKEkpqwQgJcyvzCzAAi-QWiIfhybpUdxjlQ-lalB3ZZ40PKVa3H0_OXsi1Fwr2uFEyLwqvIdluK7jXGIQBxd5_catbJBuxz9rEscj4FAS7b5dFTM71tW3817E21j-3bobFo9lewuJbuyxDhUgP15xgdrec"/></div>
+<span class="font-label-md text-label-md text-center text-on-surface">Súper</span>
+</div>
+<!-- Category Item 15 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 bg-error-container rounded-full flex items-center justify-center ring-2 ring-transparent group-hover:ring-primary transition-all"><img alt="Farmacia" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLb65FFa-qM8hETyaA-38SPtNzE3FXTFlQeuHOlOVIWkwQ06wRq2S_FpqRHNQZGIOiHrRSm2lRY6XEb9Lm35pe2jgJFSkmlP0-oRZxA3vHsS1FPWsBJ0nFO37KJe5snTjMG60TV2-hbFNIl81yEJvQXlBxKIBAtqtCUzZsgpC0jhztEcGnh_ompkkA-LpSplrNdsppVO_ecIjNRkbPw4ASpsHfNF2HeYwUrUYybTqIc9cyAw8fZ4w1vmawoVqib6Z5W4cge1JFiso"/></div>
+<span class="font-label-md text-label-md text-center text-on-surface">Farmacia</span>
+</div>
+<!-- Category Item 16 -->
+<div class="flex flex-col items-center gap-stack-sm active:scale-95 transition-transform cursor-pointer group">
+<div class="relative w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center ring-2 ring-transparent group-hover:ring-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant text-[32px]" data-icon="grid_view">grid_view</span>
+</div>
+<span class="font-label-md text-label-md text-center text-on-surface">Otros</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Navigation Shell (Shared Component: BottomNavBar) -->
+<nav class="fixed bottom-0 w-full rounded-t-xl z-[60] bg-surface-container-lowest dark:bg-inverse-surface shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] flex justify-around items-center w-full h-20 px-4 pb-safe">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Inicio</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="search" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="font-label-sm text-label-sm">Búsqueda</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-sm text-label-sm">Mis Pedidos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:opacity-80 transition-opacity active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Perfil</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for the bottom sheet
+        document.querySelector('button').addEventListener('click', () => {
+            const sheet = document.querySelector('section');
+            const overlay = document.querySelector('.fixed.inset-0.bg-black\\/40');
+            
+            sheet.classList.add('bottom-sheet-hidden');
+            overlay.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                sheet.style.display = 'none';
+                overlay.style.display = 'none';
+            }, 500);
+        });
+
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+    </script>
+</body></html>

@@ -58,7 +58,12 @@ export const TrackingScreen: React.FC = () => {
     const fetchOrder = async () => {
       try {
         const response = await fetch(`/api/orders/${orderId}`);
-        if (!response.ok) throw new Error('No se pudo encontrar el pedido');
+        if (!response.ok) {
+          if (response.status === 404 || response.status === 500) {
+            setActiveOrderId(null);
+          }
+          throw new Error('No se pudo encontrar el pedido');
+        }
         const data = await response.json();
         setOrder(data);
         
@@ -75,7 +80,8 @@ export const TrackingScreen: React.FC = () => {
         }
       } catch (err) {
         console.error('Error fetching order:', err);
-        setError('Ocurrió un error al cargar el pedido.');
+        setError('Ocurrió un error al cargar el pedido o el pedido ya no existe.');
+        setActiveOrderId(null); // Evitar bucles en órdenes eliminadas
       } finally {
         setLoading(false);
       }
@@ -130,9 +136,15 @@ export const TrackingScreen: React.FC = () => {
         <span className="material-symbols-outlined text-5xl text-outline mb-4">error</span>
         <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">Error</h2>
         <p className="font-body-md text-body-md text-on-surface-variant mb-6">{error}</p>
-        <Link href="/azul" className="bg-primary text-on-primary px-6 py-3 rounded-xl font-bold">
+        <button
+          onClick={() => {
+            setActiveOrderId(null);
+            router.push('/azul');
+          }}
+          className="bg-primary text-on-primary px-6 py-3 rounded-xl font-bold active:scale-95 transition-transform"
+        >
           Volver al inicio
-        </Link>
+        </button>
       </div>
     );
   }

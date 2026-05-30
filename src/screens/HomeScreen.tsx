@@ -4,6 +4,9 @@ import { useRouter } from 'next/navigation';
 import { TopAppBar, Zone } from '@/components/layout/TopAppBar';
 import { BottomNavBar } from '@/components/layout/BottomNavBar';
 import { useCartStore } from '@/stores/cart-store';
+import { CategoriesBottomSheet } from '@/components/layout/CategoriesBottomSheet';
+import { CATEGORIES, CategoryItem } from '@/data/categories';
+
 
 interface Store {
   id: string;
@@ -43,7 +46,7 @@ const RestaurantCardSkeleton: React.FC = () => {
   );
 };
 
-export const HomeScreen: React.FC = () => {
+export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defaultShowCategories = false }) => {
   const router = useRouter();
   const [zones, setZones] = useState<Zone[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
@@ -51,7 +54,68 @@ export const HomeScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(defaultShowCategories);
+
+  // Sincronizar estado con cambios en la propiedad (ej. navegación directa)
+  useEffect(() => {
+    setIsCategoriesOpen(defaultShowCategories);
+  }, [defaultShowCategories]);
+
   const activeOrderId = useCartStore((state) => state.activeOrderId);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+
+  const filteredStores = stores.filter((store) => {
+    if (activeFilter === 'Envío Gratis') {
+      return store.deliveryFee === 0;
+    }
+    if (activeFilter === 'Mejor puntuados') {
+      // Simular mejor valorados devolviendo los que tienen mejores tarifas de envío
+      return store.deliveryFee <= 3.0;
+    }
+    if (activeFilter === 'Promociones') {
+      // Devolver los que tienen órdenes mínimas promocionales
+      return store.minOrder <= 10;
+    }
+    return true;
+  });
+
+  // Categorías destacadas para mostrar en el carrusel de la página de inicio
+  const homeFeaturedCategories = [
+    CATEGORIES.find((c) => c.id === 'super'),
+    CATEGORIES.find((c) => c.id === 'farmacia'),
+    CATEGORIES.find((c) => c.id === 'encebollado'),
+    CATEGORIES.find((c) => c.id === 'ceviche'),
+    CATEGORIES.find((c) => c.id === 'pizzas'),
+  ].filter(Boolean) as CategoryItem[];
+
+  const handleCategorySelect = (category: CategoryItem) => {
+    setIsCategoriesOpen(false);
+    // Si estamos físicamente en /azul/categories, limpiamos la ruta de regreso a /azul
+    if (window.location.pathname.endsWith('/categories')) {
+      router.replace('/azul');
+    }
+
+    if (category.type === 'service') {
+      // Mandado Especial Express
+      router.push(`/azul/encargos?category=${category.target}`);
+    } else {
+      // Búsqueda de plato con filtro
+      router.push(`/azul/search?query=${encodeURIComponent(category.label)}&mode=products`);
+    }
+  };
+
+  const handleCloseCategories = () => {
+    setIsCategoriesOpen(false);
+    if (window.location.pathname.endsWith('/categories')) {
+      router.push('/azul');
+    }
+  };
+
+  const handleOpenCategories = () => {
+    setIsCategoriesOpen(true);
+    // Cambiar la URL estáticamente sin recargar la página para reflejar el estado en la PWA
+    window.history.pushState(null, '', '/azul/categories');
+  };
 
   useEffect(() => {
     fetch('/api/zones')
@@ -131,7 +195,19 @@ export const HomeScreen: React.FC = () => {
               <button
                 key={option.label}
                 type="button"
-                className="flex items-center gap-2 whitespace-nowrap rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest"
+                onClick={() => {
+                  if (option.label === 'Filtros') {
+                    // Si se pulsa Filtros, activamos Envío Gratis como demostración
+                    setActiveFilter(prev => prev === 'Envío Gratis' ? null : 'Envío Gratis');
+                  } else {
+                    setActiveFilter(prev => prev === option.label ? null : option.label);
+                  }
+                }}
+                className={`flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-label-md transition-colors ${
+                  activeFilter === option.label
+                    ? 'border-primary bg-primary text-on-primary hover:bg-primary/95 shadow-sm font-bold'
+                    : 'border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-highest'
+                }`}
               >
                 <span className="material-symbols-outlined text-[16px]">{option.icon}</span>
                 {option.label}
@@ -211,6 +287,36 @@ export const HomeScreen: React.FC = () => {
           </div>
         </section>
 
+        {/* Explorar Categorías Bar */}
+        <section className="mt-6 px-margin-mobile">
+          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-3 font-bold">Explorar Categorías</h2>
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
+            {homeFeaturedCategories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => handleCategorySelect(category)}
+                className="flex flex-col items-center gap-1 shrink-0 active:scale-95 transition-transform"
+              >
+                <div className="w-14 h-14 rounded-full overflow-hidden bg-surface-container-low border border-surface-variant flex items-center justify-center shadow-sm">
+                  <img src={category.image} className="w-full h-full object-cover" alt={category.label} />
+                </div>
+                <span className="text-[11px] font-semibold text-on-surface-variant">{category.label}</span>
+              </button>
+            ))}
+
+            {/* Botón "Otros" */}
+            <button
+              onClick={handleOpenCategories}
+              className="flex flex-col items-center gap-1 shrink-0 active:scale-95 transition-transform"
+            >
+              <div className="w-14 h-14 rounded-full bg-surface-container-high border border-surface-variant flex items-center justify-center shadow-sm text-on-surface-variant">
+                <span className="material-symbols-outlined text-[24px]">grid_view</span>
+              </div>
+              <span className="text-[11px] font-bold text-primary">Otros</span>
+            </button>
+          </div>
+        </section>
+
         <section className="mt-stack-lg px-margin-mobile">
           <div className="flex items-center justify-between mb-stack-md">
             <div>
@@ -234,16 +340,22 @@ export const HomeScreen: React.FC = () => {
                 Por favor selecciona tu zona en la parte superior para ver los restaurantes y promociones disponibles cerca de ti.
               </p>
             </div>
-          ) : stores.length === 0 ? (
-            <div className="text-center py-10">
+          ) : filteredStores.length === 0 ? (
+            <div className="text-center py-10 bg-surface-container-low rounded-2xl border border-outline-variant/30 mt-4">
               <span className="material-symbols-outlined text-4xl text-outline mb-2">storefront</span>
               <p className="font-body-md text-on-surface-variant">
-                {error ?? 'No hay restaurantes disponibles en esta zona todavía.'}
+                No hay restaurantes que coincidan con el filtro de &quot;{activeFilter}&quot;.
               </p>
+              <button
+                onClick={() => setActiveFilter(null)}
+                className="mt-3 text-primary font-bold font-label-md text-sm hover:underline"
+              >
+                Mostrar todos
+              </button>
             </div>
           ) : (
             <div className="space-y-stack-md">
-              {stores.map((store) => (
+              {filteredStores.map((store) => (
                 <Link
                   key={store.id}
                   href={`/azul/restaurant/${store.slug}`}
@@ -292,6 +404,12 @@ export const HomeScreen: React.FC = () => {
       </main>
 
       <BottomNavBar activeTab="home" />
+
+      <CategoriesBottomSheet
+        isOpen={isCategoriesOpen}
+        onClose={handleCloseCategories}
+        onSelectCategory={handleCategorySelect}
+      />
     </div>
   );
 };

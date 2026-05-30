@@ -16,12 +16,24 @@ export const PaymentScreen: React.FC = () => {
   const getTotal = useCartStore((state) => state.getTotal);
   const clearCart = useCartStore((state) => state.clearCart);
 
+  // Cargar geolocalización persistida del inicio
+  const persistedAddress = useCartStore((state) => state.customerAddress);
+  const persistedLat = useCartStore((state) => state.customerLat);
+  const persistedLng = useCartStore((state) => state.customerLng);
+  const setDeliveryAddress = useCartStore((state) => state.setDeliveryAddress);
+
+  const persistedStoreNotes = useCartStore((state) => state.storeNotes);
+  const persistedDeliveryNotes = useCartStore((state) => state.deliveryNotes);
+  const setPersistedStoreNotes = useCartStore((state) => state.setStoreNotes);
+  const setPersistedDeliveryNotes = useCartStore((state) => state.setDeliveryNotes);
+
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [address, setAddress] = useState('Av. Paseo de la Reforma 250, Torre B, Piso 12');
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitude, setLongitude] = useState<number | null>(null);
-  const [notes, setNotes] = useState('');
+  const [address, setAddress] = useState(persistedAddress || 'Av. Paseo de la Reforma 250, Torre B, Piso 12');
+  const [latitude, setLatitude] = useState<number | null>(persistedLat || null);
+  const [longitude, setLongitude] = useState<number | null>(persistedLng || null);
+  const [storeNotes, setStoreNotes] = useState(persistedStoreNotes || '');
+  const [deliveryNotes, setDeliveryNotes] = useState(persistedDeliveryNotes || '');
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CARD'>('CASH');
   const [coupon, setCoupon] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
@@ -30,18 +42,36 @@ export const PaymentScreen: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const subtotal = getSubtotal();
-  const total = getTotal();
+  const baseDeliveryFee = deliveryFee;
+  const appliedDiscount = couponApplied && coupon.trim().toUpperCase() === 'BLUE50' 
+    ? baseDeliveryFee * 0.5 
+    : couponApplied && coupon.trim().toUpperCase() === 'BIENVENIDO' 
+      ? baseDeliveryFee 
+      : 0;
+
+  const finalDeliveryFee = Math.max(0, baseDeliveryFee - appliedDiscount);
+  const total = subtotal + finalDeliveryFee;
   const hasItems = items.length > 0;
   const isReady = hasItems && customerName.trim() && customerPhone.trim() && address.trim();
 
   const handleApplyCoupon = () => {
     if (!coupon.trim()) {
       setError('Ingresa un código de cupón válido.');
+      setSuccess(null);
+      setCouponApplied(false);
       return;
     }
-    setCouponApplied(true);
-    setError(null);
-    setSuccess('Cupón aplicado correctamente.');
+    
+    const code = coupon.trim().toUpperCase();
+    if (code === 'BLUE50' || code === 'BIENVENIDO') {
+      setCouponApplied(true);
+      setError(null);
+      setSuccess('Cupón aplicado correctamente.');
+    } else {
+      setCouponApplied(false);
+      setSuccess(null);
+      setError('El cupón ingresado no es válido.');
+    }
   };
 
   const handlePlaceOrder = async () => {
@@ -54,6 +84,11 @@ export const PaymentScreen: React.FC = () => {
     setError(null);
 
     try {
+      const combinedNotes = [
+        storeNotes.trim() ? `🍳 Nota para el local: ${storeNotes.trim()}` : '',
+        deliveryNotes.trim() ? `🛵 Instrucciones para el repartidor: ${deliveryNotes.trim()}` : ''
+      ].filter(Boolean).join('\n');
+
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -64,8 +99,9 @@ export const PaymentScreen: React.FC = () => {
           customerAddress: address,
           customerLat: latitude,
           customerLng: longitude,
-          customerNotes: notes,
+          customerNotes: combinedNotes,
           paymentMethod: paymentMethod,
+          couponCode: couponApplied ? coupon.trim().toUpperCase() : undefined,
           items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
         }),
       });
@@ -91,7 +127,10 @@ export const PaymentScreen: React.FC = () => {
   if (!hasItems) {
     return (
       <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
-        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile">
+        <header 
+          className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile"
+          style={{ transform: 'translate3d(-50%, 0, 0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+        >
           <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
             <span className="material-symbols-outlined text-on-surface">arrow_back</span>
           </Link>
@@ -114,12 +153,20 @@ export const PaymentScreen: React.FC = () => {
 
   return (
     <div className="bg-background text-on-background antialiased w-full max-w-md mx-auto relative min-h-screen pb-32">
-      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface flex items-center justify-between px-margin-mobile h-16">
-        <div className="flex items-center gap-3">
-          <button type="button" className="text-primary hover:bg-surface-container-high transition-colors active:scale-95 p-2 -ml-2 rounded-full flex items-center justify-center">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
+      <header 
+        className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface flex items-center justify-between px-margin-mobile h-16 border-b border-surface-container-high"
+        style={{ transform: 'translate3d(-50%, 0, 0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+      >
+        <div className="flex items-center gap-2">
+          <button 
+            type="button" 
+            onClick={() => router.back()}
+            aria-label="Volver"
+            className="text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 p-2 -ml-2 rounded-full flex items-center justify-center"
+          >
+            <span className="material-symbols-outlined text-on-surface">arrow_back</span>
           </button>
-          <span className="font-headline-sm text-headline-sm text-primary font-bold">Pago</span>
+          <span className="font-headline-sm text-headline-sm text-primary font-bold ml-1">Pago</span>
         </div>
         <button className="text-primary hover:bg-surface-container-high transition-colors active:scale-95 p-2 rounded-full flex items-center justify-center">
           <span className="material-symbols-outlined">notifications</span>
@@ -158,11 +205,15 @@ export const PaymentScreen: React.FC = () => {
               longitude={longitude}
               defaultLatitude={-0.180653}
               defaultLongitude={-78.467834}
-              onAddressChange={(value) => setAddress(value)}
+              onAddressChange={(value) => {
+                setAddress(value);
+                setDeliveryAddress(value, latitude, longitude);
+              }}
               onLocationChange={(lat, lng, value) => {
-                setAddress(value)
-                setLatitude(lat)
-                setLongitude(lng)
+                setAddress(value);
+                setLatitude(lat);
+                setLongitude(lng);
+                setDeliveryAddress(value, lat, lng);
               }}
               required
             />
@@ -188,12 +239,35 @@ export const PaymentScreen: React.FC = () => {
                 />
               </label>
               <label className="flex flex-col gap-2">
-                <span className="font-label-sm text-label-sm text-secondary">Notas para el repartidor</span>
+                <span className="font-label-sm text-label-sm text-primary font-bold flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[18px]">restaurant</span>
+                  Nota o mensaje para el local / cocina (opcional)
+                </span>
                 <textarea
-                  value={notes}
-                  onChange={(event) => setNotes(event.target.value)}
-                  rows={3}
-                  placeholder="Por ejemplo: deja el pedido en la puerta"
+                  value={storeNotes}
+                  onChange={(event) => {
+                    setStoreNotes(event.target.value);
+                    setPersistedStoreNotes(event.target.value);
+                  }}
+                  rows={2}
+                  placeholder="Ej. sin cebolla, aderezo aparte, bien cocido, sin picante"
+                  className="w-full rounded-2xl border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition resize-none"
+                />
+              </label>
+              
+              <label className="flex flex-col gap-2 mt-2">
+                <span className="font-label-sm text-label-sm text-secondary font-semibold flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[18px]">two_wheeler</span>
+                  Instrucciones para el repartidor (opcional)
+                </span>
+                <textarea
+                  value={deliveryNotes}
+                  onChange={(event) => {
+                    setDeliveryNotes(event.target.value);
+                    setPersistedDeliveryNotes(event.target.value);
+                  }}
+                  rows={2}
+                  placeholder="Ej. portón negro, timbre dañado, dejar en recepción"
                   className="w-full rounded-2xl border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition resize-none"
                 />
               </label>
@@ -284,7 +358,16 @@ export const PaymentScreen: React.FC = () => {
             </div>
             <div className="flex items-center justify-between mt-3">
               <span className="font-body-md text-body-md text-secondary">Envío</span>
-              <span className="font-body-md text-body-md text-on-surface font-medium">${deliveryFee.toFixed(2)}</span>
+              <span className="font-body-md text-body-md text-on-surface font-medium">
+                {couponApplied && appliedDiscount > 0 ? (
+                  <span className="flex items-center gap-1.5">
+                    <span className="line-through text-outline text-body-sm">${baseDeliveryFee.toFixed(2)}</span>
+                    <span className="text-success font-bold">${finalDeliveryFee.toFixed(2)}</span>
+                  </span>
+                ) : (
+                  `$${baseDeliveryFee.toFixed(2)}`
+                )}
+              </span>
             </div>
           </div>
 
@@ -312,7 +395,10 @@ export const PaymentScreen: React.FC = () => {
         </section>
       </main>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-surface-container-lowest px-margin-mobile pt-4 pb-8 shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] rounded-t-2xl z-50">
+      <div 
+        className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-surface-container-lowest px-margin-mobile pt-4 pb-8 shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] rounded-t-2xl z-50"
+        style={{ transform: 'translate3d(-50%, 0, 0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+      >
         <button
           type="button"
           onClick={handlePlaceOrder}

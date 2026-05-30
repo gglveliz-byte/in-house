@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
       customerLng,
       customerNotes,
       items,
+      couponCode,
     } = body
 
     // Validación de inputs
@@ -150,10 +151,6 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Cálculo inteligente de la tarifa de envío:
-    // 1. Si la tienda tiene configurado un costo fijo de envío (deliveryFee > 0), usamos ese costo fijo.
-    // 2. Si no tiene costo fijo pero tiene un rango (minDeliveryFee o maxDeliveryFee), calculamos la media/promedio.
-    // 3. Fallback/ejemplo por defecto de cobro medio: 1.00 (un dólar).
     let deliveryFee = 1.00
     if (store.deliveryFee && store.deliveryFee > 0) {
       deliveryFee = store.deliveryFee
@@ -163,6 +160,15 @@ export async function POST(request: NextRequest) {
         deliveryFee = 1.00
       }
     }
+
+    // Aplicar descuento por cupón
+    const code = couponCode?.trim().toUpperCase()
+    if (code === 'BLUE50') {
+      deliveryFee = deliveryFee * 0.5
+    } else if (code === 'BIENVENIDO') {
+      deliveryFee = 0.00
+    }
+
     const total = subtotal + deliveryFee
 
     // Transacción atómica para evitar race condition en counter

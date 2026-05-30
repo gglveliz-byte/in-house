@@ -9,9 +9,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const storeId = searchParams.get('storeId')
     const query = searchParams.get('query')?.trim()
+    const zoneId = searchParams.get('zoneId')
 
-    if (!storeId && !query) {
-      return NextResponse.json({ error: 'storeId o query es requerido' }, { status: 400 })
+    if (!storeId && !query && !zoneId) {
+      return NextResponse.json({ error: 'storeId, query o zoneId es requerido' }, { status: 400 })
     }
 
     // Obtener sesión para validar autorización si es admin
@@ -35,12 +36,21 @@ export async function GET(request: NextRequest) {
 
     if (storeId) {
       where.storeId = storeId
+    } else if (zoneId) {
+      where.store = {
+        zoneId: zoneId
+      }
     }
 
     if (query) {
       where.OR = [
         { name: { contains: query, mode: 'insensitive' } },
         { description: { contains: query, mode: 'insensitive' } },
+        {
+          category: {
+            name: { contains: query, mode: 'insensitive' }
+          }
+        }
       ]
     }
 

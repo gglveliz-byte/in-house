@@ -9,6 +9,11 @@ interface CartStore {
   storeWhatsapp: string | null
   deliveryFee: number
   activeOrderId: string | null
+  customerAddress: string | null
+  customerLat: number | null
+  customerLng: number | null
+  storeNotes: string
+  deliveryNotes: string
 
   // Actions
   addItem: (
@@ -26,6 +31,9 @@ interface CartStore {
   clearCart: () => void
   setStore: (storeId: string, storeName: string, whatsapp: string, deliveryFee: number) => void
   setActiveOrderId: (orderId: string | null) => void
+  setDeliveryAddress: (address: string | null, lat: number | null, lng: number | null) => void
+  setStoreNotes: (notes: string) => void
+  setDeliveryNotes: (notes: string) => void
 
   // Computed
   getSubtotal: () => number
@@ -42,6 +50,11 @@ export const useCartStore = create<CartStore>()(
       storeWhatsapp: null,
       deliveryFee: 0,
       activeOrderId: null,
+      customerAddress: null,
+      customerLat: null,
+      customerLng: null,
+      storeNotes: '',
+      deliveryNotes: '',
 
       addItem: (product, quantity = 1, storeMeta) => {
         const { items, storeId } = get()
@@ -52,7 +65,7 @@ export const useCartStore = create<CartStore>()(
             'Tienes productos de otra tienda en el carrito. ¿Deseas vaciar el carrito y agregar este producto?'
           )
           if (!confirm) return false
-          set({ items: [], storeId: null, storeName: null, storeWhatsapp: null, deliveryFee: 0 })
+          set({ items: [], storeId: null, storeName: null, storeWhatsapp: null, deliveryFee: 0, storeNotes: '', deliveryNotes: '' })
         }
 
         // Si el carrito está vacío y recibimos meta de tienda, configúralo
@@ -89,7 +102,7 @@ export const useCartStore = create<CartStore>()(
         const newItems = items.filter((item) => item.productId !== productId)
         set({ items: newItems })
         if (newItems.length === 0) {
-          set({ storeId: null, storeName: null, storeWhatsapp: null, deliveryFee: 0 })
+          set({ storeId: null, storeName: null, storeWhatsapp: null, deliveryFee: 0, storeNotes: '', deliveryNotes: '' })
         }
       },
 
@@ -113,6 +126,8 @@ export const useCartStore = create<CartStore>()(
           storeName: null,
           storeWhatsapp: null,
           deliveryFee: 0,
+          storeNotes: '',
+          deliveryNotes: '',
         })
       },
 
@@ -122,6 +137,18 @@ export const useCartStore = create<CartStore>()(
 
       setActiveOrderId: (orderId) => {
         set({ activeOrderId: orderId })
+      },
+
+      setDeliveryAddress: (address, lat, lng) => {
+        set({ customerAddress: address, customerLat: lat, customerLng: lng })
+      },
+
+      setStoreNotes: (notes) => {
+        set({ storeNotes: notes })
+      },
+
+      setDeliveryNotes: (notes) => {
+        set({ deliveryNotes: notes })
       },
 
       getSubtotal: () => {

@@ -29,7 +29,7 @@ export default function CheckoutPage() {
     zoneLongitude?: number
   } | null>(null)
 
-  const { items, storeName, storeId, deliveryFee, getSubtotal, getTotal, clearCart, updateQuantity, removeItem } = useCartStore()
+  const { items, storeName, storeId, deliveryFee, getSubtotal, getTotal, clearCart, updateQuantity, removeItem, customerAddress, customerLat, customerLng, setDeliveryAddress } = useCartStore()
   const { activeOrder, isOrderInProgress, setActiveOrder } = useActiveOrderStore()
 
   // Obtener información de la tienda para el rango de envío y ubicación de la zona
@@ -60,9 +60,23 @@ export default function CheckoutPage() {
     customerLng: null as number | null,
   })
 
+  const [storeNotes, setStoreNotes] = useState('')
+  const [deliveryNotes, setDeliveryNotes] = useState('')
+
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    if (mounted) {
+      setFormData((prev) => ({
+        ...prev,
+        customerAddress: prev.customerAddress || customerAddress || '',
+        customerLat: prev.customerLat !== null ? prev.customerLat : customerLat || null,
+        customerLng: prev.customerLng !== null ? prev.customerLng : customerLng || null,
+      }))
+    }
+  }, [mounted, customerAddress, customerLat, customerLng])
 
   useEffect(() => {
     if (session?.user && session.user.role === 'CUSTOMER') {
@@ -126,7 +140,10 @@ export default function CheckoutPage() {
             customerAddress: formData.customerAddress.trim(),
             customerLat: formData.customerLat,
             customerLng: formData.customerLng,
-            customerNotes: formData.customerNotes.trim(),
+            customerNotes: [
+              storeNotes.trim() ? `🍳 Nota para el local: ${storeNotes.trim()}` : '',
+              deliveryNotes.trim() ? `🛵 Instrucciones para el repartidor: ${deliveryNotes.trim()}` : ''
+            ].filter(Boolean).join('\n'),
             items: items.map((item) => ({
               productId: item.productId,
               quantity: item.quantity,
@@ -529,6 +546,7 @@ export default function CheckoutPage() {
                   defaultLongitude={storeInfo?.zoneLongitude}
                   onAddressChange={(address) => {
                     setFormData((prev) => ({ ...prev, customerAddress: address }))
+                    setDeliveryAddress(address, formData.customerLat, formData.customerLng)
                     if (formErrors.customerAddress) setFormErrors(prev => ({ ...prev, customerAddress: '' }))
                   }}
                   onLocationChange={(lat, lng, address) => {
@@ -538,6 +556,7 @@ export default function CheckoutPage() {
                       customerLng: lng,
                       customerAddress: address,
                     }))
+                    setDeliveryAddress(address, lat, lng)
                     if (formErrors.customerAddress) setFormErrors(prev => ({ ...prev, customerAddress: '' }))
                   }}
                   required
@@ -549,20 +568,37 @@ export default function CheckoutPage() {
 
               <div>
                 <label
-                  htmlFor="customerNotes"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  htmlFor="storeNotes"
+                  className="block text-sm font-medium text-primary font-bold flex items-center gap-1 mb-1"
                 >
-                  Notas adicionales (opcional)
+                  <span className="material-symbols-outlined text-[18px]">restaurant</span>
+                  Nota o mensaje para el local / cocina (opcional)
                 </label>
                 <textarea
-                  id="customerNotes"
-                  rows={3}
-                  className="input"
-                  value={formData.customerNotes}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, customerNotes: e.target.value }))
-                  }
-                  placeholder="Instrucciones especiales, referencias, etc."
+                  id="storeNotes"
+                  rows={2}
+                  className="w-full rounded-2xl border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition resize-none"
+                  value={storeNotes}
+                  onChange={(e) => setStoreNotes(e.target.value)}
+                  placeholder="Ej. sin cebolla, aderezo aparte, bien cocido, sin picante"
+                />
+              </div>
+
+              <div className="mt-3">
+                <label
+                  htmlFor="deliveryNotes"
+                  className="block text-sm font-medium text-gray-700 flex items-center gap-1 mb-1"
+                >
+                  <span className="material-symbols-outlined text-[18px]">two_wheeler</span>
+                  Instrucciones para el repartidor (opcional)
+                </label>
+                <textarea
+                  id="deliveryNotes"
+                  rows={2}
+                  className="w-full rounded-2xl border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition resize-none"
+                  value={deliveryNotes}
+                  onChange={(e) => setDeliveryNotes(e.target.value)}
+                  placeholder="Ej. portón negro, timbre dañado, dejar en recepción"
                 />
               </div>
 

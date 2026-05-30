@@ -12,6 +12,8 @@ export const CartScreen: React.FC = () => {
   const removeItem = useCartStore((state) => state.removeItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const clearCart = useCartStore((state) => state.clearCart);
+  const storeNotes = useCartStore((state) => state.storeNotes);
+  const setStoreNotes = useCartStore((state) => state.setStoreNotes);
 
   const subtotal = getSubtotal();
   const total = getTotal();
@@ -119,6 +121,24 @@ export const CartScreen: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Notas para el local */}
+          <div className="bg-surface-container-lowest rounded-xl p-stack-md shadow-[0px_4px_12px_rgba(0,0,0,0.06)] flex flex-col gap-2">
+            <h3 className="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5 font-bold">
+              <span className="material-symbols-outlined text-primary text-[20px]">restaurant</span>
+              ¿Instrucciones especiales?
+            </h3>
+            <p className="font-body-sm text-body-sm text-secondary">
+              Ej. sin cebolla, aderezo aparte, sin picante, etc. (opcional)
+            </p>
+            <textarea
+              value={storeNotes}
+              onChange={(e) => setStoreNotes(e.target.value)}
+              rows={2}
+              placeholder="Escribe tus notas para la cocina aquí..."
+              className="w-full mt-2 rounded-2xl border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition resize-none"
+            />
           </div>
 
           <section className="mt-stack-lg bg-surface-container-lowest rounded-xl p-stack-md shadow-[0px_4px_12px_rgba(0,0,0,0.06)]">
