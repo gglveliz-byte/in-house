@@ -185,7 +185,7 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
       <TopAppBar zones={zones} selectedZone={selectedZone} onZoneChange={handleZoneChange} />
 
       <main className="flex-1 overflow-y-auto pt-16 pb-24 w-full max-w-md mx-auto">
-        <section className="bg-surface-container-lowest sticky top-16 z-40 bg-opacity-95 backdrop-blur-md border-b border-surface-container-high px-margin-mobile py-stack-sm">
+        <section className="bg-surface-container-lowest border-b border-surface-container-high px-margin-mobile py-stack-sm">
           <div className="rounded-full bg-surface-container-lowest shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-surface-variant flex items-center px-4 h-14 cursor-pointer transition-colors hover:border-primary">
             <span className="material-symbols-outlined text-primary mr-3">search</span>
             <span className="text-body-md text-on-surface-variant">Buscar comida, productos y más...</span>

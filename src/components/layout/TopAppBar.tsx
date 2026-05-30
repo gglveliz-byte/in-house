@@ -57,7 +57,14 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
           });
         }
       } else if (result === 'denied') {
-        alert('⚠️ Las notificaciones están bloqueadas. Habilítalas en los permisos de tu navegador para recibir avisos de tus pedidos.');
+        alert(
+          '🔔 Las notificaciones están bloqueadas en tu navegador.\n\n' +
+          'Para poder recibir avisos en tiempo real sobre el estado de tus pedidos, por favor sigue estos sencillos pasos:\n\n' +
+          '1️⃣ Haz clic en el icono de configuración o candado (🔒) a la izquierda de la barra de dirección web de tu navegador.\n' +
+          '2️⃣ Busca la opción "Notificaciones".\n' +
+          '3️⃣ Cambia el permiso a "Permitir" o "Activar".\n' +
+          '4️⃣ Recarga la página y ¡listo! 👍'
+        );
       }
     } catch (e) {
       console.warn('Notification prompt failed:', e);
