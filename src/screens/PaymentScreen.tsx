@@ -127,18 +127,15 @@ export const PaymentScreen: React.FC = () => {
   if (!hasItems) {
     return (
       <div className="bg-background h-full flex flex-col font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
-        <header 
-          className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile"
-          style={{ transform: 'translate3d(-50%, 0, 0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-        >
+        <header className="shrink-0 h-16 bg-surface border-b border-surface-container-high flex items-center px-margin-mobile shadow-sm z-10">
           <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
             <span className="material-symbols-outlined text-on-surface">arrow_back</span>
           </Link>
           <h1 className="ml-4 font-headline-md text-headline-md text-on-surface">Pago</h1>
         </header>
 
-        <main className="flex-1 overflow-y-auto azul-scrollable-content pt-20 px-margin-mobile w-full max-w-md mx-auto text-center">
-          <div className="bg-surface-container-lowest rounded-3xl p-stack-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] mt-stack-xl">
+        <main className="flex-1 overflow-y-auto azul-scrollable-content px-margin-mobile w-full max-w-md mx-auto text-center flex flex-col justify-center items-center">
+          <div className="bg-surface-container-lowest rounded-3xl p-stack-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] max-w-sm w-full">
             <span className="material-symbols-outlined text-5xl text-outline">shopping_cart</span>
             <h2 className="font-headline-sm text-headline-sm text-on-surface mt-stack-md">No hay productos en tu carrito</h2>
             <p className="font-body-md text-body-md text-secondary mt-2">Agrega productos desde un restaurante antes de continuar con el pago.</p>
@@ -153,10 +150,7 @@ export const PaymentScreen: React.FC = () => {
 
   return (
     <div className="bg-background text-on-background antialiased w-full max-w-md mx-auto relative h-full flex flex-col">
-      <header 
-        className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface flex items-center justify-between px-margin-mobile h-16 border-b border-surface-container-high"
-        style={{ transform: 'translate3d(-50%, 0, 0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-      >
+      <header className="shrink-0 h-16 bg-surface flex items-center justify-between px-margin-mobile border-b border-surface-container-high shadow-sm z-10">
         <div className="flex items-center gap-2">
           <button 
             type="button" 
@@ -173,7 +167,7 @@ export const PaymentScreen: React.FC = () => {
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto azul-scrollable-content pt-20 pb-28 px-margin-mobile flex flex-col gap-stack-lg w-full max-w-md mx-auto">
+      <main className="flex-1 overflow-y-auto azul-scrollable-content pb-32 px-margin-mobile flex flex-col gap-stack-lg w-full max-w-md mx-auto pt-4">
         <section className="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)]">
           <div className="p-5">
             <div className="flex items-center justify-between mb-4 gap-3">
@@ -389,10 +383,7 @@ export const PaymentScreen: React.FC = () => {
         </section>
       </main>
 
-      <div 
-        className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-surface-container-lowest px-margin-mobile pt-4 pb-8 shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] rounded-t-2xl z-50"
-        style={{ transform: 'translate3d(-50%, 0, 0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-      >
+      <div className="shrink-0 bg-surface-container-lowest px-margin-mobile pt-4 pb-8 shadow-[0px_-4px_12px_rgba(0,0,0,0.06)] rounded-t-2xl">
         <button
           type="button"
           onClick={handlePlaceOrder}

@@ -103,7 +103,7 @@ function EncargosContent() {
   return (
     <div className="h-full bg-background text-on-surface antialiased font-sans flex flex-col">
       {/* Top Header */}
-      <header className="h-16 bg-surface-container-lowest border-b border-surface-container-high px-margin-mobile flex items-center gap-4 fixed top-0 left-0 right-0 z-50">
+      <header className="shrink-0 h-16 bg-surface-container-lowest border-b border-surface-container-high px-margin-mobile flex items-center gap-4 z-10">
         <Link href="/azul" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
           <span className="material-symbols-outlined text-secondary">arrow_back</span>
         </Link>
@@ -114,7 +114,7 @@ function EncargosContent() {
       </header>
 
       {/* Main Content Form */}
-      <main className="flex-1 overflow-y-auto azul-scrollable-content pt-20 pb-10 w-full max-w-md mx-auto px-margin-mobile flex flex-col">
+      <main className="flex-1 overflow-y-auto azul-scrollable-content pb-10 w-full max-w-md mx-auto px-margin-mobile flex flex-col">
         {success ? (
           <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-8 text-center shadow-lg space-y-4 my-auto animate-in zoom-in-95 duration-300">
             <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
