@@ -20,7 +20,7 @@ export const CartScreen: React.FC = () => {
 
   if (items.length === 0) {
     return (
-      <div className="bg-background h-[100dvh] overflow-hidden flex flex-col font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
+      <div className="bg-background h-full flex flex-col font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
         <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface dark:bg-surface-dim h-16 flex items-center px-margin-mobile border-b border-surface-container-high shadow-sm">
           <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors text-primary dark:text-primary-fixed-dim">
             <span className="material-symbols-outlined text-on-surface">arrow_back</span>
@@ -43,7 +43,7 @@ export const CartScreen: React.FC = () => {
   }
 
   return (
-    <div className="bg-background h-[100dvh] overflow-hidden flex flex-col font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
+    <div className="bg-background h-full flex flex-col font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
       <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface dark:bg-surface-dim h-16 flex items-center px-margin-mobile border-b border-surface-container-high shadow-sm">
         <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors text-primary dark:text-primary-fixed-dim">
           <span className="material-symbols-outlined text-on-surface">arrow_back</span>

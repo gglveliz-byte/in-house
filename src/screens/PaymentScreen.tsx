@@ -174,7 +174,7 @@ export const PaymentScreen: React.FC = () => {
       </header>
 
       <main className="flex-1 overflow-y-auto azul-scrollable-content pt-20 pb-28 px-margin-mobile flex flex-col gap-stack-lg w-full max-w-md mx-auto">
-        <section className="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+        <section className="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)]">
           <div className="p-5">
             <div className="flex items-center justify-between mb-4 gap-3">
               <div>
