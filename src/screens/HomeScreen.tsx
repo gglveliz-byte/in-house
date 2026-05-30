@@ -62,6 +62,7 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
   }, [defaultShowCategories]);
 
   const activeOrderId = useCartStore((state) => state.activeOrderId);
+  const customerAddress = useCartStore((state) => state.customerAddress);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   const filteredStores = stores.filter((store) => {
@@ -181,7 +182,7 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
   const isAllZones = selectedZone === '';
 
   return (
-    <div className="bg-background text-on-surface antialiased h-screen overflow-hidden flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+    <div className="bg-background text-on-surface antialiased h-[100dvh] overflow-hidden flex flex-col selection:bg-primary-container selection:text-on-primary-container">
       <TopAppBar zones={zones} selectedZone={selectedZone} onZoneChange={handleZoneChange} />
 
       <main className="flex-1 overflow-y-auto pt-16 pb-24 w-full max-w-md mx-auto">
@@ -335,13 +336,26 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
               <RestaurantCardSkeleton />
             </div>
           ) : isAllZones ? (
-            <div className="text-center py-12 bg-surface-container-low rounded-2xl border-2 border-dashed border-outline-variant mt-4">
-              <span className="material-symbols-outlined text-5xl text-primary mb-3">location_on</span>
-              <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">Selecciona tu ubicación</h3>
-              <p className="font-body-md text-on-surface-variant max-w-[280px] mx-auto">
-                Por favor selecciona tu zona en la parte superior para ver los restaurantes y promociones disponibles cerca de ti.
-              </p>
-            </div>
+            customerAddress ? (
+              <div className="text-center py-12 bg-surface-container-low rounded-2xl border-2 border-dashed border-red-300 mt-4 px-6 shadow-sm">
+                <span className="material-symbols-outlined text-5xl text-red-500 mb-3 animate-pulse">location_off</span>
+                <h3 className="font-bold text-base text-gray-800 mb-2">📍 Fuera de Área de Servicio</h3>
+                <p className="font-body-md text-xs text-gray-500 max-w-[280px] mx-auto leading-relaxed">
+                  Lo sentimos, tu ubicación actual (<span className="font-bold text-primary">{customerAddress}</span>) está fuera de nuestras zonas de reparto activas.
+                </p>
+                <p className="font-body-md text-xs text-gray-500 max-w-[280px] mx-auto mt-2.5">
+                  Toca el marcador arriba para buscar otra dirección, o selecciona una zona de cobertura manualmente en el menú superior.
+                </p>
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-surface-container-low rounded-2xl border-2 border-dashed border-outline-variant mt-4">
+                <span className="material-symbols-outlined text-5xl text-primary mb-3">location_on</span>
+                <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">Selecciona tu ubicación</h3>
+                <p className="font-body-md text-on-surface-variant max-w-[280px] mx-auto">
+                  Por favor selecciona tu zona en la parte superior para ver los restaurantes y promociones disponibles cerca de ti.
+                </p>
+              </div>
+            )
           ) : filteredStores.length === 0 ? (
             <div className="text-center py-10 bg-surface-container-low rounded-2xl border border-outline-variant/30 mt-4">
               <span className="material-symbols-outlined text-4xl text-outline mb-2">storefront</span>

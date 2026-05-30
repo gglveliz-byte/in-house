@@ -20,16 +20,16 @@ export const CartScreen: React.FC = () => {
 
   if (items.length === 0) {
     return (
-      <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
-        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile">
-          <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
+      <div className="bg-background h-[100dvh] overflow-hidden flex flex-col font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface dark:bg-surface-dim h-16 flex items-center px-margin-mobile border-b border-surface-container-high shadow-sm">
+          <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors text-primary dark:text-primary-fixed-dim">
             <span className="material-symbols-outlined text-on-surface">arrow_back</span>
           </Link>
           <h1 className="ml-4 font-headline-md text-headline-md text-on-surface">Tu Carrito</h1>
         </header>
 
-        <main className="pt-20 px-margin-mobile w-full max-w-md mx-auto text-center">
-          <div className="bg-surface-container-lowest rounded-3xl p-stack-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] mt-stack-xl">
+        <main className="flex-1 overflow-y-auto pt-20 px-margin-mobile w-full max-w-md mx-auto text-center flex flex-col justify-center items-center">
+          <div className="bg-surface-container-lowest rounded-3xl p-stack-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] max-w-sm">
             <span className="material-symbols-outlined text-5xl text-outline">shopping_cart</span>
             <h2 className="font-headline-sm text-headline-sm text-on-surface mt-stack-md">Tu carrito está vacío</h2>
             <p className="font-body-md text-body-md text-secondary mt-2">Agrega productos desde un restaurante para comenzar tu pedido.</p>
@@ -43,15 +43,15 @@ export const CartScreen: React.FC = () => {
   }
 
   return (
-    <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
-      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile">
-        <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
+    <div className="bg-background h-[100dvh] overflow-hidden flex flex-col font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
+      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface dark:bg-surface-dim h-16 flex items-center px-margin-mobile border-b border-surface-container-high shadow-sm">
+        <Link href="/azul" aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors text-primary dark:text-primary-fixed-dim">
           <span className="material-symbols-outlined text-on-surface">arrow_back</span>
         </Link>
         <h1 className="ml-4 font-headline-md text-headline-md text-on-surface">Tu Carrito</h1>
       </header>
 
-      <main className="pt-20 px-margin-mobile w-full max-w-md mx-auto">
+      <main className="flex-1 overflow-y-auto pt-20 pb-32 px-margin-mobile w-full max-w-md mx-auto">
         <section aria-label="Productos en el carrito" className="flex flex-col gap-stack-md">
           <div className="bg-surface-container-lowest rounded-xl p-stack-md shadow-[0px_4px_12px_rgba(0,0,0,0.06)]">
             <div className="flex items-center justify-between mb-stack-md">

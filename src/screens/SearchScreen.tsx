@@ -117,7 +117,7 @@ export const SearchScreen: React.FC = () => {
   }, [error, loading, query, searchMode]);
 
   return (
-    <div className="w-full max-w-md mx-auto relative h-screen overflow-hidden flex flex-col bg-background shadow-2xl">
+    <div className="w-full max-w-md mx-auto relative h-[100dvh] overflow-hidden flex flex-col bg-background shadow-2xl">
       <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface dark:bg-surface-dim">
         <div className="flex items-center justify-between px-margin-mobile h-16 w-full flat no-shadows bg-surface dark:bg-surface-dim">
           <button className="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 transition-transform flex items-center justify-center">

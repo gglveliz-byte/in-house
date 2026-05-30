@@ -9,6 +9,9 @@ export interface Zone {
   id: string;
   name: string;
   currency: string;
+  latitude?: number;
+  longitude?: number;
+  radius?: number;
 }
 
 interface TopAppBarProps {
@@ -44,6 +47,47 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
   const handleSaveLocation = () => {
     setDeliveryAddress(tempAddress, tempLat, tempLng);
     setIsMapModalOpen(false);
+
+    // Si tenemos coordenadas, buscar si pertenece a alguna zona activa
+    if (tempLat !== null && tempLng !== null && zones.length > 0 && onZoneChange) {
+      // Fórmula de Haversine para calcular distancia en kilómetros
+      const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+        const R = 6371; // Radio de la Tierra en km
+        const dLat = ((lat2 - lat1) * Math.PI) / 180;
+        const dLon = ((lon2 - lon1) * Math.PI) / 180;
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      };
+
+      let matchingZone: Zone | null = null;
+      let minDistance = Infinity;
+
+      for (const zone of zones) {
+        if (zone.latitude !== undefined && zone.longitude !== undefined) {
+          const dist = calculateDistance(tempLat, tempLng, zone.latitude, zone.longitude);
+          const maxRadius = zone.radius !== undefined ? zone.radius : 10; // default 10km
+          if (dist <= maxRadius) {
+            if (dist < minDistance) {
+              minDistance = dist;
+              matchingZone = zone;
+            }
+          }
+        }
+      }
+
+      if (matchingZone) {
+        onZoneChange(matchingZone.id);
+      } else {
+        // Fuera de cobertura: limpiar zona seleccionada
+        onZoneChange('');
+      }
+    }
   };
 
   const handleNotificationClick = async () => {

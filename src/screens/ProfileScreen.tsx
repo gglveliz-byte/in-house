@@ -154,7 +154,7 @@ export const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <div className="bg-background h-screen overflow-hidden flex flex-col w-full max-w-md mx-auto relative transition-colors duration-300">
+    <div className="bg-background h-[100dvh] overflow-hidden flex flex-col w-full max-w-md mx-auto relative transition-colors duration-300">
       {/* TopAppBar */}
       <header className="bg-surface dark:bg-surface-dim fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex items-center justify-between px-margin-mobile h-16 shadow-sm border-b border-surface-container-high">
         {activeSection !== 'menu' ? (

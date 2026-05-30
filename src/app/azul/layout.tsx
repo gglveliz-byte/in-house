@@ -18,7 +18,7 @@ export default function AzulLayout({ children }: { children: React.ReactNode }) 
   }, [session, status, router]);
 
   return (
-    <div className="w-full max-w-md mx-auto bg-background min-h-screen relative shadow-2xl overflow-x-hidden">
+    <div className="w-full max-w-md mx-auto bg-background h-[100dvh] overflow-hidden flex flex-col relative shadow-2xl">
       {children}
     </div>
   );

@@ -14,6 +14,7 @@ export async function GET() {
         latitude: true,
         longitude: true,
         currency: true,
+        radius: true,
       },
     })
 
