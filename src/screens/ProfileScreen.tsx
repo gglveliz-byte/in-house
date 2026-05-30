@@ -191,7 +191,7 @@ export const ProfileScreen: React.FC = () => {
       )}
 
       {/* Main Content */}
-      <main className="pt-20 px-margin-mobile w-full max-w-md mx-auto">
+      <main className="pt-20 pb-28 px-margin-mobile w-full max-w-md mx-auto">
         {activeSection === 'menu' && (
           <div className="space-y-stack-lg animate-[fadeIn_0.2s_ease-out]">
             {/* Profile Header */}
