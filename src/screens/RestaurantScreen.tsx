@@ -108,15 +108,25 @@ export const RestaurantScreen: React.FC<RestaurantScreenProps> = ({ slug }) => {
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${heroImage}')` }}></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-transparent"></div>
         <div className="absolute top-0 left-0 w-full flex items-center justify-between p-margin-mobile pt-safe-top z-10">
-          <Link href="/azul" aria-label="Volver" className="w-10 h-10 rounded-full bg-surface-container-lowest/90 flex items-center justify-center text-on-surface shadow-sm active:scale-95 transition-transform">
-            <span className="material-symbols-outlined">arrow_back</span>
+          <Link 
+            href="/azul" 
+            aria-label="Volver" 
+            className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-800 shadow-[0_4px_16px_rgba(0,0,0,0.15)] border border-gray-100 hover:bg-gray-50 active:scale-90 transition-all"
+          >
+            <span className="material-symbols-outlined font-bold text-[22px]">arrow_back</span>
           </Link>
-          <div className="flex gap-stack-sm">
-            <button aria-label="Buscar en restaurante" className="w-10 h-10 rounded-full bg-surface-container-lowest/90 flex items-center justify-center text-on-surface shadow-sm active:scale-95 transition-transform">
-              <span className="material-symbols-outlined">search</span>
+          <div className="flex gap-2">
+            <button 
+              aria-label="Buscar en restaurante" 
+              className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-800 shadow-[0_4px_16px_rgba(0,0,0,0.15)] border border-gray-100 hover:bg-gray-50 active:scale-90 transition-all"
+            >
+              <span className="material-symbols-outlined text-[20px]">search</span>
             </button>
-            <button aria-label="Guardar en favoritos" className="w-10 h-10 rounded-full bg-surface-container-lowest/90 flex items-center justify-center text-on-surface shadow-sm active:scale-95 transition-transform">
-              <span className="material-symbols-outlined">favorite_border</span>
+            <button 
+              aria-label="Guardar en favoritos" 
+              className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-red-500 shadow-[0_4px_16px_rgba(0,0,0,0.15)] border border-gray-100 hover:bg-gray-50 active:scale-90 transition-all"
+            >
+              <span className="material-symbols-outlined text-[20px]">favorite</span>
             </button>
           </div>
         </div>
