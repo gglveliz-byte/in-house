@@ -154,7 +154,7 @@ export const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen pb-32 w-full max-w-md mx-auto relative transition-colors duration-300">
+    <div className="bg-background h-screen overflow-hidden flex flex-col w-full max-w-md mx-auto relative transition-colors duration-300">
       {/* TopAppBar */}
       <header className="bg-surface dark:bg-surface-dim fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex items-center justify-between px-margin-mobile h-16 shadow-sm border-b border-surface-container-high">
         {activeSection !== 'menu' ? (
@@ -191,7 +191,7 @@ export const ProfileScreen: React.FC = () => {
       )}
 
       {/* Main Content */}
-      <main className="pt-20 pb-28 px-margin-mobile w-full max-w-md mx-auto">
+      <main className="flex-1 overflow-y-auto pt-20 pb-24 px-margin-mobile w-full max-w-md mx-auto">
         {activeSection === 'menu' && (
           <div className="space-y-stack-lg animate-[fadeIn_0.2s_ease-out]">
             {/* Profile Header */}

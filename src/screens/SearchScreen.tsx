@@ -117,7 +117,7 @@ export const SearchScreen: React.FC = () => {
   }, [error, loading, query, searchMode]);
 
   return (
-    <div className="w-full max-w-md mx-auto relative min-h-screen pb-24 bg-background shadow-2xl">
+    <div className="w-full max-w-md mx-auto relative h-screen overflow-hidden flex flex-col bg-background shadow-2xl">
       <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface dark:bg-surface-dim">
         <div className="flex items-center justify-between px-margin-mobile h-16 w-full flat no-shadows bg-surface dark:bg-surface-dim">
           <button className="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 transition-transform flex items-center justify-center">
@@ -130,7 +130,7 @@ export const SearchScreen: React.FC = () => {
         </div>
       </header>
 
-      <main className="pt-16 pb-28 px-margin-mobile flex flex-col gap-stack-lg">
+      <main className="flex-1 overflow-y-auto pt-16 pb-24 px-margin-mobile flex flex-col gap-stack-lg">
         <div className="sticky top-16 z-40 bg-background pt-stack-md pb-stack-sm -mx-margin-mobile px-margin-mobile">
           <div className="relative w-full shadow-[0px_4px_12px_rgba(0,0,0,0.06)] rounded-full bg-surface-container-lowest flex items-center px-4 h-14 border border-surface-container-high focus-within:border-primary transition-colors">
             <span className="material-symbols-outlined text-primary mr-3" style={{ fontVariationSettings: "'FILL' 0" }}>search</span>

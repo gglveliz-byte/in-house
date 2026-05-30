@@ -85,7 +85,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
       
       <div className="flex flex-col items-center justify-center flex-1 mx-4 overflow-hidden">
         <span className="font-label-sm text-label-sm text-on-surface-variant truncate w-full text-center">
-          {customerAddress ? '📍 Dirección guardada' : 'Dirección de entrega'}
+          {customerAddress ? 'Dirección guardada' : 'Dirección de entrega'}
         </span>
         {zones.length > 0 && onZoneChange ? (
           <select
