@@ -126,7 +126,7 @@ export const PaymentScreen: React.FC = () => {
 
   if (!hasItems) {
     return (
-      <div className="bg-background min-h-screen pb-32 font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
+      <div className="bg-background h-full flex flex-col font-body-md text-on-surface antialiased w-full max-w-md mx-auto relative">
         <header 
           className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface h-16 flex items-center px-margin-mobile"
           style={{ transform: 'translate3d(-50%, 0, 0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
@@ -137,7 +137,7 @@ export const PaymentScreen: React.FC = () => {
           <h1 className="ml-4 font-headline-md text-headline-md text-on-surface">Pago</h1>
         </header>
 
-        <main className="pt-20 px-margin-mobile w-full max-w-md mx-auto text-center">
+        <main className="flex-1 overflow-y-auto azul-scrollable-content pt-20 px-margin-mobile w-full max-w-md mx-auto text-center">
           <div className="bg-surface-container-lowest rounded-3xl p-stack-lg shadow-[0px_4px_12px_rgba(0,0,0,0.06)] mt-stack-xl">
             <span className="material-symbols-outlined text-5xl text-outline">shopping_cart</span>
             <h2 className="font-headline-sm text-headline-sm text-on-surface mt-stack-md">No hay productos en tu carrito</h2>
@@ -152,7 +152,7 @@ export const PaymentScreen: React.FC = () => {
   }
 
   return (
-    <div className="bg-background text-on-background antialiased w-full max-w-md mx-auto relative min-h-screen pb-32">
+    <div className="bg-background text-on-background antialiased w-full max-w-md mx-auto relative h-full flex flex-col">
       <header 
         className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-surface flex items-center justify-between px-margin-mobile h-16 border-b border-surface-container-high"
         style={{ transform: 'translate3d(-50%, 0, 0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
@@ -173,7 +173,7 @@ export const PaymentScreen: React.FC = () => {
         </button>
       </header>
 
-      <main className="pt-20 pb-28 px-margin-mobile flex flex-col gap-stack-lg w-full max-w-md mx-auto">
+      <main className="flex-1 overflow-y-auto azul-scrollable-content pt-20 pb-28 px-margin-mobile flex flex-col gap-stack-lg w-full max-w-md mx-auto">
         <section className="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.06)] overflow-hidden">
           <div className="p-5">
             <div className="flex items-center justify-between mb-4 gap-3">
@@ -183,19 +183,13 @@ export const PaymentScreen: React.FC = () => {
                   Selecciona tu dirección o marca una ubicación con el mapa.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  alert(
-                    "🗺️ Sistema de Geolocalización Inteligente\n\nEl mapa está completamente activo y funcional. Si no se dispone de una clave de Google Maps, el sistema utiliza automáticamente un motor alternativo premium basado en Leaflet y OpenStreetMap (OSM) sin coste alguno.\n\nPuedes arrastrar el pin esmeralda, hacer clic en cualquier lugar del mapa, o pulsar 'Usar mi ubicación actual' para que el sistema geolocalice y escriba tu dirección de forma automática."
-                  );
-                }}
-                className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 text-emerald-600 px-3 py-1 text-label-sm font-semibold hover:bg-emerald-500/20 active:scale-95 transition-all cursor-pointer border border-emerald-500/20"
-                title="Estado de Geolocalización"
+              <span
+                className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 text-emerald-600 px-3 py-1 text-label-sm font-semibold border border-emerald-500/20"
+                title="Mapa GPS activo — arrastra el pin o pulsa Usar mi ubicación"
               >
                 <span className="material-symbols-outlined text-[16px] animate-pulse">location_on</span>
                 Mapa Activo
-              </button>
+              </span>
             </div>
 
             <LocationPicker
