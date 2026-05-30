@@ -131,7 +131,7 @@ export const SearchScreen: React.FC = () => {
       </header>
 
       <main className="flex-1 overflow-y-auto pt-16 pb-24 px-margin-mobile flex flex-col gap-stack-lg">
-        <div className="sticky top-16 z-40 bg-background pt-stack-md pb-stack-sm -mx-margin-mobile px-margin-mobile">
+        <div className="bg-background pt-stack-md pb-stack-sm -mx-margin-mobile px-margin-mobile">
           <div className="relative w-full shadow-[0px_4px_12px_rgba(0,0,0,0.06)] rounded-full bg-surface-container-lowest flex items-center px-4 h-14 border border-surface-container-high focus-within:border-primary transition-colors">
             <span className="material-symbols-outlined text-primary mr-3" style={{ fontVariationSettings: "'FILL' 0" }}>search</span>
             <input

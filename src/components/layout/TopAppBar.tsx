@@ -129,22 +129,22 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
       {/* Modal Interactivo de Geolocalización (Google / Leaflet OpenStreetMap Fallback) */}
       {isMapModalOpen && (
         <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 flex flex-col gap-4 animate-scale-up">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <div className="flex items-center gap-2.5">
-                <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>map</span>
-                <h3 className="font-bold text-base text-gray-800">Ubicación de entrega</h3>
+          <div className="bg-white rounded-3xl p-4 w-full max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 flex flex-col gap-3 animate-scale-up max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>map</span>
+                <h3 className="font-bold text-sm text-gray-800">Ubicación de entrega</h3>
               </div>
               <button 
                 onClick={() => setIsMapModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
+                className="w-7 h-7 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
                 aria-label="Cerrar modal"
               >
-                <span className="material-symbols-outlined text-lg">close</span>
+                <span className="material-symbols-outlined text-base">close</span>
               </button>
             </div>
             
-            <div className="overflow-y-auto max-h-[60vh] pr-1">
+            <div className="pr-0.5">
               <LocationPicker
                 label="Indica tu dirección exacta"
                 address={tempAddress}
@@ -162,11 +162,11 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
               />
             </div>
             
-            <div className="flex gap-3 mt-1 border-t border-gray-100 pt-4">
+            <div className="flex gap-3 mt-1 border-t border-gray-100 pt-3">
               <button
                 type="button"
                 onClick={() => setIsMapModalOpen(false)}
-                className="flex-1 py-3 rounded-2xl border border-gray-200 text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all active:scale-[0.98]"
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all active:scale-[0.98]"
               >
                 Cancelar
               </button>
@@ -174,7 +174,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({ zones = [], selectedZone =
                 type="button"
                 onClick={handleSaveLocation}
                 disabled={!tempAddress.trim()}
-                className="flex-1 py-3 rounded-2xl bg-primary text-white text-xs font-bold hover:bg-primary/90 shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-1"
+                className="flex-1 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-1"
               >
                 <span className="material-symbols-outlined text-xs">check_circle</span>
                 Confirmar

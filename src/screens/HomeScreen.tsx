@@ -186,10 +186,12 @@ export const HomeScreen: React.FC<{ defaultShowCategories?: boolean }> = ({ defa
 
       <main className="flex-1 overflow-y-auto pt-16 pb-24 w-full max-w-md mx-auto">
         <section className="bg-surface-container-lowest border-b border-surface-container-high px-margin-mobile py-stack-sm">
-          <div className="rounded-full bg-surface-container-lowest shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-surface-variant flex items-center px-4 h-14 cursor-pointer transition-colors hover:border-primary">
-            <span className="material-symbols-outlined text-primary mr-3">search</span>
-            <span className="text-body-md text-on-surface-variant">Buscar comida, productos y más...</span>
-          </div>
+          <Link href="/azul/search" className="block w-full">
+            <div className="rounded-full bg-surface-container-lowest shadow-[0px_4px_12px_rgba(0,0,0,0.06)] border border-surface-variant flex items-center px-4 h-14 cursor-pointer transition-colors hover:border-primary active:scale-[0.98] transition-all">
+              <span className="material-symbols-outlined text-primary mr-3">search</span>
+              <span className="text-body-md text-on-surface-variant">Buscar comida, productos y más...</span>
+            </div>
+          </Link>
           <div className="mt-stack-md overflow-x-auto no-scrollbar flex gap-3 pb-2">
             {filterOptions.map((option) => (
               <button
